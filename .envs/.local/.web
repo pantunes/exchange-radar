@@ -1,0 +1,15 @@
+DEBUG=True
+
+DB_PATH=/app/exchange_radar/web/data/db.json
+
+TRADES_SOCKET_URL=ws://127.0.0.1:9000/trades/{coin}
+TRADES_WHALES_SOCKET_URL=ws://127.0.0.1:9000/trades/{coin}/whales
+TRADES_DOLPHINS_SOCKET_URL=ws://127.0.0.1:9000/trades/{coin}/dolphins
+TRADES_OCTOPUSES_SOCKET_URL=ws://127.0.0.1:9000/trades/{coin}/octopuses
+
+TRADES_HOST_URL=http://127.0.0.1:9000/feed/{coin}
+TRADES_WHALES_HOST_URL=http://127.0.0.1:9000/feed/{coin}/whales
+TRADES_DOLPHINS_HOST_URL=http://127.0.0.1:9000/feed/{coin}/dolphins
+TRADES_OCTOPUSES_HOST_URL=http://127.0.0.1:9000/feed/{coin}/octopuses
+
+DB_TABLE_MAX_ROWS=64

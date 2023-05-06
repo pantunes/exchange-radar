@@ -1,0 +1,126 @@
+import json
+import logging
+from collections.abc import Callable
+from time import sleep
+
+import click
+import pika
+import requests
+from pika.adapters.blocking_connection import BlockingChannel
+from pika.exceptions import (
+    AMQPConnectionError,
+    ChannelWrongStateError,
+    ConnectionClosedByBroker,
+    StreamLostError,
+)
+from pika.spec import Basic
+
+from exchange_radar.consumer.settings import base as settings
+
+logging.basicConfig(
+    format="%(asctime)s - %(message)s",
+    level=logging.INFO if settings.DEBUG else logging.WARNING,
+)
+logger = logging.getLogger(__name__)
+
+
+logging.getLogger("pika").propagate = False
+
+
+ITER_SLEEP = 4.0
+
+
+class Callback:
+    def __init__(self, url: str):
+        self.url = url
+
+    def callback(
+        self,
+        ch: BlockingChannel,
+        method: Basic.Deliver,
+        properties: pika.BasicProperties,
+        body: bytes,
+    ):
+        logger.info("CALLB")
+
+        data = json.loads(body)
+
+        logger.info(f"DATA: {str(data)[:128]}")
+
+        requests.post(
+            self.url.format(coin=data["trade_symbol"]),
+            json=data,
+            timeout=1.0,
+        )
+
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+
+        logger.info("CALLB OK")
+
+
+def setup_channel(channel: BlockingChannel, queue_name: str, callback: Callable):
+    channel.queue_declare(queue=queue_name, durable=True)
+    channel.queue_bind(queue=queue_name, exchange="amq.direct")
+    channel.basic_qos(prefetch_count=1)
+    channel.basic_consume(queue=queue_name, on_message_callback=callback)
+
+
+@click.command()
+def main():
+    credentials = pika.PlainCredentials(
+        settings.RABBITMQ_DEFAULT_USER, settings.RABBITMQ_DEFAULT_PASS
+    )
+
+    parameters = pika.ConnectionParameters(
+        host=settings.RABBITMQ_HOST,
+        port=settings.RABBITMQ_PORT,
+        credentials=credentials,
+        virtual_host=settings.RABBITMQ_DEFAULT_VHOST,
+        heartbeat=settings.RABBITMQ_CONNECTION_HEARTBEAT,
+        blocked_connection_timeout=settings.RABBITMQ_BLOCKED_CONNECTION_TIMEOUT,
+    )
+
+    channel = None
+
+    while True:
+        try:
+            connection = pika.BlockingConnection(parameters)
+            channel = connection.channel()
+            setup_channel(
+                channel,
+                settings.RABBITMQ_TRADES_QUEUE_NAME,
+                Callback(url=settings.TRADES_HOST_URL).callback,
+            )
+            setup_channel(
+                channel,
+                settings.RABBITMQ_TRADES_WHALES_QUEUE_NAME,
+                Callback(url=settings.TRADES_WHALES_HOST_URL).callback,
+            )
+            setup_channel(
+                channel,
+                settings.RABBITMQ_TRADES_DOLPHIN_QUEUE_NAME,
+                Callback(url=settings.TRADES_DOLPHINS_HOST_URL).callback,
+            )
+            setup_channel(
+                channel,
+                settings.RABBITMQ_TRADES_OCTOPUS_QUEUE_NAME,
+                Callback(url=settings.TRADES_OCTOPUSES_HOST_URL).callback,
+            )
+            channel.start_consuming()
+        except KeyboardInterrupt:
+            if channel:
+                channel.stop_consuming()
+            logger.info("Quitting manually....")
+            break
+        except (
+            StreamLostError,
+            ConnectionClosedByBroker,
+            ChannelWrongStateError,
+        ) as error:
+            logger.error(f"ERROR: {error}")
+        except AMQPConnectionError:
+            logger.error("ERROR: General AMQP Connection Error")
+        except Exception as error:
+            logger.error(f"ERROR: {error}")
+        finally:
+            sleep(ITER_SLEEP)

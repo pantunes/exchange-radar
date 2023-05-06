@@ -1,0 +1,66 @@
+version: "3"
+
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: compose/web/production/Dockerfile
+    image: exchange_radar_web
+    container_name: exchange-radar-web
+    env_file:
+      - ./.envs/.production/.web
+    depends_on:
+      - rabbitmq
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./exchange_radar/web/data:/app/exchange_radar/web/data
+    command: /start
+
+  rabbitmq:
+    image: rabbitmq:3.11.15-management-alpine
+    container_name: exchange-radar-rabbitmq
+    env_file:
+      - ./.envs/.production/.rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  producer-binance:
+    build:
+      context: .
+      dockerfile: compose/producer/binance/Dockerfile
+    image: exchange_radar_producer_binance
+    container_name: exchange-radar-producer-binance
+    env_file:
+      - ./.envs/.production/.rabbitmq
+      - ./.envs/.production/.producer
+    depends_on:
+      - rabbitmq
+    command: /start
+
+  producer-kucoin:
+    build:
+      context: .
+      dockerfile: compose/producer/kucoin/Dockerfile
+    image: exchange_radar_producer_kucoin
+    container_name: exchange-radar-producer-kucoin
+    env_file:
+      - ./.envs/.production/.rabbitmq
+      - ./.envs/.production/.producer
+    depends_on:
+      - rabbitmq
+    command: /start
+
+  consumer:
+    build:
+      context: .
+      dockerfile: compose/consumer/Dockerfile
+    image: exchange_radar_consumer
+    env_file:
+      - ./.envs/.production/.rabbitmq
+      - ./.envs/.production/.consumer
+    depends_on:
+      - rabbitmq
+    command: /start
