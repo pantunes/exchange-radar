@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ coin }} octopus{% endblock %}
+{% block javascript %}
+        <script>
+            function set_page_title(obj) {
+                document.title = `{{ coin }} octopus - ${Number(obj.price).toFixed(4)} ${obj.currency}`;
+            }
+        </script>
+{% endblock %}
+{% block heading %}{{ coin }} octopus trades in Binance and Kucoin{% endblock %}

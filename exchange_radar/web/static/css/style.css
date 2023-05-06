@@ -1,0 +1,33 @@
+/* container */
+.padded-boxes {
+    display:flex;
+    flex-wrap:wrap;
+    gap:2rem;
+}
+
+/* boxes */
+.padded-boxes > * {
+    width:100%;
+    xbackground:#eee;
+    border-radius:.4rem;
+}
+
+/* headings */
+.padded-boxes {
+    margin:0;
+    padding:1rem;
+    border-top-left-radius:.4rem;
+    border-top-right-radius:.4rem;
+}
+
+/* padded content */
+.padded-boxes .padded {
+    padding:.1rem 1rem;
+}
+
+/* tablet breakpoint */
+@media (min-width:1590px) {
+    .padded-boxes > * {
+        width:calc(54% - 1rem);
+    }
+}

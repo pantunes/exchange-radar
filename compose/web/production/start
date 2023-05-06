@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+exec uvicorn exchange_radar.web.src.main:app \
+--host 0.0.0.0 \
+--port 9000 \
+--proxy-headers \
+--forwarded-allow-ips="*" \
+--no-access-log

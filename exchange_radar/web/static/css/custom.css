@@ -1,0 +1,28 @@
+body {
+	background: #e0e0e0;
+}
+
+#title {
+	font-size: 1.5em;
+	margin: 0.83em 0;
+	font-weight: bold;
+}
+
+.order_sell {
+	background-color: red;
+  	color: white;
+}
+
+.order_buy {
+	background-color: green;
+  	color: white;
+}
+
+.right {
+    width: 42rem;
+}
+
+xpre {
+	overflow: auto;
+    white-space: pre-wrap;
+}

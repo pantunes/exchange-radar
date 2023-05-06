@@ -1,0 +1,7 @@
+.github
+.idea
+.git
+venv
+nginx
+.gitignore
+.pre-commit-config.yaml

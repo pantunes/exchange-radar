@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <meta charset="utf-8"/>
+
+        <link rel="shortcut icon" href="#">
+        <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/custom.css') }}" type="text/css"/>
+
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/web-socket-js/1.0.0/web_socket.min.js"></script>
+
+        <script>
+            function create_element(obj) {
+                const span = document.createElement("span");
+
+                if (obj.is_seller === false) {
+                    span.className = "order_buy";
+                } else {
+                    span.className = "order_sell";
+                }
+
+                span.innerHTML = ` ${obj.message} \n`;
+                return span
+            }
+
+            function add_row(obj) {
+                const elem = create_element(obj)
+
+                const selector = '#messages';
+
+                $(`${selector}`).prepend(elem);
+
+                const length = $(selector).find('span').length;
+                if (length > {{ max_rows }}) {
+                    $(`${selector} > span:last`).remove();
+                }
+            }
+
+            function retrieve_data() {
+                $.get('{{ http_url }}').done(function (response) {
+                    for (const obj of response.r) {
+                        add_row(obj);
+                    }
+                })
+            }
+
+            function setup_and_start_ws() {
+                const ws = new WebSocket("{{ websocket_url }}");
+
+                ws.onopen = (event) => {
+                    console.log("connection is open")
+                };
+
+                ws.onclose = (event) => {
+                    console.log("connection is close")
+                };
+
+                ws.onmessage = function (event) {
+                    console.log("onmessage")
+
+                    const obj = JSON.parse(event.data);
+                    set_page_title(obj);
+                    add_row(obj);
+                }
+
+                ws.onclose = function(e) {
+                    console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+                    setTimeout(function() {
+                        setup_and_start_ws()
+                    }, 1000);
+                };
+
+                ws.onerror = function(err) {
+                    console.error('Socket encountered error: ', err.message, 'Closing socket');
+                    ws.close();
+                };
+            }
+        </script>
+        <script>
+            $(document).ready(function() {
+                setup_and_start_ws();
+                retrieve_data();
+            });
+        </script>
+
+        {% block javascript %}{% endblock %}
+    </head>
+
+    <body>
+        <div class="padded-boxes">
+            <section>
+                <div class="padded">
+                    <!-- box 1 content -->
+<pre>                           <span id="title">{% block heading %}{% endblock %}</span>
+------------------------------------------------------------------------------------------------------------
+       <b>DATETIME      | EXCHANGE |        PRICE        |          QUANTITY          |          TOTAL</b>
+------------------------------------------------------------------------------------------------------------
+<span id="messages"></span></pre>
+                </div>
+            </section>
+            <section class="right">
+                <div class="padded">
+                    <!-- box 2 content -->
+<pre>
+
+
+<b>Bitcoin:</b>
+
+<a href="/BTC">BTC all trades</a>
+<a href="/BTC/octopuses">BTC octopus trades</a>
+<a href="/BTC/dolphins">BTC dolphin trades</a> 💾
+<a href="/BTC/whales">BTC whale trades</a> 💾
+
+<b>Ethereum:</b>
+
+<a href="/ETH">ETH all trades</a>
+<a href="/ETH/octopuses">ETH octopus trades</a>
+<a href="/ETH/dolphins">ETH dolphin trades</a> 💾
+<a href="/ETH/whales">ETH whale trades</a> 💾
+
+<b>Chainlink:</b>
+
+<a href="/LINK">LINK all trades</a>
+<a href="/LINK/octopuses">LINK octopus trades</a>
+<a href="/LINK/dolphins">LINK dolphin trades</a> 💾
+<a href="/LINK/whales">LINK whale trades</a> 💾
+
+<b>Fantom:</b>
+
+<a href="/FTM">FTM all trades</a>
+<a href="/FTM/octopuses">FTM octopus trades</a>
+<a href="/FTM/dolphins">FTM dolphin trades</a> 💾
+<a href="/FTM/whales">FTM whale trades</a> 💾
+
+<b>Pepe:</b>
+
+<a href="/PEPE">PEPE all trades</a>
+<a href="/PEPE/octopuses">PEPE octopus trades</a>
+<a href="/PEPE/dolphins">PEPE dolphin trades</a> 💾
+<a href="/PEPE/whales">PEPE whale trades</a> 💾
+
+<b>LTO Network:</b>
+
+<a href="/LTO">LTO all trades</a> 💾
+<a href="/LTO/octopuses">LTO octopus trades</a> 💾
+<a href="/LTO/dolphins">LTO dolphin trades</a> 💾
+<a href="/LTO/whales">LTO whale trades</a> 💾
+
+
+
+
+*octopus -> More than 1,000 USDT or 0.04 BTC or 0.6 ETH in a single transaction
+*dolphin -> More than 10,000 USDT or 0.4 BTC or 6 ETH in a single transaction
+*whale -> More than 100,000 USDT or 4 BTC or 60 ETH in a single transaction
+</pre>
+                </div>
+            </section>
+        </div>
+    </body>
+
+</html>
