@@ -1,12 +1,11 @@
 from exchange_radar.producer.enums import Ranking
-from exchange_radar.producer.schemas.binance import BinanceTradeSchema
-from exchange_radar.producer.schemas.kucoin import KucoinTradeSchema
+from exchange_radar.producer.schemas.base import CustomBaseModel
 
 
-def get_ranking(data: BinanceTradeSchema | KucoinTradeSchema) -> Ranking | None:
+def get_ranking(data: CustomBaseModel) -> Ranking | None:
     if data.currency in (
         "USDT",
-        "BUSD",
+        "USD",
     ):
         if data.total > 100000.0:
             return Ranking.WHALE

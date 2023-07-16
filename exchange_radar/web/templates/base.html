@@ -6,14 +6,19 @@
         <meta charset="utf-8"/>
 
         <link rel="shortcut icon" href="#">
+
         <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/theme.css') }}" type="text/css"/>
         <link rel="stylesheet" href="{{ url_for('static', path='css/custom.css') }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/exchanges.css') }}" type="text/css"/>
+
+        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" type="text/css"/>
 
         <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/web-socket-js/1.0.0/web_socket.min.js"></script>
 
         <script>
-            function create_element(obj) {
+            function createElement(obj) {
                 const span = document.createElement("span");
 
                 if (obj.is_seller === false) {
@@ -26,28 +31,28 @@
                 return span
             }
 
-            function add_row(obj) {
-                const elem = create_element(obj)
+            function addRow(obj) {
+                const elem = createElement(obj)
 
                 const selector = '#messages';
 
                 $(`${selector}`).prepend(elem);
 
                 const length = $(selector).find('span').length;
-                if (length > {{ max_rows }}) {
+                if (length > {{ max_rows * 2 }}) {
                     $(`${selector} > span:last`).remove();
                 }
             }
 
-            function retrieve_data() {
+            function retrieveData() {
                 $.get('{{ http_url }}').done(function (response) {
                     for (const obj of response.r) {
-                        add_row(obj);
+                        addRow(obj);
                     }
                 })
             }
 
-            function setup_and_start_ws() {
+            function setupAndStartWS() {
                 const ws = new WebSocket("{{ websocket_url }}");
 
                 ws.onopen = (event) => {
@@ -60,16 +65,15 @@
 
                 ws.onmessage = function (event) {
                     console.log("onmessage")
-
                     const obj = JSON.parse(event.data);
-                    set_page_title(obj);
-                    add_row(obj);
+                    setPageTitle(obj);
+                    addRow(obj);
                 }
 
                 ws.onclose = function(e) {
                     console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
                     setTimeout(function() {
-                        setup_and_start_ws()
+                        setupAndStartWS()
                     }, 1000);
                 };
 
@@ -78,11 +82,47 @@
                     ws.close();
                 };
             }
+            function formatPage() {
+                const subURL = new URL("{{ http_url }}").pathname.replace(/^\/feed/, "");
+                $("a").each(function () {
+                    const link = $(this).attr('href');
+                    if (link === subURL) {
+                        $(this).css({'font-weight': 'bold', 'font-size': '1.2em'});
+                    }
+                });
+            }
         </script>
         <script>
             $(document).ready(function() {
-                setup_and_start_ws();
-                retrieve_data();
+                setupAndStartWS();
+                retrieveData();
+                formatPage();
+            });
+        </script>
+        <script>
+            $(document).ready(function () {
+                const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+                const currentTheme = localStorage.getItem('theme') || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+                if (currentTheme) {
+                    document.documentElement.setAttribute('data-theme', currentTheme);
+
+                    if (currentTheme === 'dark') {
+                        toggleSwitch.checked = true;
+                    }
+                }
+
+                function switchTheme(e) {
+                    if (e.target.checked) {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        document.documentElement.setAttribute('data-theme', 'light');
+                        localStorage.setItem('theme', 'light');
+                    }
+                }
+
+                toggleSwitch.addEventListener('change', switchTheme, false);
             });
         </script>
 
@@ -94,7 +134,7 @@
             <section>
                 <div class="padded">
                     <!-- box 1 content -->
-<pre>                           <span id="title">{% block heading %}{% endblock %}</span>
+<pre>
 ------------------------------------------------------------------------------------------------------------
        <b>DATETIME      | EXCHANGE |        PRICE        |          QUANTITY          |          TOTAL</b>
 ------------------------------------------------------------------------------------------------------------
@@ -105,6 +145,10 @@
                 <div class="padded">
                     <!-- box 2 content -->
 <pre>
+
+<b>Exchanges:</b>
+
+{{ exchanges }}
 
 
 <b>Bitcoin:</b>
@@ -150,11 +194,31 @@
 <a href="/LTO/whales">LTO whale trades</a> 💾
 
 
+<span class="order_buy">&nbsp;&nbsp;</span> Matched Buy Order <span class="order_sell">&nbsp;&nbsp;</span> Matched Sell Order
 
 
-*octopus -> More than 1,000 USDT or 0.04 BTC or 0.6 ETH in a single transaction
-*dolphin -> More than 10,000 USDT or 0.4 BTC or 6 ETH in a single transaction
-*whale -> More than 100,000 USDT or 4 BTC or 60 ETH in a single transaction
+In a single transaction:
+
+<i>>> octopus</i>
+More than 1,000 USD/USDT or 0.04 BTC or 0.6 ETH
+
+<i>>> dolphin</i>
+More than 10,000 USD/USDT or 0.4 BTC or 6 ETH
+
+<i>>> whale</i>
+More than 100,000 USD/USDT or 4 BTC or 60 ETH
+
+
+<div class="theme-switch-wrapper">
+    <label class="theme-switch" for="checkbox">
+        <input type="checkbox" id="checkbox"/>
+        <div class="slider round"></div>
+    </label>
+    <em>Dark Mode</em>
+</div>
+
+<a href="https://pauloantunes.com">Contact</a>
+
 </pre>
                 </div>
             </section>

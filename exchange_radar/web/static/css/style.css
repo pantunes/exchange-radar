@@ -8,7 +8,6 @@
 /* boxes */
 .padded-boxes > * {
     width:100%;
-    xbackground:#eee;
     border-radius:.4rem;
 }
 
@@ -26,8 +25,8 @@
 }
 
 /* tablet breakpoint */
-@media (min-width:1590px) {
+@media (min-width:1490px) {
     .padded-boxes > * {
-        width:calc(54% - 1rem);
+        width:calc(63% - 1rem);
     }
 }

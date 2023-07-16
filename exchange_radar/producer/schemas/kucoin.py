@@ -8,7 +8,7 @@ from exchange_radar.producer.schemas.base import CustomBaseModel
 
 class KucoinTradeSchema(CustomBaseModel):
     symbol: str
-    price: condecimal(ge=0, decimal_places=9)
+    price: condecimal(ge=0, decimal_places=10)
     quantity: condecimal(ge=0, decimal_places=9) = Field(alias="size")
     trade_time: datetime = Field(alias="time")
     side: str = Field(exclude=True)
