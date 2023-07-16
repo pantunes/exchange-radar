@@ -10,8 +10,7 @@ from pika.exceptions import (
 )
 
 from exchange_radar.producer.enums import Ranking
-from exchange_radar.producer.schemas.binance import BinanceTradeSchema
-from exchange_radar.producer.schemas.kucoin import KucoinTradeSchema
+from exchange_radar.producer.schemas.base import CustomBaseModel
 from exchange_radar.producer.settings import base as settings
 from exchange_radar.producer.utils import get_ranking
 
@@ -73,8 +72,8 @@ class ProducerChannel:
 producer_connection = ProducerConnection()
 
 
-def publish(data: BinanceTradeSchema | KucoinTradeSchema) -> None:
-    logger.info(f"PUB: {data.trade_time} {data.symbol}")
+def publish(data: CustomBaseModel) -> None:
+    logger.info(f"PUB: {data.trade_time} {data.symbol}")  # noqa
 
     try:
         with ProducerChannel(queue_name=settings.RABBITMQ_TRADES_QUEUE_NAME) as channel:
@@ -88,11 +87,11 @@ def publish(data: BinanceTradeSchema | KucoinTradeSchema) -> None:
             )
 
         queue_name = None
-        if get_ranking(data) == Ranking.WHALE:
+        if get_ranking(data) == Ranking.WHALE:  # noqa
             queue_name = settings.RABBITMQ_TRADES_WHALES_QUEUE_NAME
-        elif get_ranking(data) == Ranking.DOLPHIN:
+        elif get_ranking(data) == Ranking.DOLPHIN:  # noqa
             queue_name = settings.RABBITMQ_TRADES_DOLPHIN_QUEUE_NAME
-        elif get_ranking(data) == Ranking.OCTOPUS:
+        elif get_ranking(data) == Ranking.OCTOPUS:  # noqa
             queue_name = settings.RABBITMQ_TRADES_OCTOPUS_QUEUE_NAME
 
         if queue_name is not None:
@@ -116,4 +115,4 @@ def publish(data: BinanceTradeSchema | KucoinTradeSchema) -> None:
     except Exception as error:
         logger.error(f"ERROR: {error}")
     else:
-        logger.info(f"PUB OK: {data.trade_time} {data.symbol}")
+        logger.info(f"PUB OK: {data.trade_time} {data.symbol}")  # noqa

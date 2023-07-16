@@ -1,9 +1,13 @@
 # exchange-radar
 Get real-time trades from various crypto exchanges.
 
-So far the following crypto exchanges are implemented:
+So far the following crypto exchanges are supported:
 - Binance
+- Coinbase
+- Kraken
 - Kucoin
+
+Currently, these are the top 4 exchanges by highest volume.
 
 ### Build & Run
 As simple as:

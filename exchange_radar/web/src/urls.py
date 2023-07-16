@@ -19,6 +19,7 @@ from exchange_radar.web.src.views.websockets import (
 )
 
 routes = [
+    # Preferably should be served by a load-balancer and not this web-app
     Mount(
         "/static",
         StaticFiles(directory="./exchange_radar/web/static"),

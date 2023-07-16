@@ -38,10 +38,10 @@ class CustomBaseModel(BaseModel):
     def message(self) -> str:
         return (
             f"{self.trade_time} | "  # noqa
-            f"{self.exchange.ljust(8, ' ')} | "  # noqa
-            f"{'{:.8f} {}'.format(self.price, self.currency).rjust(14 + 5, ' ')} | "  # noqa
+            f"<span class='{self.exchange.lower()}'>{self.exchange.ljust(8, ' ')}</span> | "  # noqa
+            f"{'{:.8f} {}'.format(self.price, self.currency.rjust(4)).rjust(14 + 5, ' ')} | "  # noqa
             f"{'{:.8f} {}'.format(self.quantity, self.trade_symbol).rjust(21 + 5, ' ')} | "  # noqa
-            f"{'{:.8f} {}'.format(self.total, self.currency).rjust(17 + 5, ' ')}"  # noqa
+            f"{'{:.8f} {}'.format(self.total, self.currency.rjust(4)).rjust(17 + 5, ' ')}"  # noqa
         )
 
     @computed_field

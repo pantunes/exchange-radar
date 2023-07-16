@@ -12,6 +12,9 @@ from exchange_radar.producer.task import Task
 logger = logging.getLogger(__name__)
 
 
+ITER_SLEEP = 10.0
+
+
 class KucoinTradesTask(Task):
     def __init__(self):
         super().__init__()
@@ -29,7 +32,7 @@ class KucoinTradesTask(Task):
     async def task(self, symbols: tuple[str]):
         await asyncio.gather(self.process(",".join(symbols)))
 
-    async def process(self, symbol_or_symbols: str):
+    async def process(self, symbol_or_symbols: str | tuple):
         try:
 
             async def callback(res):
@@ -37,7 +40,7 @@ class KucoinTradesTask(Task):
 
                 try:
                     data = KucoinTradeSchema(**res["data"])
-                    publish(data)
+                    publish(data)  # noqa
                 except Exception as error1:
                     logger.error(f"ERROR(1): {error1}")
 
@@ -47,11 +50,13 @@ class KucoinTradesTask(Task):
                 self.num_events += 1
 
                 if self.num_events <= 2:
-                    await asyncio.sleep(20)
+                    logger.info(f"Trying again in {ITER_SLEEP} seconds...")
+                    await asyncio.sleep(ITER_SLEEP)
                     continue
 
                 try:
                     try:
+                        logger.error("Unsubscribing...")
                         await kucoin_manager.unsubscribe(
                             f"/market/match:{symbol_or_symbols}"
                         )

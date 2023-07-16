@@ -10,6 +10,7 @@ from exchange_radar.web.src.manager import (
 )
 from exchange_radar.web.src.models import Db
 from exchange_radar.web.src.settings import base as settings
+from exchange_radar.web.src.utils import get_exchanges
 
 templates = Jinja2Templates(directory="/app/exchange_radar/web/templates")
 
@@ -32,6 +33,7 @@ class IndexBase(HTTPEndpoint):
             "coin": coin,
             "websocket_url": self.websocket_url.format(coin=coin),
             "http_url": self.http_url.format(coin=coin),
+            "exchanges": get_exchanges(coin=coin),
             "max_rows": settings.DB_TABLE_MAX_ROWS,
         }
         return templates.TemplateResponse(self.template_name, context=context)
