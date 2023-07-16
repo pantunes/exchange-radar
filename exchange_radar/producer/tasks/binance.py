@@ -14,7 +14,7 @@ ITER_SLEEP = 10 * 60.0
 
 
 class BinanceTradesTask(Task):
-    async def process(self, symbol_or_symbols: str):
+    async def process(self, symbol_or_symbols: str | tuple):
         while True:
             try:
                 async_client = await AsyncClient.create()

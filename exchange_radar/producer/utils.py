@@ -7,6 +7,7 @@ def get_ranking(data: BinanceTradeSchema | KucoinTradeSchema) -> Ranking | None:
     if data.currency in (
         "USDT",
         "BUSD",
+        "USD",
     ):
         if data.total > 100000.0:
             return Ranking.WHALE

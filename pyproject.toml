@@ -44,11 +44,10 @@ pika = "^1.3.2"
 requests = "^2.31.0"
 urllib3 = "^1.26.16"
 coverage = "^7.2.7"
-
+copra = "1.2.9"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"
-
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
@@ -58,10 +57,8 @@ ipython = "^8.14.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-
 [tool.pytest.ini_options]
 addopts = "-vv"
-
 
 [tool.poetry.scripts]
 producer = "exchange_radar.producer.main:main"

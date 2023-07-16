@@ -53,6 +53,19 @@ services:
       - rabbitmq
     command: /start
 
+  producer-coinbase:
+    build:
+      context: .
+      dockerfile: compose/producer/coinbase/Dockerfile
+    image: exchange_radar_producer_coinbase
+    container_name: exchange-radar-producer-coinbase
+    env_file:
+      - ./.envs/.production/.rabbitmq
+      - ./.envs/.production/.producer
+    depends_on:
+      - rabbitmq
+    command: /start
+
   consumer:
     build:
       context: .

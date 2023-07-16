@@ -1,0 +1,14 @@
+.binance {
+    background: var(--binance-background-color);
+    color: var(--binance-text-color);
+}
+
+.kucoin {
+    background: var(--kucoin-background-color);
+    color: var(--kucoin-text-color);
+}
+
+.coinbase {
+    background: var(--coinbase-background-color);
+    color: var(--coinbase-text-color);
+}

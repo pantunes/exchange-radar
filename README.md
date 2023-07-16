@@ -1,9 +1,10 @@
 # exchange-radar
 Get real-time trades from various crypto exchanges.
 
-So far the following crypto exchanges are implemented:
+So far the following crypto exchanges are supported:
 - Binance
 - Kucoin
+- Coinbase
 
 ### Build & Run
 As simple as:

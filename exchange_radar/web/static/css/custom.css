@@ -1,5 +1,15 @@
 body {
-	background: #e0e0e0;
+	background: var(--background-color);
+	color: var(--text-color);
+}
+
+a {
+    color: var(--link-color);
+}
+
+a:hover {
+    text-decoration: underline;
+    filter: brightness(80%);
 }
 
 #title {
@@ -9,20 +19,15 @@ body {
 }
 
 .order_sell {
-	background-color: red;
-  	color: white;
+	background-color: var(--order-sell-background-color);
+  	color: var(--order-sell-text-color);
 }
 
 .order_buy {
-	background-color: green;
-  	color: white;
+	background-color: var(--order-buy-background-color);
+  	color: var(--order-buy-text-color);
 }
 
 .right {
     width: 42rem;
-}
-
-xpre {
-	overflow: auto;
-    white-space: pre-wrap;
 }

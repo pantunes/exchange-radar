@@ -2,6 +2,10 @@
 .idea
 .git
 venv
+.venv
 nginx
+.pytest_cache
+htmlcov
 .gitignore
 .pre-commit-config.yaml
+.coverage

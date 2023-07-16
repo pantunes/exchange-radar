@@ -29,7 +29,7 @@ class KucoinTradesTask(Task):
     async def task(self, symbols: tuple[str]):
         await asyncio.gather(self.process(",".join(symbols)))
 
-    async def process(self, symbol_or_symbols: str):
+    async def process(self, symbol_or_symbols: str | tuple):
         try:
 
             async def callback(res):

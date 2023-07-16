@@ -8,7 +8,6 @@
 /* boxes */
 .padded-boxes > * {
     width:100%;
-    xbackground:#eee;
     border-radius:.4rem;
 }
 
