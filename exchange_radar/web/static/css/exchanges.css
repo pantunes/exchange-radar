@@ -12,3 +12,8 @@
     background: var(--coinbase-background-color);
     color: var(--coinbase-text-color);
 }
+
+.kraken {
+    background: var(--kraken-background-color);
+    color: var(--kraken-text-color);
+}

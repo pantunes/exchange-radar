@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from exchange_radar.producer.schemas.binance import BinanceTradeSchema
 from exchange_radar.producer.schemas.coinbase import CoinbaseTradeSchema
+from exchange_radar.producer.schemas.kraken import KrakenTradeSchema
 from exchange_radar.producer.schemas.kucoin import KucoinTradeSchema
 
 
@@ -108,4 +109,42 @@ def test_schemas_coinbase():
         "             QTY: 0.00251665 ETH |         TOTAL: 4.86702493 USD",
         "is_seller": True,
         "exchange": "Coinbase",
+    }
+
+
+def test_schemas_kraken():
+    msg = [
+        337,
+        [["29911.20000", "0.03409475", "1690115020.186705", "s", "l", ""]],
+        "trade",
+        "XBT/USD",
+    ]
+
+    _, trades, _, symbol = msg
+    trade = trades[0]
+
+    price, volume, time, side, order_type, misc = trade
+
+    payload = KrakenTradeSchema(
+        symbol=symbol,
+        price=price,
+        quantity=volume,
+        trade_time=time,
+        side=side,
+    )
+
+    assert payload.model_dump() == {
+        "symbol": "BTCUSD",
+        "price": Decimal("29911.20000"),
+        "quantity": Decimal("0.03409475"),
+        "trade_time": datetime.datetime(2023, 7, 23, 12, 23, 40),
+        "total": Decimal("1019.8148862000"),
+        "currency": "USD",
+        "trade_symbol": "BTC",
+        "message": "2023-07-23 12:23:40 | <span class='kraken'>Kraken  </span> | 29911.20000000  USD |"
+        "             0.03409475 BTC |     1019.81488620  USD",
+        "message_with_keys": "2023-07-23 12:23:40 | Kraken   |  PRICE: 29911.20000000 USD |"
+        "             QTY: 0.03409475 BTC |      TOTAL: 1019.81488620 USD",
+        "is_seller": True,
+        "exchange": "Kraken",
     }

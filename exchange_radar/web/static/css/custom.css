@@ -1,5 +1,7 @@
 body {
 	background: var(--background-color);
+	font-family: monospace, courier, "courier new";
+   	font-size: 13px;
 	color: var(--text-color);
 }
 

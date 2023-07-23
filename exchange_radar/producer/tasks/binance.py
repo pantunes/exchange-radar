@@ -10,7 +10,7 @@ from exchange_radar.producer.task import Task
 logger = logging.getLogger(__name__)
 
 
-ITER_SLEEP = 10 * 60.0
+ITER_SLEEP = 10.0
 
 
 class BinanceTradesTask(Task):
@@ -31,6 +31,6 @@ class BinanceTradesTask(Task):
                 res = await ts.recv()
                 try:
                     data = BinanceTradeSchema(**res)
-                    publish(data)
+                    publish(data)  # noqa
                 except Exception as error:
                     logger.error(f"ERROR: {error}")

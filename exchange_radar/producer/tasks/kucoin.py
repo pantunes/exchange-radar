@@ -12,6 +12,9 @@ from exchange_radar.producer.task import Task
 logger = logging.getLogger(__name__)
 
 
+ITER_SLEEP = 10.0
+
+
 class KucoinTradesTask(Task):
     def __init__(self):
         super().__init__()
@@ -37,7 +40,7 @@ class KucoinTradesTask(Task):
 
                 try:
                     data = KucoinTradeSchema(**res["data"])
-                    publish(data)
+                    publish(data)  # noqa
                 except Exception as error1:
                     logger.error(f"ERROR(1): {error1}")
 
@@ -47,7 +50,8 @@ class KucoinTradesTask(Task):
                 self.num_events += 1
 
                 if self.num_events <= 2:
-                    await asyncio.sleep(20)
+                    logger.error(f"Trying again in {ITER_SLEEP} seconds...")
+                    await asyncio.sleep(ITER_SLEEP)
                     continue
 
                 try:

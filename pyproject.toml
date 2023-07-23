@@ -16,6 +16,10 @@ keywords=[
     "crypto exchanges",
     "exchange",
     "crypto",
+    "binance",
+    "coinbase",
+    "kraken",
+    "kucoin",
 ]
 classifiers=[
     "Development Status :: 5 - Production/Stable",

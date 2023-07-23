@@ -10,7 +10,7 @@ from exchange_radar.producer.task import Task
 logger = logging.getLogger(__name__)
 
 
-ITER_SLEEP = 10 * 60.0
+ITER_SLEEP = 10.0
 
 
 class CoinbaseTradesTask(Task):
@@ -19,11 +19,15 @@ class CoinbaseTradesTask(Task):
     def process(self, symbol_or_symbols: str | tuple):
         class CustomClient(Client):
             def on_message(self, message):
-                try:
-                    data = CoinbaseTradeSchema(**message)
-                    publish(data)
-                except Exception as _error:
-                    logger.error(f"ERROR: {_error}")
+                match message:
+                    case {"type": "subscriptions"}:
+                        pass
+                    case _:
+                        try:
+                            data = CoinbaseTradeSchema(**message)
+                            publish(data)  # noqa
+                        except Exception as _error:
+                            logger.error(f"ERROR: {_error}")
 
         while True:
             try:

@@ -66,6 +66,19 @@ services:
       - rabbitmq
     command: /start
 
+  producer-kraken:
+    build:
+      context: .
+      dockerfile: compose/producer/kraken/Dockerfile
+    image: exchange_radar_producer_kraken
+    container_name: exchange-radar-producer-kraken
+    env_file:
+      - ./.envs/.production/.rabbitmq
+      - ./.envs/.production/.producer
+    depends_on:
+      - rabbitmq
+    command: /start
+
   consumer:
     build:
       context: .

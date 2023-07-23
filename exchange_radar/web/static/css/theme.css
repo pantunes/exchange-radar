@@ -12,6 +12,8 @@
     --kucoin-text-color: black;
     --coinbase-background-color: #1449fc;
     --coinbase-text-color: white;
+    --kraken-background-color: #5442d0;
+    --kraken-text-color: white;
 }
 
 [data-theme="dark"] {
@@ -28,6 +30,8 @@
     --kucoin-text-color: #b8b8b8;
     --coinbase-background-color: #132254;
     --coinbase-text-color: #b8b8b8;
+    --kraken-background-color: #31267a;
+    --kraken-text-color: #b8b8b8;
 }
 
 /* toggle switch */
