@@ -1,16 +1,15 @@
-# exchange-radar
-Get real-time trades from various crypto exchanges.
+# exchange-radar: Real-time Crypto Exchange Trades Monitor
+Welcome to Exchange Radar, your gateway to real-time trade data from major cryptocurrency exchanges.
 
-So far the following crypto exchanges are supported:
+### Supported Exchanges
+Exchange Radar currently supports the following top 4 exchanges by trading volume:
 - Binance
 - Coinbase
 - Kraken
 - Kucoin
 
-Currently, these are the top 4 exchanges by highest volume.
-
 ### Build & Run
-As simple as:
+Get started effortlessly:
 
 #### Locally
 
@@ -20,17 +19,18 @@ As simple as:
 
     $ docker-compose -f production.yml up --build -d
 
-Example of how to spin all services and scale the service `consumer` horizontally with 2 instances:
+Scale the consumer service horizontally with 2 instances:
 
     $ docker-compose -f production.yml up --build --scale consumer=2
 
-### Client
-Access `http://127.0.0.1:9000/BTC` and voilá!
+### Accessing data
+Explore real-time trade information effortlessly:
+- Visit http://127.0.0.1:9000/BTC to access real-time BTC trades.
+- To track BTC whales' transactions, navigate to http://127.0.0.1:9000/BTC/whales.
+- For BTC dolphins' transactions, use http://127.0.0.1:9000/BTC/dolphins.
+- To monitor BTC octopuses' transactions, head to http://127.0.0.1:9000/BTC/octopuses.
 
-All BTC trades are displayed in real-time.
+Feel free to replace BTC with any other supported coin across the exchanges.
 
-To check BTC whales transactions hit `http://127.0.0.1:9000/BTC/whales` \
-To check BTC dolphins transactions hit `http://127.0.0.1:9000/BTC/dolphins` \
-To check BTC octopuses transactions hit `http://127.0.0.1:9000/BTC/octopuses`
-
-Use any other coin that the exchanges support - The coin `BTC` was used as an example.
+### Hardware Requirements
+Exchange Radar operates efficiently without requiring extensive resources. In fact, all services run seamlessly on a single Raspberry Pi 4.
