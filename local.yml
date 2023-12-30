@@ -27,6 +27,12 @@ services:
       - "5672:5672"
       - "15672:15672"
 
+  redis:
+    image: redis:7.2-alpine
+    container_name: exchange-radar-redis
+    ports:
+      - '6379:6379'
+
   producer-binance:
     build:
       context: .
@@ -36,6 +42,7 @@ services:
     env_file:
       - ./.envs/.local/.rabbitmq
       - ./.envs/.local/.producer
+      - ./.envs/.local/.redis
     depends_on:
       - rabbitmq
     volumes:
@@ -51,6 +58,7 @@ services:
     env_file:
       - ./.envs/.local/.rabbitmq
       - ./.envs/.local/.producer
+      - ./.envs/.local/.redis
     depends_on:
       - rabbitmq
     volumes:
@@ -66,6 +74,7 @@ services:
     env_file:
       - ./.envs/.local/.rabbitmq
       - ./.envs/.local/.producer
+      - ./.envs/.local/.redis
     depends_on:
       - rabbitmq
     volumes:
@@ -81,6 +90,7 @@ services:
     env_file:
       - ./.envs/.local/.rabbitmq
       - ./.envs/.local/.producer
+      - ./.envs/.local/.redis
     depends_on:
       - rabbitmq
     volumes:

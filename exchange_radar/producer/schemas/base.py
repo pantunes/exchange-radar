@@ -2,9 +2,15 @@ from datetime import datetime
 from decimal import Decimal, localcontext
 from functools import cached_property
 
+import redis
 from pydantic import BaseModel, computed_field, field_validator
 
+from exchange_radar.producer.settings import base as settings
 from exchange_radar.producer.settings.base import CURRENCIES
+
+_redis = redis.Redis(
+    host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB
+)
 
 
 class CustomBaseModel(BaseModel):
@@ -28,6 +34,13 @@ class CustomBaseModel(BaseModel):
     @cached_property
     def trade_symbol(self) -> str:
         return self.symbol.replace(self.currency, "")  # noqa
+
+    @computed_field
+    def volume(self) -> float:
+        today_date = datetime.today().date().strftime("%Y-%m-%d")
+        return _redis.hincrbyfloat(
+            today_date, self.trade_symbol, float(self.quantity)  # noqa
+        )
 
     @field_validator("trade_time", mode="after", check_fields=False)
     def trade_time_after(cls, v) -> datetime:

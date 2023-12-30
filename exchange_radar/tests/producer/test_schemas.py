@@ -38,6 +38,7 @@ def test_schemas_binance():
         "message_with_keys": "2022-12-31 19:43:02 | Binance  |      PRICE: 0.00100000 BTC |"
         "           QTY: 100.00000000 BNB |         TOTAL: 0.10000000 BTC",
         "exchange": "Binance",
+        "volume": Decimal("100.0"),
     }
 
 
@@ -76,6 +77,7 @@ def test_schemas_kucoin():
         "             QTY: 3.73350000 LTO |         TOTAL: 0.00001313 BTC",
         "is_seller": True,
         "exchange": "Kucoin",
+        "volume": Decimal("3.7335"),
     }
 
 
@@ -109,6 +111,7 @@ def test_schemas_coinbase():
         "             QTY: 0.00251665 ETH |         TOTAL: 4.86702493 USD",
         "is_seller": True,
         "exchange": "Coinbase",
+        "volume": Decimal("0.00251665"),
     }
 
 
@@ -147,4 +150,5 @@ def test_schemas_kraken():
         "             QTY: 0.03409475 BTC |      TOTAL: 1019.81488620 USD",
         "is_seller": True,
         "exchange": "Kraken",
+        "volume": Decimal("0.03409475"),
     }
