@@ -53,6 +53,20 @@
                 }
             }
 
+            function setVolume(obj) {
+                const volume = obj.volume.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                $(`#${obj.trade_symbol}_volume`).text(volume);
+
+                const volume_in_currency = (obj.volume * obj.price).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                $(`#${obj.trade_symbol}_volume_in_currency`).text(`${volume_in_currency} ${obj.currency}`);
+            }
+
             function retrieveData() {
                 $.get('{{ http_url }}').done(function (response) {
                     for (const obj of response.r) {
@@ -77,6 +91,7 @@
                     const obj = JSON.parse(event.data);
                     setPageTitle(obj);
                     addRow(obj);
+                    setVolume(obj);
                 }
 
                 ws.onclose = function(e) {
@@ -161,6 +176,9 @@
 
 
 <b>Bitcoin:</b>
+{%- if coin == "BTC" %}
+<i>Daily Volume: <span id="BTC_volume">-</span> BTC @ <span id="BTC_volume_in_currency">-</span></i>
+{%- endif %}
 
 <a href="/BTC">BTC all trades</a>
 <a href="/BTC/octopuses">BTC octopus trades</a>
@@ -168,6 +186,9 @@
 <a href="/BTC/whales">BTC whale trades</a> 💾
 
 <b>Ethereum:</b>
+{%- if coin == "ETH" %}
+<i>Daily Volume: <span id="ETH_volume">-</span> ETH @ <span id="ETH_volume_in_currency">-</span></i>
+{%- endif %}
 
 <a href="/ETH">ETH all trades</a>
 <a href="/ETH/octopuses">ETH octopus trades</a>
@@ -175,6 +196,9 @@
 <a href="/ETH/whales">ETH whale trades</a> 💾
 
 <b>Chainlink:</b>
+{%- if coin == "LINK" %}
+<i>Daily Volume: <span id="LINK_volume">-</span> LINK @ <span id="LINK_volume_in_currency">-</span></i>
+{%- endif %}
 
 <a href="/LINK">LINK all trades</a>
 <a href="/LINK/octopuses">LINK octopus trades</a>
@@ -182,6 +206,9 @@
 <a href="/LINK/whales">LINK whale trades</a> 💾
 
 <b>Fantom:</b>
+{%- if coin == "FTM" %}
+<i>Daily Volume: <span id="FTM_volume">-</span> FTM @ <span id="FTM_volume_in_currency">-</span></i>
+{%- endif %}
 
 <a href="/FTM">FTM all trades</a>
 <a href="/FTM/octopuses">FTM octopus trades</a>
@@ -189,6 +216,9 @@
 <a href="/FTM/whales">FTM whale trades</a> 💾
 
 <b>Pepe:</b>
+{%- if coin == "PEPE" %}
+<i>Daily Volume: <span id="PEPE_volume">-</span> PEPE @ <span id="PEPE_volume_in_currency">-</span></i>
+{%- endif %}
 
 <a href="/PEPE">PEPE all trades</a>
 <a href="/PEPE/octopuses">PEPE octopus trades</a>
@@ -196,6 +226,9 @@
 <a href="/PEPE/whales">PEPE whale trades</a> 💾
 
 <b>LTO Network:</b>
+{%- if coin == "LTO" %}
+<i>Daily Volume: <span id="LTO_volume">-</span> LTO @ <span id="LTO_volume_in_currency">-</span></i>
+{%- endif %}
 
 <a href="/LTO">LTO all trades</a> 💾
 <a href="/LTO/octopuses">LTO octopus trades</a> 💾

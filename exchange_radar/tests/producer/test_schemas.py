@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from unittest.mock import patch
 
 from exchange_radar.producer.schemas.binance import BinanceTradeSchema
 from exchange_radar.producer.schemas.coinbase import CoinbaseTradeSchema
@@ -7,7 +8,10 @@ from exchange_radar.producer.schemas.kraken import KrakenTradeSchema
 from exchange_radar.producer.schemas.kucoin import KucoinTradeSchema
 
 
-def test_schemas_binance():
+@patch("exchange_radar.producer.schemas.base._redis")
+def test_schemas_binance(mock_redis):
+    mock_redis.hincrbyfloat.return_value = Decimal("100.0")
+
     msg = {
         "e": "trade",  # Event type
         "E": 1672515782136,  # Event time
@@ -38,10 +42,14 @@ def test_schemas_binance():
         "message_with_keys": "2022-12-31 19:43:02 | Binance  |      PRICE: 0.00100000 BTC |"
         "           QTY: 100.00000000 BNB |         TOTAL: 0.10000000 BTC",
         "exchange": "Binance",
+        "volume": Decimal("100.0"),
     }
 
 
-def test_schemas_kucoin():
+@patch("exchange_radar.producer.schemas.base._redis")
+def test_schemas_kucoin(mock_redis):
+    mock_redis.hincrbyfloat.return_value = Decimal("3.7335")
+
     msg = {
         "type": "message",
         "topic": "/market/match:LTO-BTC",
@@ -76,10 +84,14 @@ def test_schemas_kucoin():
         "             QTY: 3.73350000 LTO |         TOTAL: 0.00001313 BTC",
         "is_seller": True,
         "exchange": "Kucoin",
+        "volume": Decimal("3.7335"),
     }
 
 
-def test_schemas_coinbase():
+@patch("exchange_radar.producer.schemas.base._redis")
+def test_schemas_coinbase(mock_redis):
+    mock_redis.hincrbyfloat.return_value = Decimal("0.00251665")
+
     msg = {
         "type": "last_match",
         "trade_id": 461948687,
@@ -109,10 +121,14 @@ def test_schemas_coinbase():
         "             QTY: 0.00251665 ETH |         TOTAL: 4.86702493 USD",
         "is_seller": True,
         "exchange": "Coinbase",
+        "volume": Decimal("0.00251665"),
     }
 
 
-def test_schemas_kraken():
+@patch("exchange_radar.producer.schemas.base._redis")
+def test_schemas_kraken(mock_redis):
+    mock_redis.hincrbyfloat.return_value = Decimal("0.03409475")
+
     msg = [
         337,
         [["29911.20000", "0.03409475", "1690115020.186705", "s", "l", ""]],
@@ -147,4 +163,5 @@ def test_schemas_kraken():
         "             QTY: 0.03409475 BTC |      TOTAL: 1019.81488620 USD",
         "is_seller": True,
         "exchange": "Kraken",
+        "volume": Decimal("0.03409475"),
     }
