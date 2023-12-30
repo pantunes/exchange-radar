@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from unittest.mock import patch
 
 from exchange_radar.producer.schemas.binance import BinanceTradeSchema
 from exchange_radar.producer.schemas.coinbase import CoinbaseTradeSchema
@@ -7,7 +8,10 @@ from exchange_radar.producer.schemas.kraken import KrakenTradeSchema
 from exchange_radar.producer.schemas.kucoin import KucoinTradeSchema
 
 
-def test_schemas_binance():
+@patch("exchange_radar.producer.schemas.base._redis")
+def test_schemas_binance(mock_redis):
+    mock_redis.hincrbyfloat.return_value = Decimal("100.0")
+
     msg = {
         "e": "trade",  # Event type
         "E": 1672515782136,  # Event time
@@ -42,7 +46,10 @@ def test_schemas_binance():
     }
 
 
-def test_schemas_kucoin():
+@patch("exchange_radar.producer.schemas.base._redis")
+def test_schemas_kucoin(mock_redis):
+    mock_redis.hincrbyfloat.return_value = Decimal("3.7335")
+
     msg = {
         "type": "message",
         "topic": "/market/match:LTO-BTC",
@@ -81,7 +88,10 @@ def test_schemas_kucoin():
     }
 
 
-def test_schemas_coinbase():
+@patch("exchange_radar.producer.schemas.base._redis")
+def test_schemas_coinbase(mock_redis):
+    mock_redis.hincrbyfloat.return_value = Decimal("0.00251665")
+
     msg = {
         "type": "last_match",
         "trade_id": 461948687,
@@ -115,7 +125,10 @@ def test_schemas_coinbase():
     }
 
 
-def test_schemas_kraken():
+@patch("exchange_radar.producer.schemas.base._redis")
+def test_schemas_kraken(mock_redis):
+    mock_redis.hincrbyfloat.return_value = Decimal("0.03409475")
+
     msg = [
         337,
         [["29911.20000", "0.03409475", "1690115020.186705", "s", "l", ""]],
