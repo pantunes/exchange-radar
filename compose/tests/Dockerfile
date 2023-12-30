@@ -18,6 +18,8 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 FROM python as python-build-stage
 
+ARG BUILD_ENVIRONMENT=tests
+
 RUN apt-get update && apt-get install --no-install-recommends -y \
     curl \
     build-essential
