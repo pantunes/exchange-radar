@@ -33,4 +33,4 @@ class BinanceTradesTask(Task):
                     data = BinanceTradeSchema(**res)
                     publish(data)  # noqa
                 except Exception as error:
-                    logger.error(f"ERROR: {error}")
+                    logger.error(f"GENERAL ERROR: {error}")

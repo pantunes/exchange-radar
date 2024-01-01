@@ -36,7 +36,7 @@ class CoinbaseTradesTask(Task):
                 )
                 break
             except Exception as error:
-                logger.error(f"ERROR: {error}")
+                logger.error(f"GENERAL ERROR: {error}")
                 logger.error(f"Trying again in {ITER_SLEEP} seconds...")
                 time.sleep(ITER_SLEEP)
 
