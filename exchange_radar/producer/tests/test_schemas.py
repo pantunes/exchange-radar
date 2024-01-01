@@ -49,6 +49,10 @@ def test_schemas_binance(mock_redis):
         ),
         "exchange": "Binance",
         "volume": Decimal("100.0"),
+        "volume_trades": (
+            1.0,
+            Decimal("100.0"),
+        ),
     }
 
 
@@ -97,6 +101,10 @@ def test_schemas_kucoin(mock_redis):
         "is_seller": True,
         "exchange": "Kucoin",
         "volume": Decimal("3.7335"),
+        "volume_trades": (
+            1.0,
+            Decimal("3.7335"),
+        ),
     }
 
 
@@ -140,6 +148,10 @@ def test_schemas_coinbase(mock_redis):
         "is_seller": True,
         "exchange": "Coinbase",
         "volume": Decimal("0.00251665"),
+        "volume_trades": (
+            1.0,
+            Decimal("0.00251665"),
+        ),
     }
 
 
@@ -188,4 +200,8 @@ def test_schemas_kraken(mock_redis):
         "is_seller": True,
         "exchange": "Kraken",
         "volume": Decimal("0.03409475"),
+        "volume_trades": (
+            1.0,
+            Decimal("0.03409475"),
+        ),
     }
