@@ -67,6 +67,20 @@
                 $(`#${obj.trade_symbol}_volume_in_currency`).text(`${volume_in_currency} ${obj.currency}`);
             }
 
+            function setVolumeTrades(obj) {
+                const volume_trades_buys = obj.volume_trades[0].toLocaleString('en-US', {
+                    minimumFractionDigits: 4,
+                    maximumFractionDigits: 8
+                });
+                $(`#${obj.trade_symbol}_volume_trades_buy_orders`).text(volume_trades_buys);
+
+                const volume_trades_sells = obj.volume_trades[1].toLocaleString('en-US', {
+                    minimumFractionDigits: 4,
+                    maximumFractionDigits: 8
+                });
+                $(`#${obj.trade_symbol}_volume_trades_sell_orders`).text(volume_trades_sells);
+            }
+
             function setNumberTrades(obj) {
                 $(`#${obj.trade_symbol}_number_trades_buy_orders`).text(obj.number_trades[0]);
                 $(`#${obj.trade_symbol}_number_trades_sell_orders`).text(obj.number_trades[1]);
@@ -97,6 +111,7 @@
                     setPageTitle(obj);
                     addRow(obj);
                     setVolume(obj);
+                    setVolumeTrades(obj);
                     setNumberTrades(obj);
                 }
 
@@ -186,6 +201,7 @@
 <a href="/BTC">BTC all trades</a>
 {%- if coin == "BTC" %}
   <i>Daily Volume: <span id="BTC_volume">-</span> BTC @ <span id="BTC_volume_in_currency">-</span></i>
+  <i>Daily Volume Trades: Buys <span id="BTC_volume_trades_buy_orders">-</span> BTC, Sells <span id="BTC_volume_trades_sell_orders">-</span> BTC</i>
   <i>Daily Number Trades: Buys <span id="BTC_number_trades_buy_orders">-</span>, Sells <span id="BTC_number_trades_sell_orders">-</span></i>
 {%- endif %}
 <a href="/BTC/octopuses">BTC octopus trades</a>
