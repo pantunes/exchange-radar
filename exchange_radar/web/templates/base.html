@@ -55,7 +55,7 @@
 
             function setVolume(obj) {
                 const volume = obj.volume.toLocaleString('en-US', {
-                    minimumFractionDigits: 8,
+                    minimumFractionDigits: 4,
                     maximumFractionDigits: 8
                 });
                 $(`#${obj.trade_symbol}_volume`).text(volume);
@@ -178,7 +178,7 @@
 
 <b>Exchanges:</b>
 
-{{ exchanges }}
+{{ exchanges|safe }}
 
 
 <b>Bitcoin:</b>
