@@ -43,6 +43,33 @@ class CustomBaseModel(BaseModel):
         )
 
     @computed_field
+    def volume_trades(self) -> tuple[float, float]:
+        today_date = datetime.today().date().strftime("%Y-%m-%d")
+
+        if self.is_seller is False:  # noqa
+            num_buy_orders = _redis.hincrbyfloat(
+                today_date,
+                f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS",
+                float(self.quantity),  # noqa
+            )
+            num_sell_orders = float(
+                _redis.hget(
+                    today_date, f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS"
+                )
+            )
+        else:
+            num_buy_orders = float(
+                _redis.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS")
+            )
+            num_sell_orders = _redis.hincrbyfloat(
+                today_date,
+                f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS",
+                float(self.quantity),  # noqa
+            )
+
+        return num_buy_orders, num_sell_orders
+
+    @computed_field
     def number_trades(self) -> tuple[int, int]:
         today_date = datetime.today().date().strftime("%Y-%m-%d")
 
