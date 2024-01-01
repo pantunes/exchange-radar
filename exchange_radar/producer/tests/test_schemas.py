@@ -11,6 +11,8 @@ from exchange_radar.producer.schemas.kucoin import KucoinTradeSchema
 @patch("exchange_radar.producer.schemas.base._redis")
 def test_schemas_binance(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("100.0")
+    mock_redis.hincrby.return_value = 1
+    mock_redis.hget.return_value = 1
 
     msg = {
         "e": "trade",  # Event type
@@ -41,6 +43,10 @@ def test_schemas_binance(mock_redis):
         "           100.00000000 BNB |        0.10000000  BTC",
         "message_with_keys": "2022-12-31 19:43:02 | Binance  |      PRICE: 0.00100000 BTC |"
         "           QTY: 100.00000000 BNB |         TOTAL: 0.10000000 BTC",
+        "number_trades": (
+            1,
+            1,
+        ),
         "exchange": "Binance",
         "volume": Decimal("100.0"),
     }
@@ -49,6 +55,8 @@ def test_schemas_binance(mock_redis):
 @patch("exchange_radar.producer.schemas.base._redis")
 def test_schemas_kucoin(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("3.7335")
+    mock_redis.hincrby.return_value = 1
+    mock_redis.hget.return_value = 1
 
     msg = {
         "type": "message",
@@ -82,6 +90,10 @@ def test_schemas_kucoin(mock_redis):
         "             3.73350000 LTO |        0.00001313  BTC",
         "message_with_keys": "2023-05-03 10:10:39 | Kucoin   |      PRICE: 0.00000352 BTC |"
         "             QTY: 3.73350000 LTO |         TOTAL: 0.00001313 BTC",
+        "number_trades": (
+            1,
+            1,
+        ),
         "is_seller": True,
         "exchange": "Kucoin",
         "volume": Decimal("3.7335"),
@@ -91,6 +103,8 @@ def test_schemas_kucoin(mock_redis):
 @patch("exchange_radar.producer.schemas.base._redis")
 def test_schemas_coinbase(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("0.00251665")
+    mock_redis.hincrby.return_value = 1
+    mock_redis.hget.return_value = 1
 
     msg = {
         "type": "last_match",
@@ -119,6 +133,10 @@ def test_schemas_coinbase(mock_redis):
         "             0.00251665 ETH |        4.86702493  USD",
         "message_with_keys": "2023-07-16 12:19:57 | Coinbase |   PRICE: 1933.93000000 USD |"
         "             QTY: 0.00251665 ETH |         TOTAL: 4.86702493 USD",
+        "number_trades": (
+            1,
+            1,
+        ),
         "is_seller": True,
         "exchange": "Coinbase",
         "volume": Decimal("0.00251665"),
@@ -128,6 +146,8 @@ def test_schemas_coinbase(mock_redis):
 @patch("exchange_radar.producer.schemas.base._redis")
 def test_schemas_kraken(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("0.03409475")
+    mock_redis.hincrby.return_value = 1
+    mock_redis.hget.return_value = 1
 
     msg = [
         337,
@@ -161,6 +181,10 @@ def test_schemas_kraken(mock_redis):
         "             0.03409475 BTC |     1019.81488620  USD",
         "message_with_keys": "2023-07-23 12:23:40 | Kraken   |  PRICE: 29911.20000000 USD |"
         "             QTY: 0.03409475 BTC |      TOTAL: 1019.81488620 USD",
+        "number_trades": (
+            1,
+            1,
+        ),
         "is_seller": True,
         "exchange": "Kraken",
         "volume": Decimal("0.03409475"),

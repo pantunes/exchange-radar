@@ -41,11 +41,11 @@ class Callback:
         properties: pika.BasicProperties,
         body: bytes,
     ):
-        logger.info("CALLB")
+        logger.info("CONSUMER - start")
 
         data = json.loads(body)
 
-        logger.info(f"DATA: {str(data)[:128]}")
+        logger.info(f"CONSUMER - data: {str(data)[:128]}")
 
         requests.post(
             self.url.format(coin=data["trade_symbol"]),
@@ -55,12 +55,12 @@ class Callback:
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
-        logger.info("CALLB OK")
+        logger.info("CONSUMER - end")
 
 
 def setup_channel(channel: BlockingChannel, queue_name: str, callback: Callable):
     channel.queue_declare(queue=queue_name, durable=True)
-    channel.queue_bind(queue=queue_name, exchange="amq.direct")
+    channel.queue_bind(queue=queue_name, exchange=settings.RABBITMQ_EXCHANGE)
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue=queue_name, on_message_callback=callback)
 
@@ -121,6 +121,6 @@ def main():
         except AMQPConnectionError:
             logger.error("ERROR: General AMQP Connection Error")
         except Exception as error:
-            logger.error(f"ERROR: {error}")
+            logger.error(f"GENERAL ERROR: {error}")
         finally:
             sleep(ITER_SLEEP)

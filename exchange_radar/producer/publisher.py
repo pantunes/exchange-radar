@@ -73,7 +73,7 @@ producer_connection = ProducerConnection()
 
 
 def publish(data: CustomBaseModel) -> None:
-    logger.info(f"PUB: {data.trade_time} {data.symbol}")  # noqa
+    logger.info(f"PRODUCER - start: {data.trade_time} {data.symbol}")  # noqa
 
     try:
         with ProducerChannel(queue_name=settings.RABBITMQ_TRADES_QUEUE_NAME) as channel:
@@ -113,6 +113,6 @@ def publish(data: CustomBaseModel) -> None:
     except AMQPConnectionError:
         logger.error("ERROR: General AMQP Connection Error")
     except Exception as error:
-        logger.error(f"ERROR: {error}")
+        logger.error(f"GENERAL ERROR: {error}")
     else:
-        logger.info(f"PUB OK: {data.trade_time} {data.symbol}")  # noqa
+        logger.info(f"PRODUCER - end: {data.trade_time} {data.symbol}")  # noqa
