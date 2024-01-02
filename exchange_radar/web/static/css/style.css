@@ -27,6 +27,6 @@
 /* tablet breakpoint */
 @media (min-width:1490px) {
     .padded-boxes > * {
-        width:calc(63% - 1rem);
+        width:calc(59% - 1rem);
     }
 }
