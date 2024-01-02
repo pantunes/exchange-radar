@@ -4,7 +4,10 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-WORKERS="$((2 * $(getconf _NPROCESSORS_ONLN) + 1))";
+if [ -z "${WORKERS}" ]; then
+  WORKERS="$((2 * $(getconf _NPROCESSORS_ONLN) + 1))";
+fi
+echo "Starting service web with $(($WORKERS)) worker(s)"
 
 exec uvicorn exchange_radar.web.src.main:app \
 --host 0.0.0.0 \
