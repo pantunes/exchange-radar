@@ -12,6 +12,7 @@ services:
       context: .
       dockerfile: compose/web/production/Dockerfile
     image: exchange_radar_web
+    container_name: exchange-radar-web
     env_file:
       - ./.envs/.production/.web
     environment:
