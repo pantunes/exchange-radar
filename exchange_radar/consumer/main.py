@@ -52,7 +52,7 @@ class Callback:
             response = requests.post(
                 url=url,
                 json=data,
-                timeout=1.0,
+                timeout=(settings.POST_CONNECT_TIMEOUT, settings.POST_READ_TIMEOUT),
             )
             response.raise_for_status()
         except (

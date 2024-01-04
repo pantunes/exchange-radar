@@ -41,7 +41,10 @@ class ConnectionTradesManager(Singleton):
         for connection in self.active_connections[coin]:
             try:
                 await connection.send_json(message)
-            except websockets.exceptions.ConnectionClosedOK:
+            except (
+                websockets.exceptions.ConnectionClosedOK,
+                websockets.exceptions.ConnectionClosedError,
+            ):
                 # connection was closed in the meantime, fine!
                 pass
 

@@ -23,3 +23,9 @@ TRADES_HOST_URL = env.str("TRADES_HOST_URL")
 TRADES_WHALES_HOST_URL = env.str("TRADES_WHALES_HOST_URL")
 TRADES_DOLPHINS_HOST_URL = env.str("TRADES_DOLPHINS_HOST_URL")
 TRADES_OCTOPUSES_HOST_URL = env.str("TRADES_OCTOPUSES_HOST_URL")
+
+# Regarding TCP/IP Protocol packet retransmission window,
+# on connect() add a bit more than a multiple of 3.
+# In seconds
+POST_CONNECT_TIMEOUT = 3.05
+POST_READ_TIMEOUT = 2
