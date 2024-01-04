@@ -1,6 +1,7 @@
 import logging
 from collections import defaultdict
 
+import websockets
 from starlette.websockets import WebSocket
 
 logger = logging.getLogger(__name__)
@@ -38,7 +39,11 @@ class ConnectionTradesManager(Singleton):
 
     async def broadcast(self, message: dict, coin: str):
         for connection in self.active_connections[coin]:
-            await connection.send_json(message)
+            try:
+                await connection.send_json(message)
+            except websockets.exceptions.ConnectionClosedOK:
+                # connection was closed in the meantime, fine!
+                pass
 
 
 class ConnectionTradesWhalesManager(ConnectionTradesManager):

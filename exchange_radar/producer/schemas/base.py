@@ -8,7 +8,7 @@ from pydantic import BaseModel, computed_field, field_validator
 from exchange_radar.producer.settings import base as settings
 from exchange_radar.producer.settings.base import CURRENCIES
 
-_redis = redis.Redis(
+_redis = redis.StrictRedis(
     host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB
 )
 

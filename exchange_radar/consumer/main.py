@@ -47,11 +47,21 @@ class Callback:
 
         logger.info(f"CONSUMER - data: {str(data)[:128]}")
 
-        requests.post(
-            self.url.format(coin=data["trade_symbol"]),
-            json=data,
-            timeout=1.0,
-        )
+        url = self.url.format(coin=data["trade_symbol"])
+        try:
+            response = requests.post(
+                url=url,
+                json=data,
+                timeout=1.0,
+            )
+            response.raise_for_status()
+        except (
+            requests.exceptions.HTTPError,  # 4xx, 5xx errors
+            requests.exceptions.Timeout,
+            requests.exceptions.TooManyRedirects,
+            requests.exceptions.RequestException,
+        ) as error:
+            logger.error(f"POST {url} Error: {error}")
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
