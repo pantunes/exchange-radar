@@ -28,4 +28,4 @@ TRADES_OCTOPUSES_HOST_URL = env.str("TRADES_OCTOPUSES_HOST_URL")
 # on connect() add a bit more than a multiple of 3.
 # In seconds
 POST_CONNECT_TIMEOUT = 3.05
-POST_READ_TIMEOUT = 2
+POST_READ_TIMEOUT = 3.0
