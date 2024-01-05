@@ -1,3 +1,16 @@
 {
-  "message": "2022-12-31 23:59:59 | <span class='binance'>Binance </span> |     0.00100000  BTC |           100.00000000 BNB |        0.10000000  BTC"
+  "symbol": "BTCUSD",
+  "price": "29911.20000",
+  "quantity": "0.03409475",
+  "trade_time": "2023-07-23 12:23:40",
+  "total": "1019.8148862000",
+  "currency": "USD",
+  "trade_symbol": "BTC",
+  "message": "2023-07-23 12:23:40 | <span class='kraken'>Kraken  </span> | 29911.20000000  USD |             0.03409475 BTC |     1019.81488620  USD",
+  "message_with_keys": "2023-07-23 12:23:40 | Kraken   |  PRICE: 29911.20000000 USD |             QTY: 0.03409475 BTC |      TOTAL: 1019.81488620 USD",
+  "number_trades":["1", "1"],
+  "is_seller": true,
+  "exchange": "Kraken",
+  "volume": "0.03409475",
+  "volume_trades": ["1.0", "0.03409475"]
 }

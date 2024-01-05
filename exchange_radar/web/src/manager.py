@@ -4,6 +4,7 @@ from collections import defaultdict
 import websockets
 from starlette.websockets import WebSocket
 
+logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 

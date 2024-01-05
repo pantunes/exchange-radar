@@ -47,12 +47,12 @@ click = "^8.1.5"
 pika = "^1.3.2"
 requests = "^2.31.0"
 urllib3 = "^1.26.16"
-coverage = "^7.2.7"
 copra = "1.2.9"
 redis = "4.3.4"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"
+coverage = "^7.2.7"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
