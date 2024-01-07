@@ -8,7 +8,7 @@ from pydantic import BaseModel, computed_field, field_validator
 from exchange_radar.producer.settings import base as settings
 from exchange_radar.producer.settings.base import CURRENCIES
 
-_redis = redis.StrictRedis(
+redis = redis.StrictRedis(
     host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB
 )
 
@@ -38,7 +38,7 @@ class CustomBaseModel(BaseModel):
     @computed_field
     def volume(self) -> float:
         today_date = datetime.today().date().strftime("%Y-%m-%d")
-        return _redis.hincrbyfloat(
+        return redis.hincrbyfloat(
             today_date, f"{self.trade_symbol}_VOLUME", float(self.quantity)  # noqa
         )
 
@@ -47,21 +47,19 @@ class CustomBaseModel(BaseModel):
         today_date = datetime.today().date().strftime("%Y-%m-%d")
 
         if self.is_seller is False:  # noqa
-            num_buy_orders = _redis.hincrbyfloat(
+            num_buy_orders = redis.hincrbyfloat(
                 today_date,
                 f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS",
                 float(self.quantity),  # noqa
             )
             num_sell_orders = float(
-                _redis.hget(
-                    today_date, f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS"
-                )
+                redis.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS")
             )
         else:
             num_buy_orders = float(
-                _redis.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS")
+                redis.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS")
             )
-            num_sell_orders = _redis.hincrbyfloat(
+            num_sell_orders = redis.hincrbyfloat(
                 today_date,
                 f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS",
                 float(self.quantity),  # noqa
@@ -74,17 +72,17 @@ class CustomBaseModel(BaseModel):
         today_date = datetime.today().date().strftime("%Y-%m-%d")
 
         if self.is_seller is False:  # noqa
-            num_buy_orders = _redis.hincrby(
+            num_buy_orders = redis.hincrby(
                 today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS", 1
             )
-            num_sell_orders = _redis.hget(
+            num_sell_orders = redis.hget(
                 today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS"
             )
         else:
-            num_buy_orders = _redis.hget(
+            num_buy_orders = redis.hget(
                 today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS"
             )
-            num_sell_orders = _redis.hincrby(
+            num_sell_orders = redis.hincrby(
                 today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS", 1
             )
 
