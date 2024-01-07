@@ -9,9 +9,9 @@ from pika.exceptions import (
     StreamLostError,
 )
 
-from exchange_radar.producer.enums import Ranking
 from exchange_radar.producer.schemas.base import CustomBaseModel
 from exchange_radar.producer.settings import base as settings
+from exchange_radar.producer.settings.queues import QUEUES
 from exchange_radar.producer.utils import get_ranking
 
 logger = logging.getLogger(__name__)
@@ -71,39 +71,32 @@ class ProducerChannel:
 
 producer_connection = ProducerConnection()
 
+params = {
+    "exchange": settings.RABBITMQ_EXCHANGE,
+    "properties": pika.BasicProperties(
+        delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE
+    ),
+}
+
 
 def publish(data: CustomBaseModel) -> None:
     logger.info(f"PRODUCER - start: {data.trade_time} {data.symbol}")  # noqa
 
+    body = data.model_dump_json().encode()
+
     try:
         with ProducerChannel(queue_name=settings.RABBITMQ_TRADES_QUEUE_NAME) as channel:
             channel.basic_publish(
-                exchange=settings.RABBITMQ_EXCHANGE,
-                routing_key=settings.RABBITMQ_TRADES_QUEUE_NAME,
-                body=data.model_dump_json().encode(),
-                properties=pika.BasicProperties(
-                    delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE
-                ),
+                routing_key=settings.RABBITMQ_TRADES_QUEUE_NAME, body=body, **params
             )
 
-        queue_name = None
-        if get_ranking(data) == Ranking.WHALE:  # noqa
-            queue_name = settings.RABBITMQ_TRADES_WHALES_QUEUE_NAME
-        elif get_ranking(data) == Ranking.DOLPHIN:  # noqa
-            queue_name = settings.RABBITMQ_TRADES_DOLPHIN_QUEUE_NAME
-        elif get_ranking(data) == Ranking.OCTOPUS:  # noqa
-            queue_name = settings.RABBITMQ_TRADES_OCTOPUS_QUEUE_NAME
-
-        if queue_name is not None:
+        try:
+            queue_name = QUEUES[get_ranking(data)]
+        except KeyError as error:
+            logger.error(f"ERROR: Queue not found: {error}")
+        else:
             with ProducerChannel(queue_name=queue_name) as channel:
-                channel.basic_publish(
-                    exchange=settings.RABBITMQ_EXCHANGE,
-                    routing_key=queue_name,
-                    body=data.model_dump_json().encode(),
-                    properties=pika.BasicProperties(
-                        delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE
-                    ),
-                )
+                channel.basic_publish(routing_key=queue_name, body=body, **params)
     except (
         StreamLostError,
         ConnectionClosedByBroker,

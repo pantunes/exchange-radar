@@ -8,7 +8,7 @@ from exchange_radar.producer.schemas.kraken import KrakenTradeSchema
 from exchange_radar.producer.schemas.kucoin import KucoinTradeSchema
 
 
-@patch("exchange_radar.producer.schemas.base._redis")
+@patch("exchange_radar.producer.schemas.base.redis")
 def test_schemas_binance(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("100.0")
     mock_redis.hincrby.return_value = 1
@@ -56,7 +56,7 @@ def test_schemas_binance(mock_redis):
     }
 
 
-@patch("exchange_radar.producer.schemas.base._redis")
+@patch("exchange_radar.producer.schemas.base.redis")
 def test_schemas_kucoin(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("3.7335")
     mock_redis.hincrby.return_value = 1
@@ -108,7 +108,7 @@ def test_schemas_kucoin(mock_redis):
     }
 
 
-@patch("exchange_radar.producer.schemas.base._redis")
+@patch("exchange_radar.producer.schemas.base.redis")
 def test_schemas_coinbase(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("0.00251665")
     mock_redis.hincrby.return_value = 1
@@ -155,7 +155,7 @@ def test_schemas_coinbase(mock_redis):
     }
 
 
-@patch("exchange_radar.producer.schemas.base._redis")
+@patch("exchange_radar.producer.schemas.base.redis")
 def test_schemas_kraken(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("0.03409475")
     mock_redis.hincrby.return_value = 1
