@@ -15,6 +15,7 @@ services:
     container_name: exchange-radar-web
     env_file:
       - ./.envs/.local/.web
+      - ./.envs/.local/.redis
     depends_on:
       - rabbitmq
     ports:

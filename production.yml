@@ -15,6 +15,7 @@ services:
     container_name: exchange-radar-web
     env_file:
       - ./.envs/.production/.web
+      - ./.envs/.production/.redis
     environment:
       - WORKERS=1
     depends_on:

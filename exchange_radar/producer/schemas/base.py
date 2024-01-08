@@ -47,46 +47,46 @@ class CustomBaseModel(BaseModel):
         today_date = datetime.today().date().strftime("%Y-%m-%d")
 
         if self.is_seller is False:  # noqa
-            num_buy_orders = redis.hincrbyfloat(
+            vol_trades_buy_orders = redis.hincrbyfloat(
                 today_date,
                 f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS",
                 float(self.quantity),  # noqa
             )
-            num_sell_orders = float(
+            vol_trades_sell_orders = float(
                 redis.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS")
             )
         else:
-            num_buy_orders = float(
+            vol_trades_buy_orders = float(
                 redis.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS")
             )
-            num_sell_orders = redis.hincrbyfloat(
+            vol_trades_sell_orders = redis.hincrbyfloat(
                 today_date,
                 f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS",
                 float(self.quantity),  # noqa
             )
 
-        return num_buy_orders, num_sell_orders
+        return vol_trades_buy_orders, vol_trades_sell_orders
 
     @computed_field
     def number_trades(self) -> tuple[int, int]:
         today_date = datetime.today().date().strftime("%Y-%m-%d")
 
         if self.is_seller is False:  # noqa
-            num_buy_orders = redis.hincrby(
+            num_trades_buy_orders = redis.hincrby(
                 today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS", 1
             )
-            num_sell_orders = redis.hget(
-                today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS"
+            num_trades_sell_orders = int(
+                redis.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS")
             )
         else:
-            num_buy_orders = redis.hget(
-                today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS"
+            num_trades_buy_orders = int(
+                redis.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS")
             )
-            num_sell_orders = redis.hincrby(
+            num_trades_sell_orders = redis.hincrby(
                 today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS", 1
             )
 
-        return num_buy_orders, num_sell_orders
+        return num_trades_buy_orders, num_trades_sell_orders
 
     @field_validator("trade_time", mode="after", check_fields=False)
     def trade_time_after(cls, v) -> datetime:
