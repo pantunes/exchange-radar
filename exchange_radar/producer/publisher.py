@@ -92,8 +92,8 @@ def publish(data: CustomBaseModel) -> None:
 
         try:
             queue_name = QUEUES[get_ranking(data)]
-        except KeyError as error:
-            logger.error(f"ERROR: Queue not found: {error}")
+        except KeyError:
+            logger.info("No specific extra Queue")
         else:
             with ProducerChannel(queue_name=queue_name) as channel:
                 channel.basic_publish(routing_key=queue_name, body=body, **params)

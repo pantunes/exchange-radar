@@ -13,7 +13,7 @@
         <meta property="og:type" content="website">
         <meta name="image" property="og:image" content="{{ url_for('static', path='favicon/favicon-180x180.png') }}"/>
         <meta name="description" property="og:description" content="Get real-time trading data from different Crypto Exchanges and configure hooks, trends, notifications, messages based on custom rules."/>
-        <meta property="og:url" content="{{ http_url }}"/>
+        <meta property="og:url" content="{{ http_trades_url }}"/>
         <!-- CSS -->
         <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}" type="text/css"/>
         <link rel="stylesheet" href="{{ url_for('static', path='css/theme.css') }}" type="text/css"/>
@@ -60,11 +60,13 @@
                 });
                 $(`#${obj.trade_symbol}_volume`).text(volume);
 
-                const volume_in_currency = (obj.volume * obj.price).toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-                $(`#${obj.trade_symbol}_volume_in_currency`).text(`${volume_in_currency} ${obj.currency}`);
+                if (obj.hasOwnProperty('price')) {
+                    const volume_in_currency = (obj.volume * obj.price).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                    $(`#${obj.trade_symbol}_volume_in_currency`).text(`${volume_in_currency} ${obj.currency}`);
+                }
             }
 
             function setVolumeTrades(obj) {
@@ -87,7 +89,12 @@
             }
 
             function retrieveData() {
-                $.get('{{ http_url }}').done(function (response) {
+                $.get('{{ http_stats_url }}').done(function (response) {
+                    setVolume(response);
+                    setVolumeTrades(response);
+                    setNumberTrades(response);
+                })
+                $.get('{{ http_trades_url }}').done(function (response) {
                     for (const obj of response.r) {
                         addRow(obj);
                     }
@@ -128,7 +135,7 @@
                 };
             }
             function formatPage() {
-                const subURL = new URL("{{ http_url }}").pathname.replace(/^\/feed/, "");
+                const subURL = new URL("{{ http_trades_url }}").pathname.replace(/^\/feed/, "");
                 $("a").each(function () {
                     const link = $(this).attr('href');
                     if (link === subURL) {
@@ -181,7 +188,7 @@
                     <!-- box 1 content -->
 <pre>
 ------------------------------------------------------------------------------------------------------------
-       <b>DATETIME      | EXCHANGE |        PRICE        |          QUANTITY          |          TOTAL</b>
+     <b>DATETIME UTC    | EXCHANGE |        PRICE        |          QUANTITY          |          TOTAL</b>
 ------------------------------------------------------------------------------------------------------------
 <span id="messages"></span></pre>
                 </div>
