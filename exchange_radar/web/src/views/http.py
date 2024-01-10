@@ -1,6 +1,3 @@
-from datetime import datetime
-
-import redis
 from starlette.endpoints import HTTPEndpoint
 from starlette.responses import JSONResponse
 from starlette.templating import Jinja2Templates
@@ -11,15 +8,13 @@ from exchange_radar.web.src.manager import (
     ConnectionTradesOctopusesManager,
     ConnectionTradesWhalesManager,
 )
-from exchange_radar.web.src.models import Db
+from exchange_radar.web.src.models.tinydb import Db
+from exchange_radar.web.src.serializers.stats import StatsSerializer
 from exchange_radar.web.src.settings import base as settings
 from exchange_radar.web.src.utils import get_exchanges
 
 templates = Jinja2Templates(directory="/app/exchange_radar/web/templates")
 
-redis = redis.StrictRedis(
-    host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB
-)
 
 manager_trades = ConnectionTradesManager.get_instance()
 manager_trades_dolphins = ConnectionTradesDolphinsManager.get_instance()
@@ -98,33 +93,6 @@ class FeedOctopuses(FeedBase):
 
 class Stats(HTTPEndpoint):
     async def get(self, request):  # noqa
-        today_date = datetime.today().date().strftime("%Y-%m-%d")
-
-        coin = request.path_params["coin"]
-
-        response = {
-            "trade_symbol": coin,
-            "volume": None,
-            "volume_trades": [],
-            "number_trades": [],
-        }
-
-        volume = float(redis.hget(today_date, f"{coin}_VOLUME"))
-        vol_trades_buy_orders = float(
-            redis.hget(today_date, f"{coin}_VOLUME_TRADES_BUY_ORDERS")
-        )
-        vol_trades_sell_orders = float(
-            redis.hget(today_date, f"{coin}_VOLUME_TRADES_SELL_ORDERS")
-        )
-        num_trades_buy_orders = int(
-            redis.hget(today_date, f"{coin}_NUMBER_TRADES_BUY_ORDERS")
-        )
-        num_trades_sell_orders = int(
-            redis.hget(today_date, f"{coin}_NUMBER_TRADES_SELL_ORDERS")
-        )
-
-        response["volume"] = volume
-        response["volume_trades"] = [vol_trades_buy_orders, vol_trades_sell_orders]
-        response["number_trades"] = [num_trades_buy_orders, num_trades_sell_orders]
-
-        return JSONResponse(response, status_code=200)
+        trade_symbol = request.path_params["coin"]
+        response = StatsSerializer(trade_symbol=trade_symbol)
+        return JSONResponse(response.model_dump(), status_code=200)

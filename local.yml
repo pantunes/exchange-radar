@@ -17,7 +17,7 @@ services:
       - ./.envs/.local/.web
       - ./.envs/.local/.redis
     depends_on:
-      - rabbitmq
+      - redis
     ports:
       - "9000:9000"
     volumes:
@@ -53,6 +53,7 @@ services:
       - ./.envs/.local/.redis
     depends_on:
       - rabbitmq
+      - redis
     volumes:
       - ./exchange_radar/producer:/app/exchange_radar/producer
     command: /start
@@ -69,6 +70,7 @@ services:
       - ./.envs/.local/.redis
     depends_on:
       - rabbitmq
+      - redis
     volumes:
       - ./exchange_radar/producer:/app/exchange_radar/producer
     command: /start
@@ -85,6 +87,7 @@ services:
       - ./.envs/.local/.redis
     depends_on:
       - rabbitmq
+      - redis
     volumes:
       - ./exchange_radar/producer:/app/exchange_radar/producer
     command: /start
@@ -101,6 +104,7 @@ services:
       - ./.envs/.local/.redis
     depends_on:
       - rabbitmq
+      - redis
     volumes:
       - ./exchange_radar/producer:/app/exchange_radar/producer
     command: /start

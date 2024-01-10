@@ -9,7 +9,7 @@ from pika.exceptions import (
     StreamLostError,
 )
 
-from exchange_radar.producer.schemas.base import CustomBaseModel
+from exchange_radar.producer.serializers.base import BaseSerializer
 from exchange_radar.producer.settings import base as settings
 from exchange_radar.producer.settings.queues import QUEUES
 from exchange_radar.producer.utils import get_ranking
@@ -79,7 +79,7 @@ params = {
 }
 
 
-def publish(data: CustomBaseModel) -> None:
+def publish(data: BaseSerializer) -> None:
     logger.info(f"PRODUCER - start: {data.trade_time} {data.symbol}")  # noqa
 
     body = data.model_dump_json().encode()
