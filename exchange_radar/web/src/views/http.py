@@ -70,7 +70,7 @@ class FeedBase(HTTPEndpoint):
         coin = request.path_params["coin"]
         message = await request.json()
         await self.manager.broadcast(message, coin)
-        Db.write(cls_name=str(self), coin=coin, message=message)
+        # Db.write(cls_name=str(self), coin=coin, message=message)
         return JSONResponse({"r": True}, status_code=201)
 
     async def get(self, request):
