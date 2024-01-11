@@ -37,6 +37,7 @@ class Feed(JsonModel):
 
     type: str = Field(index=True)
     price: float
+    trade_time_ts: int = Field(index=True, sortable=True)
     is_seller: bool
     currency: str
     trade_symbol: str = Field(index=True)
