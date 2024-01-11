@@ -37,7 +37,7 @@ class IndexBase(HTTPEndpoint):
             "http_stats_url": self.http_stats_url.format(coin=coin),
             "websocket_url": self.websocket_url.format(coin=coin),
             "exchanges": get_exchanges(coin=coin),
-            "max_rows": settings.DB_TABLE_MAX_ROWS,
+            "max_rows": settings.REDIS_MAX_ROWS,
         }
         return templates.TemplateResponse(self.template_name, context=context)
 
@@ -70,16 +70,34 @@ class FeedBase(HTTPEndpoint):
         coin = request.path_params["coin"]
         message = await request.json()
         await self.manager.broadcast(message, coin)
-        Feed(type=str(self), **message).save().expire(60 * 10)
-        return JSONResponse({"r": True}, status_code=201)
+        category = str(self)
+        if coin in ("LTO",) or category in (
+            "FeedWhales",
+            "FeedDolphins",
+        ):
+            Feed(
+                type=category,
+                price=message["price"],
+                is_seller=message["is_seller"],
+                currency=message["currency"],
+                trade_symbol=message["trade_symbol"],
+                volume=message["volume"],
+                volume_trades=message["volume_trades"],
+                number_trades=message["number_trades"],
+                message=message["message"],
+            ).save().expire(settings.REDIS_EXPIRATION)
+            response = True
+        else:
+            response = False
+        return JSONResponse({"r": response}, status_code=201)
 
     async def get(self, request):  # noqa
         coin = request.path_params["coin"]
         response = [
             item.dict()
-            for item in Feed.find(Feed.trade_symbol == coin).all()[
-                : settings.DB_TABLE_MAX_ROWS
-            ]
+            for item in Feed.find(
+                (Feed.trade_symbol == coin) & (Feed.type == str(self))
+            ).all()[: settings.REDIS_MAX_ROWS]
         ]
         return JSONResponse({"r": response}, status_code=200)
 
