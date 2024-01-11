@@ -1,8 +1,8 @@
 from exchange_radar.producer.enums import Ranking
-from exchange_radar.producer.schemas.base import CustomBaseModel
+from exchange_radar.producer.serializers.base import BaseSerializer
 
 
-def get_ranking(data: CustomBaseModel) -> Ranking | None:
+def get_ranking(data: BaseSerializer) -> Ranking | None:
     if data.currency in (
         "USDT",
         "USD",

@@ -4,7 +4,7 @@ import time
 from copra.websocket import Channel, Client
 
 from exchange_radar.producer.publisher import publish
-from exchange_radar.producer.schemas.coinbase import CoinbaseTradeSchema
+from exchange_radar.producer.serializers.coinbase import CoinbaseTradeSerializer
 from exchange_radar.producer.task import Task
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class CoinbaseTradesTask(Task):
                         pass
                     case _:
                         try:
-                            data = CoinbaseTradeSchema(**message)
+                            data = CoinbaseTradeSerializer(**message)
                             publish(data)  # noqa
                         except Exception as _error:
                             logger.error(f"ERROR: {_error}")

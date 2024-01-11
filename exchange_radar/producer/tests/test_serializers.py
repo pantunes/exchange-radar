@@ -2,14 +2,14 @@ import datetime
 from decimal import Decimal
 from unittest.mock import patch
 
-from exchange_radar.producer.schemas.binance import BinanceTradeSchema
-from exchange_radar.producer.schemas.coinbase import CoinbaseTradeSchema
-from exchange_radar.producer.schemas.kraken import KrakenTradeSchema
-from exchange_radar.producer.schemas.kucoin import KucoinTradeSchema
+from exchange_radar.producer.serializers.binance import BinanceTradeSerializer
+from exchange_radar.producer.serializers.coinbase import CoinbaseTradeSerializer
+from exchange_radar.producer.serializers.kraken import KrakenTradeSerializer
+from exchange_radar.producer.serializers.kucoin import KucoinTradeSerializer
 
 
-@patch("exchange_radar.producer.schemas.base.redis")
-def test_schemas_binance(mock_redis):
+@patch("exchange_radar.producer.serializers.base.redis")
+def test_serializer_binance(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("100.0")
     mock_redis.hincrby.return_value = 1
     mock_redis.hget.return_value = 1
@@ -28,7 +28,7 @@ def test_schemas_binance(mock_redis):
         "M": True,  # Ignore
     }
 
-    payload = BinanceTradeSchema(**msg)
+    payload = BinanceTradeSerializer(**msg)
 
     assert payload.model_dump() == {
         "symbol": "BNBBTC",
@@ -56,8 +56,8 @@ def test_schemas_binance(mock_redis):
     }
 
 
-@patch("exchange_radar.producer.schemas.base.redis")
-def test_schemas_kucoin(mock_redis):
+@patch("exchange_radar.producer.serializers.base.redis")
+def test_serializer_kucoin(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("3.7335")
     mock_redis.hincrby.return_value = 1
     mock_redis.hget.return_value = 1
@@ -80,7 +80,7 @@ def test_schemas_kucoin(mock_redis):
         },
     }
 
-    payload = KucoinTradeSchema(**msg["data"])
+    payload = KucoinTradeSerializer(**msg["data"])
 
     assert payload.model_dump() == {
         "symbol": "LTOBTC",
@@ -108,8 +108,8 @@ def test_schemas_kucoin(mock_redis):
     }
 
 
-@patch("exchange_radar.producer.schemas.base.redis")
-def test_schemas_coinbase(mock_redis):
+@patch("exchange_radar.producer.serializers.base.redis")
+def test_serializer_coinbase(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("0.00251665")
     mock_redis.hincrby.return_value = 1
     mock_redis.hget.return_value = 1
@@ -127,7 +127,7 @@ def test_schemas_coinbase(mock_redis):
         "time": "2023-07-16T12:19:57.255067Z",
     }
 
-    payload = CoinbaseTradeSchema(**msg)
+    payload = CoinbaseTradeSerializer(**msg)
 
     assert payload.model_dump() == {
         "symbol": "ETHUSD",
@@ -155,8 +155,8 @@ def test_schemas_coinbase(mock_redis):
     }
 
 
-@patch("exchange_radar.producer.schemas.base.redis")
-def test_schemas_kraken(mock_redis):
+@patch("exchange_radar.producer.serializers.base.redis")
+def test_serializer_kraken(mock_redis):
     mock_redis.hincrbyfloat.return_value = Decimal("0.03409475")
     mock_redis.hincrby.return_value = 1
     mock_redis.hget.return_value = 1
@@ -173,7 +173,7 @@ def test_schemas_kraken(mock_redis):
 
     price, volume, time, side, order_type, misc = trade
 
-    payload = KrakenTradeSchema(
+    payload = KrakenTradeSerializer(
         symbol=symbol,
         price=price,
         quantity=volume,

@@ -3,10 +3,10 @@ from functools import cached_property
 
 from pydantic import Field, computed_field, condecimal, field_validator
 
-from exchange_radar.producer.schemas.base import CustomBaseModel
+from exchange_radar.producer.serializers.base import BaseSerializer
 
 
-class KucoinTradeSchema(CustomBaseModel):
+class KucoinTradeSerializer(BaseSerializer):
     symbol: str
     price: condecimal(ge=0, decimal_places=10)
     quantity: condecimal(ge=0, decimal_places=9) = Field(alias="size")

@@ -8,8 +8,8 @@ REDIS_HOST = env.str("REDIS_HOST", default=None)
 REDIS_PORT = env.int("REDIS_PORT", default=None)
 REDIS_DB = env.int("REDIS_DB", default=None)
 
-DB_PATH = env.str("DB_PATH")
-DB_TABLE_MAX_ROWS = env.int("DB_TABLE_MAX_ROWS")
+REDIS_MAX_ROWS = env.int("REDIS_MAX_ROWS")
+REDIS_EXPIRATION = env.int("REDIS_EXPIRATION")
 
 TRADES_SOCKET_URL = env.str("TRADES_SOCKET_URL")
 TRADES_WHALES_SOCKET_URL = env.str("TRADES_WHALES_SOCKET_URL")

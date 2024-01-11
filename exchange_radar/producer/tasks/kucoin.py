@@ -6,7 +6,7 @@ from kucoin.asyncio import KucoinSocketManager
 from kucoin.client import Client
 
 from exchange_radar.producer.publisher import publish
-from exchange_radar.producer.schemas.kucoin import KucoinTradeSchema
+from exchange_radar.producer.serializers.kucoin import KucoinTradeSerializer
 from exchange_radar.producer.task import Task
 
 logger = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ class KucoinTradesTask(Task):
                 self.num_events = 0
 
                 try:
-                    data = KucoinTradeSchema(**res["data"])
+                    data = KucoinTradeSerializer(**res["data"])
                     publish(data)  # noqa
                 except Exception as error1:
                     logger.error(f"ERROR(1): {error1}")

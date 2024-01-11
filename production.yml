@@ -19,7 +19,7 @@ services:
     environment:
       - WORKERS=1
     depends_on:
-      - rabbitmq
+      - redis
     ports:
       - "9000:9000"
     volumes:
@@ -36,10 +36,10 @@ services:
       - "15672:15672"
 
   redis:
-    image: redis:7.2-alpine
+    image: redis/redis-stack-server
     container_name: exchange-radar-redis
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - redis_data:/data
 
@@ -55,6 +55,7 @@ services:
       - ./.envs/.production/.redis
     depends_on:
       - rabbitmq
+      - redis
     command: /start
 
   producer-kucoin:
@@ -69,6 +70,7 @@ services:
       - ./.envs/.production/.redis
     depends_on:
       - rabbitmq
+      - redis
     command: /start
 
   producer-coinbase:
@@ -83,6 +85,7 @@ services:
       - ./.envs/.production/.redis
     depends_on:
       - rabbitmq
+      - redis
     command: /start
 
   producer-kraken:
@@ -97,6 +100,7 @@ services:
       - ./.envs/.production/.redis
     depends_on:
       - rabbitmq
+      - redis
     command: /start
 
   consumer:

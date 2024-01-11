@@ -2,18 +2,19 @@ from datetime import datetime
 from decimal import Decimal, localcontext
 from functools import cached_property
 
-import redis
 from pydantic import BaseModel, computed_field, field_validator
+from redis_om import get_redis_connection
 
-from exchange_radar.producer.settings import base as settings
 from exchange_radar.producer.settings.base import CURRENCIES
 
-redis = redis.StrictRedis(
-    host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB
-)
+redis = get_redis_connection()
 
 
-class CustomBaseModel(BaseModel):
+class BaseSerializer(BaseModel):
+    @field_validator("trade_time", check_fields=False)
+    def trade_time_normalization(cls, v) -> str:
+        return v.replace(tzinfo=None)
+
     @computed_field
     @cached_property
     def total(self) -> Decimal:
