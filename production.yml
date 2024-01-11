@@ -36,10 +36,10 @@ services:
       - "15672:15672"
 
   redis:
-    image: redis:7.2-alpine
+    image: redis/redis-stack-server
     container_name: exchange-radar-redis
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - redis_data:/data
 

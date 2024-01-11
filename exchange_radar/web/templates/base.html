@@ -113,7 +113,6 @@
                 };
 
                 ws.onmessage = function (event) {
-                    console.log("onmessage")
                     const obj = JSON.parse(event.data);
                     setPageTitle(obj);
                     addRow(obj);

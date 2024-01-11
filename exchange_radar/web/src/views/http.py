@@ -8,7 +8,7 @@ from exchange_radar.web.src.manager import (
     ConnectionTradesOctopusesManager,
     ConnectionTradesWhalesManager,
 )
-from exchange_radar.web.src.models.tinydb import Db
+from exchange_radar.web.src.models import Feed
 from exchange_radar.web.src.serializers.stats import StatsSerializer
 from exchange_radar.web.src.settings import base as settings
 from exchange_radar.web.src.utils import get_exchanges
@@ -70,13 +70,18 @@ class FeedBase(HTTPEndpoint):
         coin = request.path_params["coin"]
         message = await request.json()
         await self.manager.broadcast(message, coin)
-        # Db.write(cls_name=str(self), coin=coin, message=message)
+        Feed(type=str(self), **message).save().expire(60 * 10)
         return JSONResponse({"r": True}, status_code=201)
 
-    async def get(self, request):
+    async def get(self, request):  # noqa
         coin = request.path_params["coin"]
-        rows = Db.read(cls_name=str(self), coin=coin)
-        return JSONResponse({"r": rows}, status_code=200)
+        response = [
+            item.dict()
+            for item in Feed.find(Feed.trade_symbol == coin).all()[
+                : settings.DB_TABLE_MAX_ROWS
+            ]
+        ]
+        return JSONResponse({"r": response}, status_code=200)
 
 
 class FeedWhales(FeedBase):
