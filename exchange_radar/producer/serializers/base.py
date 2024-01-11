@@ -95,6 +95,11 @@ class BaseSerializer(BaseModel):
 
     @computed_field
     @cached_property
+    def trade_time_ts(self) -> int:
+        return int(self.trade_time.timestamp())
+
+    @computed_field
+    @cached_property
     def message(self) -> str:
         return (
             f"{self.trade_time} | "  # noqa

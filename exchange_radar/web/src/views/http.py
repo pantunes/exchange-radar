@@ -78,6 +78,7 @@ class FeedBase(HTTPEndpoint):
             Feed(
                 type=category,
                 price=message["price"],
+                trade_time_ts=message["trade_time_ts"],
                 is_seller=message["is_seller"],
                 currency=message["currency"],
                 trade_symbol=message["trade_symbol"],
@@ -86,10 +87,9 @@ class FeedBase(HTTPEndpoint):
                 number_trades=message["number_trades"],
                 message=message["message"],
             ).save().expire(settings.REDIS_EXPIRATION)
-            response = True
-        else:
-            response = False
-        return JSONResponse({"r": response}, status_code=201)
+            return JSONResponse({"r": True}, status_code=201)
+
+        return JSONResponse({"r": False}, status_code=200)
 
     async def get(self, request):  # noqa
         coin = request.path_params["coin"]
@@ -97,9 +97,11 @@ class FeedBase(HTTPEndpoint):
             item.dict()
             for item in Feed.find(
                 (Feed.trade_symbol == coin) & (Feed.type == str(self))
-            ).all()[: settings.REDIS_MAX_ROWS]
+            )
+            .sort_by("-trade_time_ts")
+            .page(offset=0, limit=settings.REDIS_MAX_ROWS)
         ]
-        return JSONResponse({"r": response}, status_code=200)
+        return JSONResponse({"r": response[::-1]}, status_code=200)
 
 
 class FeedWhales(FeedBase):
