@@ -4,7 +4,7 @@ import logging
 from binance import AsyncClient, BinanceSocketManager, exceptions
 
 from exchange_radar.producer.publisher import publish
-from exchange_radar.producer.schemas.binance import BinanceTradeSchema
+from exchange_radar.producer.serializers.binance import BinanceTradeSerializer
 from exchange_radar.producer.task import Task
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class BinanceTradesTask(Task):
             while True:
                 res = await ts.recv()
                 try:
-                    data = BinanceTradeSchema(**res)
+                    data = BinanceTradeSerializer(**res)
                     publish(data)  # noqa
                 except Exception as error:
                     logger.error(f"GENERAL ERROR: {error}")

@@ -3,10 +3,10 @@ from functools import cached_property
 
 from pydantic import Field, computed_field, condecimal, field_validator
 
-from exchange_radar.producer.schemas.base import CustomBaseModel
+from exchange_radar.producer.serializers.base import BaseSerializer
 
 
-class CoinbaseTradeSchema(CustomBaseModel):
+class CoinbaseTradeSerializer(BaseSerializer):
     symbol: str = Field(alias="product_id")
     price: condecimal(ge=0, decimal_places=8)
     quantity: condecimal(ge=0, decimal_places=8) = Field(alias="size")
@@ -16,10 +16,6 @@ class CoinbaseTradeSchema(CustomBaseModel):
     @field_validator("symbol")
     def symbol_normalization(cls, v) -> str:
         return v.replace("-", "")
-
-    @field_validator("trade_time")
-    def trade_time_normalization(cls, v) -> str:
-        return v.replace(tzinfo=None)
 
     @computed_field
     @cached_property

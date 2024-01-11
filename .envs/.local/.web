@@ -1,7 +1,7 @@
 DEBUG=True
 
-DB_PATH=/app/exchange_radar/web/data/db.json
-DB_TABLE_MAX_ROWS=64
+REDIS_MAX_ROWS=64
+REDIS_EXPIRATION=600
 
 TRADES_SOCKET_URL=ws://127.0.0.1:9000/trades/{coin}
 TRADES_WHALES_SOCKET_URL=ws://127.0.0.1:9000/trades/{coin}/whales

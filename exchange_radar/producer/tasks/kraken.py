@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from exchange_radar.producer.publisher import publish
-from exchange_radar.producer.schemas.kraken import KrakenTradeSchema
+from exchange_radar.producer.serializers.kraken import KrakenTradeSerializer
 from exchange_radar.producer.task import Task
 from exchange_radar.producer.tasks.libs.kraken import WSKrakenClient, WSKrakenInMsg
 
@@ -34,7 +34,7 @@ class KrakenTradesTask(Task):
                         _, trades, _, symbol = msg.payload
                         for trade in trades:
                             price, volume, time, side, order_type, misc = trade
-                            data = KrakenTradeSchema(
+                            data = KrakenTradeSerializer(
                                 symbol=symbol,
                                 price=price,
                                 quantity=volume,
