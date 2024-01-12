@@ -1,8 +1,13 @@
+import logging
 from collections import defaultdict
 
 from redis_om import Field, JsonModel, Migrator, get_redis_connection
 
 from exchange_radar.web.src.settings import base as settings
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO if settings.DEBUG else logging.WARNING)
+
 
 redis = get_redis_connection()
 
@@ -81,21 +86,17 @@ class Feed(JsonModel):
             ).save()
 
             cache_pks[f"{coin}-{category}"].append(obj.pk)
-            # print(f"CACHE_PKS: {cache_pks}")
+            logger.info(f"CACHE_PKS: {cache_pks}")
 
             count = cls.find(
                 (cls.trade_symbol == coin) & (cls.type == category)
             ).count()
-            # print(f"COUNT: {count}")
+            logger.info(f"COUNT: {count}")
 
             if count > settings.REDIS_MAX_ROWS:
                 obj2del = cache_pks[f"{coin}-{category}"].pop(0)
-                cls.delete(obj2del)
-                # print(f"DELETE {coin}-{category}: {obj2del}")
-                # count = cls.find(
-                #     (cls.trade_symbol == coin) & (cls.type == category)
-                # ).count()
-                # print(f"POS-COUNT: {count}")
+                status = cls.delete(obj2del)
+                logger.info(f"DELETE {coin}-{category}: {obj2del} RETURN {status}")
 
             return True
 
