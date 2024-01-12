@@ -86,7 +86,7 @@ class FeedBase(HTTPEndpoint):
                 volume_trades=message["volume_trades"],
                 number_trades=message["number_trades"],
                 message=message["message"],
-            ).save()
+            ).save().expire(settings.REDIS_EXPIRATION)
             return JSONResponse({"r": True}, status_code=201)
 
         return JSONResponse({"r": False}, status_code=200)
@@ -100,6 +100,7 @@ class FeedBase(HTTPEndpoint):
             )
             .sort_by("-trade_time_ts")
             .page(offset=0, limit=settings.REDIS_MAX_ROWS)
+            .all()
         ]
         return JSONResponse({"r": response[::-1]}, status_code=200)
 
