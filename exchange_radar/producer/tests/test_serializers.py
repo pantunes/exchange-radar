@@ -10,9 +10,9 @@ from exchange_radar.producer.serializers.kucoin import KucoinTradeSerializer
 
 @patch("exchange_radar.producer.serializers.base.redis")
 def test_serializer_binance(mock_redis):
-    mock_redis.hincrbyfloat.return_value = Decimal("100.0")
+    mock_redis.hincrbyfloat.return_value = 100.0
     mock_redis.hincrby.return_value = 1
-    mock_redis.hget.return_value = 1
+    mock_redis.hget.return_value = "1"
 
     msg = {
         "e": "trade",  # Event type
@@ -49,19 +49,19 @@ def test_serializer_binance(mock_redis):
             1,
         ),
         "exchange": "Binance",
-        "volume": Decimal("100.0"),
+        "volume": 100.0,
         "volume_trades": (
             1.0,
-            Decimal("100.0"),
+            100.0,
         ),
     }
 
 
 @patch("exchange_radar.producer.serializers.base.redis")
 def test_serializer_kucoin(mock_redis):
-    mock_redis.hincrbyfloat.return_value = Decimal("3.7335")
+    mock_redis.hincrbyfloat.return_value = 3.7335
     mock_redis.hincrby.return_value = 1
-    mock_redis.hget.return_value = 1
+    mock_redis.hget.return_value = "1"
 
     msg = {
         "type": "message",
@@ -102,19 +102,19 @@ def test_serializer_kucoin(mock_redis):
         ),
         "is_seller": True,
         "exchange": "Kucoin",
-        "volume": Decimal("3.7335"),
+        "volume": 3.7335,
         "volume_trades": (
             1.0,
-            Decimal("3.7335"),
+            3.7335,
         ),
     }
 
 
 @patch("exchange_radar.producer.serializers.base.redis")
 def test_serializer_coinbase(mock_redis):
-    mock_redis.hincrbyfloat.return_value = Decimal("0.00251665")
+    mock_redis.hincrbyfloat.return_value = 0.00251665
     mock_redis.hincrby.return_value = 1
-    mock_redis.hget.return_value = 1
+    mock_redis.hget.return_value = "1"
 
     msg = {
         "type": "last_match",
@@ -150,19 +150,19 @@ def test_serializer_coinbase(mock_redis):
         ),
         "is_seller": True,
         "exchange": "Coinbase",
-        "volume": Decimal("0.00251665"),
+        "volume": 0.00251665,
         "volume_trades": (
             1.0,
-            Decimal("0.00251665"),
+            0.00251665,
         ),
     }
 
 
 @patch("exchange_radar.producer.serializers.base.redis")
 def test_serializer_kraken(mock_redis):
-    mock_redis.hincrbyfloat.return_value = Decimal("0.03409475")
+    mock_redis.hincrbyfloat.return_value = 0.03409475
     mock_redis.hincrby.return_value = 1
-    mock_redis.hget.return_value = 1
+    mock_redis.hget.return_value = "1"
 
     msg = [
         337,
@@ -203,9 +203,9 @@ def test_serializer_kraken(mock_redis):
         ),
         "is_seller": True,
         "exchange": "Kraken",
-        "volume": Decimal("0.03409475"),
+        "volume": 0.03409475,
         "volume_trades": (
             1.0,
-            Decimal("0.03409475"),
+            0.03409475,
         ),
     }
