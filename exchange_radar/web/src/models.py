@@ -53,6 +53,15 @@ class Feed(JsonModel):
     message: str
 
     @classmethod
+    def select_rows(cls, coin: str, category: str) -> list[dict[str]]:
+        return [
+            item.dict()
+            for item in cls.find((cls.trade_symbol == coin) & (cls.type == category))
+            .sort_by("-trade_time_ts")
+            .page(offset=0, limit=settings.REDIS_MAX_ROWS)
+        ][::-1]
+
+    @classmethod
     def save_or_not(cls, coin: str, category: str, message: dict) -> bool:
         if coin in ("LTO",) or category in (
             "FeedWhales",
@@ -75,7 +84,7 @@ class Feed(JsonModel):
             # print(f"CACHE_PKS: {cache_pks}")
 
             count = cls.find(
-                (Feed.trade_symbol == coin) & (Feed.type == category)
+                (cls.trade_symbol == coin) & (cls.type == category)
             ).count()
             # print(f"COUNT: {count}")
 
@@ -84,7 +93,7 @@ class Feed(JsonModel):
                 cls.delete(obj2del)
                 # print(f"DELETE {coin}-{category}: {obj2del}")
                 # count = cls.find(
-                #     (Feed.trade_symbol == coin) & (Feed.type == category)
+                #     (cls.trade_symbol == coin) & (cls.type == category)
                 # ).count()
                 # print(f"POS-COUNT: {count}")
 

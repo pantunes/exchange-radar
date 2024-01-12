@@ -70,20 +70,13 @@ class FeedBase(HTTPEndpoint):
         coin = request.path_params["coin"]
         message = await request.json()
         await self.manager.broadcast(message, coin)
-        status = Feed.save_or_not(coin=coin, category=str(self), message=message)
-        return JSONResponse({"r": status}, status_code=201 if status else 200)
+        is_saved = Feed.save_or_not(coin=coin, category=str(self), message=message)
+        return JSONResponse({"r": is_saved}, status_code=201 if is_saved else 200)
 
-    async def get(self, request):  # noqa
+    async def get(self, request):
         coin = request.path_params["coin"]
-        response = [
-            item.dict()
-            for item in Feed.find(
-                (Feed.trade_symbol == coin) & (Feed.type == str(self))
-            )
-            .sort_by("-trade_time_ts")
-            .page(offset=0, limit=settings.REDIS_MAX_ROWS)
-        ]
-        return JSONResponse({"r": response[::-1]}, status_code=200)
+        rows = Feed.select_rows(coin=coin, category=str(self))
+        return JSONResponse({"r": rows}, status_code=200)
 
 
 class FeedWhales(FeedBase):
