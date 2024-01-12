@@ -86,7 +86,7 @@ class FeedBase(HTTPEndpoint):
                 volume_trades=message["volume_trades"],
                 number_trades=message["number_trades"],
                 message=message["message"],
-            ).save().expire(settings.REDIS_EXPIRATION)
+            ).save()
             return JSONResponse({"r": True}, status_code=201)
 
         return JSONResponse({"r": False}, status_code=200)
