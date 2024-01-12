@@ -1,6 +1,12 @@
+from collections import defaultdict
+
 from redis_om import Field, JsonModel, Migrator, get_redis_connection
 
+from exchange_radar.web.src.settings import base as settings
+
 redis = get_redis_connection()
+
+cache_pks = defaultdict(list)
 
 
 class Feed(JsonModel):
@@ -52,7 +58,7 @@ class Feed(JsonModel):
             "FeedWhales",
             "FeedDolphins",
         ):
-            cls(
+            obj = cls(
                 type=category,
                 price=message["price"],
                 trade_time_ts=message["trade_time_ts"],
@@ -64,7 +70,26 @@ class Feed(JsonModel):
                 number_trades=message["number_trades"],
                 message=message["message"],
             ).save()
+
+            cache_pks[f"{coin}-{category}"].append(obj.pk)
+            # print(f"CACHE_PKS: {cache_pks}")
+
+            count = cls.find(
+                (Feed.trade_symbol == coin) & (Feed.type == category)
+            ).count()
+            # print(f"COUNT: {count}")
+
+            if count > settings.REDIS_MAX_ROWS:
+                obj2del = cache_pks[f"{coin}-{category}"].pop(0)
+                cls.delete(obj2del)
+                # print(f"DELETE {coin}-{category}: {obj2del}")
+                # count = cls.find(
+                #     (Feed.trade_symbol == coin) & (Feed.type == category)
+                # ).count()
+                # print(f"POS-COUNT: {count}")
+
             return True
+
         return False
 
 
