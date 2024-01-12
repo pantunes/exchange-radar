@@ -42,9 +42,30 @@ class Feed(JsonModel):
     currency: str
     trade_symbol: str = Field(index=True)
     volume: float
-    volume_trades: list[float, float]
-    number_trades: list[int, int]
+    volume_trades: list[float]
+    number_trades: list[int]
     message: str
+
+    @classmethod
+    def save_or_not(cls, coin: str, category: str, message: dict) -> bool:
+        if coin in ("LTO",) or category in (
+            "FeedWhales",
+            "FeedDolphins",
+        ):
+            cls(
+                type=category,
+                price=message["price"],
+                trade_time_ts=message["trade_time_ts"],
+                is_seller=message["is_seller"],
+                currency=message["currency"],
+                trade_symbol=message["trade_symbol"],
+                volume=message["volume"],
+                volume_trades=message["volume_trades"],
+                number_trades=message["number_trades"],
+                message=message["message"],
+            ).save()
+            return True
+        return False
 
 
 Migrator().run()

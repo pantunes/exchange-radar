@@ -70,26 +70,8 @@ class FeedBase(HTTPEndpoint):
         coin = request.path_params["coin"]
         message = await request.json()
         await self.manager.broadcast(message, coin)
-        category = str(self)
-        if coin in ("LTO",) or category in (
-            "FeedWhales",
-            "FeedDolphins",
-        ):
-            Feed(
-                type=category,
-                price=message["price"],
-                trade_time_ts=message["trade_time_ts"],
-                is_seller=message["is_seller"],
-                currency=message["currency"],
-                trade_symbol=message["trade_symbol"],
-                volume=message["volume"],
-                volume_trades=message["volume_trades"],
-                number_trades=message["number_trades"],
-                message=message["message"],
-            ).save()
-            return JSONResponse({"r": True}, status_code=201)
-
-        return JSONResponse({"r": False}, status_code=200)
+        status = Feed.save_or_not(coin=coin, category=str(self), message=message)
+        return JSONResponse({"r": status}, status_code=201 if status else 200)
 
     async def get(self, request):  # noqa
         coin = request.path_params["coin"]
