@@ -100,7 +100,6 @@ class FeedBase(HTTPEndpoint):
             )
             .sort_by("-trade_time_ts")
             .page(offset=0, limit=settings.REDIS_MAX_ROWS)
-            .all()
         ]
         return JSONResponse({"r": response[::-1]}, status_code=200)
 
