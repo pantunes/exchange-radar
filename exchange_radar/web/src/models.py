@@ -6,7 +6,6 @@ from redis_om import Field, JsonModel, Migrator, get_redis_connection
 from exchange_radar.web.src.settings import base as settings
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO if settings.DEBUG else logging.WARNING)
 
 
 redis = get_redis_connection()
@@ -94,9 +93,10 @@ class Feed(JsonModel):
             logger.info(f"COUNT: {count}")
 
             if count > settings.REDIS_MAX_ROWS:
-                obj2del = cache_pks[f"{coin}-{category}"].pop(0)
-                is_deleted = cls.delete(obj2del)
-                logger.info(f"DELETE {coin}-{category}: {obj2del} RETURN {is_deleted}")
+                key = f"{coin}-{category}"
+                obj2del_pk = cache_pks[key].pop(0)
+                is_deleted = cls.delete(obj2del_pk)
+                logger.info(f"DELETE {key}: {obj2del_pk} RETURN {is_deleted}")
 
             return True
 

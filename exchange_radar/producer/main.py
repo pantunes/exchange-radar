@@ -4,8 +4,8 @@ import click
 
 from exchange_radar.producer.settings.exchanges import EXCHANGES
 
-logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 @click.command()
