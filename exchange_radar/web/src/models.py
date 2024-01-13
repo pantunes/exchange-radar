@@ -5,7 +5,7 @@ from redis_om import Field, JsonModel, Migrator, get_redis_connection
 
 from exchange_radar.web.src.settings import base as settings
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 redis = get_redis_connection()

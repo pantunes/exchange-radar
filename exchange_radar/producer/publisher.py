@@ -14,7 +14,7 @@ from exchange_radar.producer.settings import base as settings
 from exchange_radar.producer.settings.queues import QUEUES
 from exchange_radar.producer.utils import get_ranking
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 logging.getLogger("pika").propagate = False
 

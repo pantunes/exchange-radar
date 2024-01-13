@@ -4,7 +4,7 @@ from collections import defaultdict
 import websockets
 from starlette.websockets import WebSocket
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 

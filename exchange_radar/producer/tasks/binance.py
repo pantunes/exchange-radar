@@ -7,7 +7,7 @@ from exchange_radar.producer.publisher import publish
 from exchange_radar.producer.serializers.binance import BinanceTradeSerializer
 from exchange_radar.producer.task import Task
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 ITER_SLEEP = 10.0

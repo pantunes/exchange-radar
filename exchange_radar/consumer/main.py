@@ -17,7 +17,7 @@ from pika.spec import Basic
 
 from exchange_radar.consumer.settings import base as settings
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 logging.getLogger("pika").propagate = False

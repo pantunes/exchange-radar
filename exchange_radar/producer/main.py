@@ -4,7 +4,7 @@ import click
 
 from exchange_radar.producer.settings.exchanges import EXCHANGES
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 

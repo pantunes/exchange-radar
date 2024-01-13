@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
