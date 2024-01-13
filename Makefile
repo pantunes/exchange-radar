@@ -24,6 +24,9 @@ coverage report && \
 coverage html"
 	open htmlcov/index.html
 
+coverage-95:
+	@docker-compose -f local.yml run --rm tests coverage report --fail-under=95
+
 benchmark:
 	@cd benchmarks && sh endpoints.sh && cd ..
 

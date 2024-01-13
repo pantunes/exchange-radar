@@ -73,9 +73,7 @@ def setup_channel(channel: BlockingChannel, queue_name: str, callback: Callable)
 
 @click.command()
 def main():
-    credentials = pika.PlainCredentials(
-        settings.RABBITMQ_DEFAULT_USER, settings.RABBITMQ_DEFAULT_PASS
-    )
+    credentials = pika.PlainCredentials(settings.RABBITMQ_DEFAULT_USER, settings.RABBITMQ_DEFAULT_PASS)
 
     parameters = pika.ConnectionParameters(
         host=settings.RABBITMQ_HOST,

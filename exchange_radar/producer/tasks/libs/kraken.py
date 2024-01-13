@@ -54,18 +54,14 @@ class WSKrakenClient:
         return await self.auth_websocket.recv()
 
     async def __aenter__(self) -> WSKrakenClient:
-        self.websocket: websockets.WebSocketClientProtocol = await websockets.connect(
-            self.uri
-        )
+        self.websocket: websockets.WebSocketClientProtocol = await websockets.connect(self.uri)
         if self.open_auth_socket:
             print(
                 "You are also opening an authenticated socket. At least one "
                 "private message should be subscribed to keep the authenticated "
                 "client connection open."
             )
-            self.auth_websocket: websockets.WebSocketClientProtocol = (
-                await websockets.connect(self.auth_uri)
-            )
+            self.auth_websocket: websockets.WebSocketClientProtocol = await websockets.connect(self.auth_uri)
         return self
 
     async def __aexit__(self, exc_t, exc_v, exc_tb) -> None:
@@ -96,16 +92,8 @@ class WSKrakenClient:
     ) -> dict:
         _locals = locals()
         del _locals["self"]
-        payload = {
-            k: v
-            for (k, v) in _locals.items()
-            if not k.startswith("sub") and v is not None
-        }
-        payload["subscription"] = {
-            k[4:]: v
-            for (k, v) in _locals.items()
-            if k.startswith("sub") and v is not None
-        }
+        payload = {k: v for (k, v) in _locals.items() if not k.startswith("sub") and v is not None}
+        payload["subscription"] = {k[4:]: v for (k, v) in _locals.items() if k.startswith("sub") and v is not None}
         return payload
 
     def _gen_raw_subscribe_payload(self, **kwargs) -> dict:
@@ -115,56 +103,28 @@ class WSKrakenClient:
         return self._gen_raw_subscription_payload(event="unsubscribe", **kwargs)
 
     async def subscribe_ticker(self, pair: list[str], **kwargs) -> None:
-        await self.send(
-            WSKrakenOutMsg(
-                self._gen_raw_subscribe_payload(sub_name="ticker", pair=pair, **kwargs)
-            )
-        )
+        await self.send(WSKrakenOutMsg(self._gen_raw_subscribe_payload(sub_name="ticker", pair=pair, **kwargs)))
 
     async def unsubscribe_ticker(self, pair: list[str], **kwargs) -> None:
-        await self.send(
-            WSKrakenOutMsg(
-                self._gen_raw_unsubscribe_payload(
-                    sub_name="ticker", pair=pair, **kwargs
-                )
-            )
-        )
+        await self.send(WSKrakenOutMsg(self._gen_raw_unsubscribe_payload(sub_name="ticker", pair=pair, **kwargs)))
 
     async def subscribe_trade(self, pair: list[str], **kwargs) -> None:
-        await self.send(
-            WSKrakenOutMsg(
-                self._gen_raw_subscribe_payload(sub_name="trade", pair=pair, **kwargs)
-            )
-        )
+        await self.send(WSKrakenOutMsg(self._gen_raw_subscribe_payload(sub_name="trade", pair=pair, **kwargs)))
 
     async def unsubscribe_trade(self, pair: list[str], **kwargs) -> None:
-        await self.send(
-            WSKrakenOutMsg(
-                self._gen_raw_unsubscribe_payload(sub_name="trade", pair=pair, **kwargs)
-            )
-        )
+        await self.send(WSKrakenOutMsg(self._gen_raw_unsubscribe_payload(sub_name="trade", pair=pair, **kwargs)))
 
     async def subscribe_ohlc(self, pair: list[str], interval: int) -> None:
         await self.send(
-            WSKrakenOutMsg(
-                self._gen_raw_subscribe_payload(
-                    sub_name="ohlc", pair=pair, sub_interval=interval
-                )
-            )
+            WSKrakenOutMsg(self._gen_raw_subscribe_payload(sub_name="ohlc", pair=pair, sub_interval=interval))
         )
 
     async def unsubscribe_ohlc(self, pair: list[str], interval: int) -> None:
         await self.send(
-            WSKrakenOutMsg(
-                self._gen_raw_unsubscribe_payload(
-                    sub_name="ohlc", pair=pair, sub_interval=interval
-                )
-            )
+            WSKrakenOutMsg(self._gen_raw_unsubscribe_payload(sub_name="ohlc", pair=pair, sub_interval=interval))
         )
 
-    async def subscribe_own_trades(
-        self, token: str, snapshot: bool = True, **kwargs
-    ) -> None:
+    async def subscribe_own_trades(self, token: str, snapshot: bool = True, **kwargs) -> None:
         await self.auth_send(
             WSKrakenOutMsg(
                 self._gen_raw_subscribe_payload(
@@ -178,16 +138,10 @@ class WSKrakenClient:
 
     async def unsubscribe_own_trades(self, token: str, **kwargs) -> None:
         await self.auth_send(
-            WSKrakenOutMsg(
-                self._gen_raw_unsubscribe_payload(
-                    sub_name="ownTrades", sub_token=token, **kwargs
-                )
-            )
+            WSKrakenOutMsg(self._gen_raw_unsubscribe_payload(sub_name="ownTrades", sub_token=token, **kwargs))
         )
 
-    async def subscribe_open_orders(
-        self, token: str, ratecounter: bool = False, **kwargs
-    ) -> None:
+    async def subscribe_open_orders(self, token: str, ratecounter: bool = False, **kwargs) -> None:
         await self.auth_send(
             WSKrakenOutMsg(
                 self._gen_raw_subscribe_payload(
@@ -199,9 +153,7 @@ class WSKrakenClient:
             )
         )
 
-    async def unsubscribe_open_orders(
-        self, token: str, ratecounter: bool = False, **kwargs
-    ) -> None:
+    async def unsubscribe_open_orders(self, token: str, ratecounter: bool = False, **kwargs) -> None:
         await self.auth_send(
             WSKrakenOutMsg(
                 self._gen_raw_unsubscribe_payload(
@@ -251,6 +203,4 @@ class WSKrakenClient:
         await self.auth_send(WSKrakenOutMsg(payload))
 
     async def cancel_order(self, token: str, txid: list[str]):
-        await self.auth_send(
-            WSKrakenOutMsg(dict(event="cancelOrder", token=token, txid=txid))
-        )
+        await self.auth_send(WSKrakenOutMsg(dict(event="cancelOrder", token=token, txid=txid)))

@@ -61,9 +61,27 @@ ipython = "^8.14.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.pytest.ini_options]
-addopts = "-vv"
-
 [tool.poetry.scripts]
 producer = "exchange_radar.producer.main:main"
 consumer = "exchange_radar.consumer.main:main"
+
+[tool.pytest.ini_options]
+addopts = "-vv"
+
+[tool.coverage.run]
+include = ["exchange_radar/**"]
+omit = ["**/settings/*", "**/tests/*", "**/static/*", "**/templates/*"]
+
+[tool.black]
+line-length = 119
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+known_first_party = ["exchange_radar"]
+skip = ["venv/"]

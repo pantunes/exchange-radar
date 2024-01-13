@@ -31,9 +31,7 @@ class CoinbaseTradesTask(Task):
 
         while True:
             try:
-                self.async_client = CustomClient(
-                    self.loop, Channel("matches", list(symbol_or_symbols))
-                )
+                self.async_client = CustomClient(self.loop, Channel("matches", list(symbol_or_symbols)))
                 break
             except Exception as error:
                 logger.error(f"GENERAL ERROR: {error}")

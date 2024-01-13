@@ -20,13 +20,9 @@ class KucoinTradesTask(Task):
         super().__init__()
         self.num_events = 0
 
-    async def _subscribe(
-        self, callback: Callable, symbol_or_symbols: str
-    ) -> KucoinSocketManager:
+    async def _subscribe(self, callback: Callable, symbol_or_symbols: str) -> KucoinSocketManager:
         async_client = Client("", "", "")
-        kucoin_manager = await KucoinSocketManager.create(
-            self.loop, async_client, callback
-        )
+        kucoin_manager = await KucoinSocketManager.create(self.loop, async_client, callback)
         return await kucoin_manager.subscribe(f"/market/match:{symbol_or_symbols}")
 
     async def task(self, symbols: tuple[str]):
@@ -57,9 +53,7 @@ class KucoinTradesTask(Task):
                 try:
                     try:
                         logger.error("Unsubscribing...")
-                        await kucoin_manager.unsubscribe(
-                            f"/market/match:{symbol_or_symbols}"
-                        )
+                        await kucoin_manager.unsubscribe(f"/market/match:{symbol_or_symbols}")
                     except Exception:
                         pass  # possibly nothing to unsubscribe
 

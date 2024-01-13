@@ -28,9 +28,7 @@ class ProducerConnection:
             logger.info("Reusing connection...")
             return self.connection
 
-        credentials = pika.PlainCredentials(
-            settings.RABBITMQ_DEFAULT_USER, settings.RABBITMQ_DEFAULT_PASS
-        )
+        credentials = pika.PlainCredentials(settings.RABBITMQ_DEFAULT_USER, settings.RABBITMQ_DEFAULT_PASS)
 
         parameters = pika.ConnectionParameters(
             host=settings.RABBITMQ_HOST,
@@ -72,9 +70,7 @@ producer_connection = ProducerConnection()
 
 params = {
     "exchange": settings.RABBITMQ_EXCHANGE,
-    "properties": pika.BasicProperties(
-        delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE
-    ),
+    "properties": pika.BasicProperties(delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE),
 }
 
 
@@ -85,9 +81,7 @@ def publish(data: BaseSerializer) -> None:
 
     try:
         with ProducerChannel(queue_name=settings.RABBITMQ_TRADES_QUEUE_NAME) as channel:
-            channel.basic_publish(
-                routing_key=settings.RABBITMQ_TRADES_QUEUE_NAME, body=body, **params
-            )
+            channel.basic_publish(routing_key=settings.RABBITMQ_TRADES_QUEUE_NAME, body=body, **params)
 
         try:
             queue_name = QUEUES[get_ranking(data)]
