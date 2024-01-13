@@ -10,30 +10,33 @@ class StatsSerializer(BaseModel):
     trade_symbol: str
 
     @computed_field
-    def volume(self) -> float:
+    def volume(self) -> float | None:
         today_date = datetime.today().date().strftime("%Y-%m-%d")
-        return float(redis.hget(today_date, f"{self.trade_symbol}_VOLUME"))
+        try:
+            return float(redis.hget(today_date, f"{self.trade_symbol}_VOLUME"))
+        except TypeError:
+            pass
 
     @computed_field
-    def volume_trades(self) -> tuple[float, float]:
+    def volume_trades(self) -> tuple[float, float] | None:
         today_date = datetime.today().date().strftime("%Y-%m-%d")
-
-        vol_trades_buy_orders = float(
-            redis.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS")
-        )
-        vol_trades_sell_orders = float(
-            redis.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS")
-        )
-        return vol_trades_buy_orders, vol_trades_sell_orders
+        pipeline = redis.pipeline()
+        pipeline.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS")
+        pipeline.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS")
+        result = pipeline.execute()
+        try:
+            return float(result[0]), float(result[1])
+        except TypeError:
+            pass
 
     @computed_field
-    def number_trades(self) -> tuple[int, int]:
+    def number_trades(self) -> tuple[int, int] | None:
         today_date = datetime.today().date().strftime("%Y-%m-%d")
-
-        num_trades_buy_orders = int(
-            redis.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS")
-        )
-        num_trades_sell_orders = int(
-            redis.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS")
-        )
-        return num_trades_buy_orders, num_trades_sell_orders
+        pipeline = redis.pipeline()
+        pipeline.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS")
+        pipeline.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS")
+        result = pipeline.execute()
+        try:
+            return int(result[0]), int(result[1])
+        except TypeError:
+            pass

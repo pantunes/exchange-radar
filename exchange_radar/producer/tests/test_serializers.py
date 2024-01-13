@@ -1,6 +1,6 @@
 import datetime
 from decimal import Decimal
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from exchange_radar.producer.serializers.binance import BinanceTradeSerializer
 from exchange_radar.producer.serializers.coinbase import CoinbaseTradeSerializer
@@ -11,8 +11,7 @@ from exchange_radar.producer.serializers.kucoin import KucoinTradeSerializer
 @patch("exchange_radar.producer.serializers.base.redis")
 def test_serializer_binance(mock_redis):
     mock_redis.hincrbyfloat.return_value = 100.0
-    mock_redis.hincrby.return_value = 1
-    mock_redis.hget.return_value = "1"
+    mock_redis.pipeline().execute = MagicMock(return_value=[1.0, 100.0])
 
     msg = {
         "e": "trade",  # Event type
@@ -46,7 +45,7 @@ def test_serializer_binance(mock_redis):
         "           QTY: 100.00000000 BNB |         TOTAL: 0.10000000 BTC",
         "number_trades": (
             1,
-            1,
+            100,
         ),
         "exchange": "Binance",
         "volume": 100.0,
@@ -60,8 +59,7 @@ def test_serializer_binance(mock_redis):
 @patch("exchange_radar.producer.serializers.base.redis")
 def test_serializer_kucoin(mock_redis):
     mock_redis.hincrbyfloat.return_value = 3.7335
-    mock_redis.hincrby.return_value = 1
-    mock_redis.hget.return_value = "1"
+    mock_redis.pipeline().execute = MagicMock(return_value=[1.0, 100.0])
 
     msg = {
         "type": "message",
@@ -98,14 +96,14 @@ def test_serializer_kucoin(mock_redis):
         "             QTY: 3.73350000 LTO |         TOTAL: 0.00001313 BTC",
         "number_trades": (
             1,
-            1,
+            100,
         ),
         "is_seller": True,
         "exchange": "Kucoin",
         "volume": 3.7335,
         "volume_trades": (
             1.0,
-            3.7335,
+            100.0,
         ),
     }
 
@@ -113,8 +111,7 @@ def test_serializer_kucoin(mock_redis):
 @patch("exchange_radar.producer.serializers.base.redis")
 def test_serializer_coinbase(mock_redis):
     mock_redis.hincrbyfloat.return_value = 0.00251665
-    mock_redis.hincrby.return_value = 1
-    mock_redis.hget.return_value = "1"
+    mock_redis.pipeline().execute = MagicMock(return_value=[1.0, 100.0])
 
     msg = {
         "type": "last_match",
@@ -146,14 +143,14 @@ def test_serializer_coinbase(mock_redis):
         "             QTY: 0.00251665 ETH |         TOTAL: 4.86702493 USD",
         "number_trades": (
             1,
-            1,
+            100,
         ),
         "is_seller": True,
         "exchange": "Coinbase",
         "volume": 0.00251665,
         "volume_trades": (
             1.0,
-            0.00251665,
+            100.0,
         ),
     }
 
@@ -161,8 +158,7 @@ def test_serializer_coinbase(mock_redis):
 @patch("exchange_radar.producer.serializers.base.redis")
 def test_serializer_kraken(mock_redis):
     mock_redis.hincrbyfloat.return_value = 0.03409475
-    mock_redis.hincrby.return_value = 1
-    mock_redis.hget.return_value = "1"
+    mock_redis.pipeline().execute = MagicMock(return_value=[1.0, 100.0])
 
     msg = [
         337,
@@ -199,13 +195,13 @@ def test_serializer_kraken(mock_redis):
         "             QTY: 0.03409475 BTC |      TOTAL: 1019.81488620 USD",
         "number_trades": (
             1,
-            1,
+            100,
         ),
         "is_seller": True,
         "exchange": "Kraken",
         "volume": 0.03409475,
         "volume_trades": (
             1.0,
-            0.03409475,
+            100.0,
         ),
     }
