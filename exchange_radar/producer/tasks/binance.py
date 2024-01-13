@@ -31,6 +31,6 @@ class BinanceTradesTask(Task):
                 res = await ts.recv()
                 try:
                     data = BinanceTradeSerializer(**res)
-                    publish(data)  # noqa
+                    publish(data)
                 except Exception as error:
                     logger.error(f"GENERAL ERROR: {error}")

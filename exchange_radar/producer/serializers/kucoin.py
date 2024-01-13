@@ -13,11 +13,13 @@ class KucoinTradeSerializer(BaseSerializer):
     trade_time: datetime = Field(alias="time")
     side: str = Field(exclude=True)
 
-    @field_validator("symbol")
+    @field_validator("symbol")  # noqa
+    @classmethod
     def symbol_normalization(cls, v) -> str:
         return v.replace("-", "")
 
-    @field_validator("trade_time", mode="before")
+    @field_validator("trade_time", mode="before")  # noqa
+    @classmethod
     def trade_time_before(cls, v) -> int:
         return int(v[:13])
 

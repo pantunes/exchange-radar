@@ -13,7 +13,8 @@ class KrakenTradeSerializer(BaseSerializer):
     trade_time: datetime
     side: str = Field(exclude=True)
 
-    @field_validator("symbol")
+    @field_validator("symbol")  # noqa
+    @classmethod
     def symbol_normalization(cls, v) -> str:
         if v[:4] == "XBT/":
             v = v.replace("XBT/", "BTC/")
@@ -21,7 +22,8 @@ class KrakenTradeSerializer(BaseSerializer):
             v = v.replace("/XBT", "/BTC")
         return v.replace("/", "")
 
-    @field_validator("trade_time", mode="before")
+    @field_validator("trade_time", mode="before")  # noqa
+    @classmethod
     def trade_time_before(cls, v) -> int:
         return int(v[:10])
 

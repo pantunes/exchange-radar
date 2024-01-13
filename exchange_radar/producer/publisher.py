@@ -80,7 +80,7 @@ params = {
 
 
 def publish(data: BaseSerializer) -> None:
-    logger.info(f"PRODUCER - start: {data.trade_time} {data.symbol}")  # noqa
+    logger.info(f"PRODUCER - start: {data.trade_time} {data.symbol}")
 
     body = data.model_dump_json().encode()
 
@@ -108,4 +108,4 @@ def publish(data: BaseSerializer) -> None:
     except Exception as error:
         logger.error(f"GENERAL ERROR: {error}")
     else:
-        logger.info(f"PRODUCER - end: {data.trade_time} {data.symbol}")  # noqa
+        logger.info(f"PRODUCER - end: {data.trade_time} {data.symbol}")
