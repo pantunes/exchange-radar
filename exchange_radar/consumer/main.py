@@ -96,26 +96,27 @@ def main():
         try:
             connection = pika.BlockingConnection(parameters)
             channel = connection.channel()
-            setup_channel(
-                channel,
-                settings.RABBITMQ_TRADES_QUEUE_NAME,
-                Callback(url=settings.TRADES_HOST_URL).callback,
-            )
-            setup_channel(
-                channel,
-                settings.RABBITMQ_TRADES_WHALES_QUEUE_NAME,
-                Callback(url=settings.TRADES_WHALES_HOST_URL).callback,
-            )
-            setup_channel(
-                channel,
-                settings.RABBITMQ_TRADES_DOLPHIN_QUEUE_NAME,
-                Callback(url=settings.TRADES_DOLPHINS_HOST_URL).callback,
-            )
-            setup_channel(
-                channel,
-                settings.RABBITMQ_TRADES_OCTOPUS_QUEUE_NAME,
-                Callback(url=settings.TRADES_OCTOPUSES_HOST_URL).callback,
-            )
+
+            for queue_name, url in (
+                (settings.RABBITMQ_TRADES_QUEUE_NAME, settings.TRADES_HOST_URL),
+                (
+                    settings.RABBITMQ_TRADES_WHALES_QUEUE_NAME,
+                    settings.TRADES_WHALES_HOST_URL,
+                ),
+                (
+                    settings.RABBITMQ_TRADES_DOLPHIN_QUEUE_NAME,
+                    settings.TRADES_DOLPHINS_HOST_URL,
+                ),
+                (
+                    settings.RABBITMQ_TRADES_OCTOPUS_QUEUE_NAME,
+                    settings.TRADES_OCTOPUSES_HOST_URL,
+                ),
+            ):
+                setup_channel(
+                    channel,
+                    queue_name,
+                    Callback(url=url).callback,
+                )
             channel.start_consuming()
         except KeyboardInterrupt:
             if channel:

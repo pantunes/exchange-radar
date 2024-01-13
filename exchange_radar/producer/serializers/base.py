@@ -46,48 +46,40 @@ class BaseSerializer(BaseModel):
     @computed_field
     def volume_trades(self) -> tuple[float, float]:
         today_date = datetime.today().date().strftime("%Y-%m-%d")
-
+        pipeline = redis.pipeline()
         if self.is_seller is False:  # noqa
-            vol_trades_buy_orders = redis.hincrbyfloat(
+            pipeline.hincrbyfloat(
                 today_date,
                 f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS",
-                float(self.quantity),  # noqa
+                float(self.quantity),
             )
-            vol_trades_sell_orders = float(
-                redis.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS")
-            )
+            pipeline.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS")
         else:
-            vol_trades_buy_orders = float(
-                redis.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS")
-            )
-            vol_trades_sell_orders = redis.hincrbyfloat(
+            pipeline.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS")
+            pipeline.hincrbyfloat(
                 today_date,
                 f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS",
-                float(self.quantity),  # noqa
+                float(self.quantity),
             )
-
-        return vol_trades_buy_orders, vol_trades_sell_orders
+        result = pipeline.execute()
+        return float(result[0]), float(result[1])
 
     @computed_field
     def number_trades(self) -> tuple[int, int]:
         today_date = datetime.today().date().strftime("%Y-%m-%d")
-
+        pipeline = redis.pipeline()
         if self.is_seller is False:  # noqa
-            num_trades_buy_orders = redis.hincrby(
+            pipeline.hincrby(
                 today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS", 1
             )
-            num_trades_sell_orders = int(
-                redis.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS")
-            )
+            pipeline.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS")
         else:
-            num_trades_buy_orders = int(
-                redis.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS")
-            )
-            num_trades_sell_orders = redis.hincrby(
+            pipeline.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS")
+            pipeline.hincrby(
                 today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS", 1
             )
-
-        return num_trades_buy_orders, num_trades_sell_orders
+        result = pipeline.execute()
+        return int(result[0]), int(result[1])
 
     @field_validator("trade_time", mode="after", check_fields=False)
     def trade_time_after(cls, v) -> datetime:
