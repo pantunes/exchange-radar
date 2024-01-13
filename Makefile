@@ -26,3 +26,6 @@ coverage html"
 
 benchmark:
 	@cd benchmarks && sh endpoints.sh && cd ..
+
+reset-data:
+	@docker exec -it exchange-radar-redis redis-cli FLUSHALL

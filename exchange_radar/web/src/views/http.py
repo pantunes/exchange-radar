@@ -70,38 +70,13 @@ class FeedBase(HTTPEndpoint):
         coin = request.path_params["coin"]
         message = await request.json()
         await self.manager.broadcast(message, coin)
-        category = str(self)
-        if coin in ("LTO",) or category in (
-            "FeedWhales",
-            "FeedDolphins",
-        ):
-            Feed(
-                type=category,
-                price=message["price"],
-                trade_time_ts=message["trade_time_ts"],
-                is_seller=message["is_seller"],
-                currency=message["currency"],
-                trade_symbol=message["trade_symbol"],
-                volume=message["volume"],
-                volume_trades=message["volume_trades"],
-                number_trades=message["number_trades"],
-                message=message["message"],
-            ).save().expire(settings.REDIS_EXPIRATION)
-            return JSONResponse({"r": True}, status_code=201)
+        is_saved = Feed.save_or_not(coin=coin, category=str(self), message=message)
+        return JSONResponse({"r": is_saved}, status_code=201 if is_saved else 200)
 
-        return JSONResponse({"r": False}, status_code=200)
-
-    async def get(self, request):  # noqa
+    async def get(self, request):
         coin = request.path_params["coin"]
-        response = [
-            item.dict()
-            for item in Feed.find(
-                (Feed.trade_symbol == coin) & (Feed.type == str(self))
-            )
-            .sort_by("-trade_time_ts")
-            .page(offset=0, limit=settings.REDIS_MAX_ROWS)
-        ]
-        return JSONResponse({"r": response[::-1]}, status_code=200)
+        rows = Feed.select_rows(coin=coin, category=str(self))
+        return JSONResponse({"r": rows}, status_code=200)
 
 
 class FeedWhales(FeedBase):

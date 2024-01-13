@@ -22,8 +22,6 @@ services:
       - redis
     ports:
       - "9000:9000"
-    volumes:
-      - ./exchange_radar/web/data:/app/exchange_radar/web/data
     command: /start
 
   rabbitmq:
