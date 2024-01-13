@@ -28,15 +28,11 @@ class ConnectionTradesManager(Singleton):
     async def connect(self, websocket: WebSocket, coin: str):
         await websocket.accept()
         self.active_connections[coin].append(websocket)
-        logger.info(
-            f"Num. active connections {self} {coin}: {len(self.active_connections[coin])}"
-        )
+        logger.info(f"Num. active connections {self} {coin}: {len(self.active_connections[coin])}")
 
     def disconnect(self, websocket: WebSocket, coin: str):
         self.active_connections[coin].remove(websocket)
-        logger.info(
-            f"Num. active connections {self} {coin}: {len(self.active_connections[coin])}"
-        )
+        logger.info(f"Num. active connections {self} {coin}: {len(self.active_connections[coin])}")
 
     async def broadcast(self, message: dict, coin: str):
         for connection in self.active_connections[coin]:

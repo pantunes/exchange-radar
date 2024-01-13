@@ -10,9 +10,7 @@ logger.setLevel(logging.INFO)
 
 @click.command()
 @click.argument("symbols", nargs=-1, required=True, type=str)
-@click.option(
-    "--exchange", "-e", required=True, type=click.Choice(list(EXCHANGES.keys()))
-)
+@click.option("--exchange", "-e", required=True, type=click.Choice(list(EXCHANGES.keys())))
 def main(symbols: tuple, exchange: str):
     task = EXCHANGES[exchange]()
 

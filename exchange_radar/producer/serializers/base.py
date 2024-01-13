@@ -40,9 +40,7 @@ class BaseSerializer(BaseModel):
     @computed_field
     def volume(self) -> float:
         today_date = datetime.today().date().strftime("%Y-%m-%d")
-        return redis.hincrbyfloat(
-            today_date, f"{self.trade_symbol}_VOLUME", float(self.quantity)
-        )
+        return redis.hincrbyfloat(today_date, f"{self.trade_symbol}_VOLUME", float(self.quantity))
 
     @computed_field
     def volume_trades(self) -> tuple[float, float]:
@@ -70,15 +68,11 @@ class BaseSerializer(BaseModel):
         today_date = datetime.today().date().strftime("%Y-%m-%d")
         pipeline = redis.pipeline()
         if self.is_seller is False:
-            pipeline.hincrby(
-                today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS", 1
-            )
+            pipeline.hincrby(today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS", 1)
             pipeline.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS")
         else:
             pipeline.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS")
-            pipeline.hincrby(
-                today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS", 1
-            )
+            pipeline.hincrby(today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS", 1)
         result = pipeline.execute()
         return int(result[0]), int(result[1])
 

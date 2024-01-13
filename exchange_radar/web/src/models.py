@@ -87,9 +87,7 @@ class Feed(JsonModel):
             cache_pks[f"{coin}-{category}"].append(obj.pk)
             logger.info(f"CACHE_PKS: {cache_pks}")
 
-            count = cls.find(
-                (cls.trade_symbol == coin) & (cls.type == category)
-            ).count()
+            count = cls.find((cls.trade_symbol == coin) & (cls.type == category)).count()
             logger.info(f"COUNT: {count}")
 
             if count > settings.REDIS_MAX_ROWS:
