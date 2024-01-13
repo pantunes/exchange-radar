@@ -9,7 +9,7 @@ from exchange_radar.producer.publisher import publish
 from exchange_radar.producer.serializers.kucoin import KucoinTradeSerializer
 from exchange_radar.producer.task import Task
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 ITER_SLEEP = 10.0

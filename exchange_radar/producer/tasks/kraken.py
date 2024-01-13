@@ -6,7 +6,7 @@ from exchange_radar.producer.serializers.kraken import KrakenTradeSerializer
 from exchange_radar.producer.task import Task
 from exchange_radar.producer.tasks.libs.kraken import WSKrakenClient, WSKrakenInMsg
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 ITER_SLEEP = 10.0
