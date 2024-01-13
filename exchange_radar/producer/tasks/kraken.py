@@ -41,7 +41,7 @@ class KrakenTradesTask(Task):
                                 trade_time=time,
                                 side=side,
                             )
-                            publish(data)  # noqa
+                            publish(data)
                     except Exception as error1:
                         logger.error(f"ERROR(1): {error1}")
 

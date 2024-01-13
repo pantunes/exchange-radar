@@ -25,7 +25,7 @@ class CoinbaseTradesTask(Task):
                     case _:
                         try:
                             data = CoinbaseTradeSerializer(**message)
-                            publish(data)  # noqa
+                            publish(data)
                         except Exception as _error:
                             logger.error(f"ERROR: {_error}")
 

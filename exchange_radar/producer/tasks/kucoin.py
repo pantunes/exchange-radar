@@ -40,7 +40,7 @@ class KucoinTradesTask(Task):
 
                 try:
                     data = KucoinTradeSerializer(**res["data"])
-                    publish(data)  # noqa
+                    publish(data)
                 except Exception as error1:
                     logger.error(f"ERROR(1): {error1}")
 

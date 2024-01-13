@@ -92,7 +92,8 @@ class FeedOctopuses(FeedBase):
 
 
 class Stats(HTTPEndpoint):
-    async def get(self, request):  # noqa
+    @staticmethod
+    async def get(request):
         trade_symbol = request.path_params["coin"]
         response = StatsSerializer(trade_symbol=trade_symbol)
         return JSONResponse(response.model_dump(), status_code=200)

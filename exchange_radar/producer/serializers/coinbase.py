@@ -13,7 +13,8 @@ class CoinbaseTradeSerializer(BaseSerializer):
     trade_time: datetime = Field(alias="time")
     side: str = Field(exclude=True)
 
-    @field_validator("symbol")
+    @field_validator("symbol")  # noqa
+    @classmethod
     def symbol_normalization(cls, v) -> str:
         return v.replace("-", "")
 
