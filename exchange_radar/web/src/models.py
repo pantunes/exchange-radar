@@ -95,8 +95,8 @@ class Feed(JsonModel):
 
             if count > settings.REDIS_MAX_ROWS:
                 obj2del = cache_pks[f"{coin}-{category}"].pop(0)
-                status = cls.delete(obj2del)
-                logger.info(f"DELETE {coin}-{category}: {obj2del} RETURN {status}")
+                is_deleted = cls.delete(obj2del)
+                logger.info(f"DELETE {coin}-{category}: {obj2del} RETURN {is_deleted}")
 
             return True
 
