@@ -15,7 +15,6 @@ from exchange_radar.producer.settings.queues import QUEUES
 from exchange_radar.producer.utils import get_ranking
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO if settings.DEBUG else logging.WARNING)
 
 logging.getLogger("pika").propagate = False
 

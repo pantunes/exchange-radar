@@ -17,10 +17,6 @@ from pika.spec import Basic
 
 from exchange_radar.consumer.settings import base as settings
 
-logging.basicConfig(
-    format="%(asctime)s - %(message)s",
-    level=logging.INFO if settings.DEBUG else logging.WARNING,
-)
 logger = logging.getLogger(__name__)
 
 
