@@ -1,16 +1,16 @@
 import logging
-from collections import defaultdict
 
 from redis_om import Field, JsonModel, Migrator, get_redis_connection
 
 from exchange_radar.web.src.settings import base as settings
+from exchange_radar.web.src.types import ERdefaultdict
 
 logger = logging.getLogger(__name__)
 
 
 redis = get_redis_connection()
 
-cache_pks = defaultdict(list)
+cache_pks = ERdefaultdict(list)
 
 
 class Feed(JsonModel):
@@ -57,6 +57,13 @@ class Feed(JsonModel):
     message: str
 
     @classmethod
+    def is_coin_selected(cls, coin: str, category: str) -> bool:
+        return coin in ("LTO",) or category in (
+            "FeedWhales",
+            "FeedDolphins",
+        )
+
+    @classmethod
     def select_rows(cls, coin: str, category: str) -> list[dict[str]]:
         return [
             item.dict()
@@ -67,10 +74,7 @@ class Feed(JsonModel):
 
     @classmethod
     def save_or_not(cls, coin: str, category: str, message: dict) -> bool:
-        if coin in ("LTO",) or category in (
-            "FeedWhales",
-            "FeedDolphins",
-        ):
+        if cls.is_coin_selected(coin, category):
             obj = cls(
                 type=category,
                 price=message["price"],
@@ -84,17 +88,16 @@ class Feed(JsonModel):
                 message=message["message"],
             ).save()
 
-            cache_pks[f"{coin}-{category}"].append(obj.pk)
+            cache_pks.__get__(coin=coin, category=category).append(obj.pk)
             logger.info(f"CACHE_PKS: {cache_pks}")
 
             count = cls.find((cls.trade_symbol == coin) & (cls.type == category)).count()
             logger.info(f"COUNT: {count}")
 
             if count > settings.REDIS_MAX_ROWS:
-                key = f"{coin}-{category}"
-                obj2del_pk = cache_pks[key].pop(0)
+                obj2del_pk = cache_pks.__get__(coin=coin, category=category).pop(0)
                 is_deleted = cls.delete(obj2del_pk)
-                logger.info(f"DELETE {key}: {obj2del_pk} RETURN {is_deleted}")
+                logger.info(f"DELETE {obj2del_pk} RETURN {is_deleted}")
 
             return True
 
