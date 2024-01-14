@@ -36,8 +36,8 @@ jobs:
       - name: Build the Stack
         run: docker-compose -f local.yml build tests
 
-      - name: Run Django Tests
-        run: docker-compose -f local.yml run tests coverage run -m pytest -v --tb=short -p no:warnings
+      - name: Run Tests cases
+        run: docker-compose -f local.yml run tests coverage run -m pytest
 
       - name: Full Code Test Coverage Check (min. 95%)
         run: docker-compose -f local.yml run tests coverage report --fail-under=95

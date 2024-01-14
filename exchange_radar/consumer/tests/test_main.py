@@ -1,12 +1,12 @@
 import logging
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from requests.exceptions import HTTPError
 
 from exchange_radar.consumer.main import Callback
 
 
-@patch("exchange_radar.consumer.main.requests.post", return_value=Mock())
+@patch("exchange_radar.consumer.main.requests.post")
 def tests_callback(mock_post, caplog, ch, method, properties):
     body = b'{"trade_symbol": "BTCUSDT"}'
     caplog.set_level(logging.INFO)
