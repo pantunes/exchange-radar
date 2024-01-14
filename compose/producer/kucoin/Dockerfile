@@ -36,6 +36,10 @@ FROM python as python-run-stage
 COPY --from=python-build-stage $POETRY_HOME $POETRY_HOME
 COPY --from=python-build-stage $PYSETUP_PATH $PYSETUP_PATH
 
+COPY ./compose/producer/entrypoint /entrypoint
+RUN sed -i 's/\r$//g' /entrypoint
+RUN chmod +x /entrypoint
+
 COPY ./compose/producer/kucoin/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
@@ -45,3 +49,5 @@ WORKDIR $PYSETUP_PATH
 COPY . .
 
 RUN poetry install
+
+ENTRYPOINT ["/entrypoint"]
