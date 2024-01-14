@@ -19,7 +19,6 @@ from exchange_radar.consumer.settings import base as settings
 
 logger = logging.getLogger(__name__)
 
-
 logging.getLogger("pika").propagate = False
 
 
@@ -64,7 +63,7 @@ class Callback:
         logger.info("CONSUMER - end")
 
 
-def setup_channel(channel: BlockingChannel, queue_name: str, callback: Callable):
+def setup_channel(channel: BlockingChannel, queue_name: str, callback: Callable):  # pragma: no cover
     channel.queue_declare(queue=queue_name, durable=True)
     channel.queue_bind(queue=queue_name, exchange=settings.RABBITMQ_EXCHANGE)
     channel.basic_qos(prefetch_count=1)
@@ -72,7 +71,7 @@ def setup_channel(channel: BlockingChannel, queue_name: str, callback: Callable)
 
 
 @click.command()
-def main():
+def main():  # pragma: no cover
     credentials = pika.PlainCredentials(settings.RABBITMQ_DEFAULT_USER, settings.RABBITMQ_DEFAULT_PASS)
 
     parameters = pika.ConnectionParameters(

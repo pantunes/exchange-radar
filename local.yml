@@ -133,7 +133,7 @@ services:
     container_name: exchange-radar-tests
     env_file:
       - ./.envs/.local/.rabbitmq
-      - ./.envs/.local/.producer
+      - ./.envs/.local/.consumer
     volumes:
       - .:/app
     profiles:

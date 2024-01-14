@@ -1,7 +1,7 @@
 from starlette.routing import Mount, Route, WebSocketRoute
 from starlette.staticfiles import StaticFiles
 
-from exchange_radar.web.src.views.http import (
+from exchange_radar.web.src.endpoints.http import (
     FeedBase,
     FeedDolphins,
     FeedOctopuses,
@@ -12,7 +12,7 @@ from exchange_radar.web.src.views.http import (
     IndexWhales,
     Stats,
 )
-from exchange_radar.web.src.views.websockets import (
+from exchange_radar.web.src.endpoints.websockets import (
     trades,
     trades_dolphins,
     trades_octopuses,
