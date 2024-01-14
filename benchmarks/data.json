@@ -3,6 +3,7 @@
   "price": "100000",
   "quantity": "10.123",
   "trade_time": "2024-07-23 12:23:40",
+  "trade_time_ts":1721730220,
   "total": "1012300",
   "currency": "USD",
   "trade_symbol": "BTC",

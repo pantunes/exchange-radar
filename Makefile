@@ -28,7 +28,7 @@ coverage-95:
 	@docker-compose -f local.yml run --rm tests coverage report --fail-under=95
 
 benchmark:
-	@cd benchmarks && sh endpoints.sh && cd ..
+	@sh benchmarks/endpoints.sh benchmarks/data.json
 
 reset-data:
 	@docker exec -it exchange-radar-redis redis-cli FLUSHALL
