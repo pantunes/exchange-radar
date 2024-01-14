@@ -23,6 +23,16 @@ Scale the consumer service horizontally with 2 instances:
 
     $ docker-compose -f production.yml up --build --scale consumer=2
 
+### Run Test Cases & Code Coverage
+
+#### Tests
+
+    $ make tests
+
+#### Code Coverage
+
+    $ make coverage
+
 ### Accessing data
 Explore real-time trade information effortlessly:
 - Visit http://127.0.0.1:9000/BTC to access real-time BTC trades.
