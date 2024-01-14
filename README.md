@@ -33,6 +33,10 @@ Scale the consumer service horizontally with 2 instances:
 
     $ make coverage
 
+### Run Benchmarks
+
+    $ make benchmark
+
 ### Accessing data
 Explore real-time trade information effortlessly:
 - Visit http://127.0.0.1:9000/BTC to access real-time BTC trades.
