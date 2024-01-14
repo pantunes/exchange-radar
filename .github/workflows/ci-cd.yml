@@ -3,6 +3,11 @@
 
 name: CI/CD
 
+# Enable Buildkit and let compose use it to speed up image building
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
 on:
   push:
     branches: [ "main" ]
@@ -13,22 +18,29 @@ permissions:
   contents: read
 
 jobs:
-  build:
-
+  linter:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.11"
+      - name: Run pre-commit
+        uses: pre-commit/action@v2.0.3
 
-    - name: Pre-commit validations
-      run: |
-        make pre-commit-verify
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
 
-    - name: Run Test cases
-      run: |
-        make tests
+      - name: Build the Stack
+        run: docker-compose -f local.yml build tests
+
+      - name: Run Django Tests
+        run: docker-compose -f local.yml run tests coverage run -m pytest -v --tb=short -p no:warnings
+
+      - name: Full Code Test Coverage Check (min. 95%)
+        run: docker-compose -f local.yml run tests coverage report --fail-under=95
+
+      - name: Tear down the Stack
+        run:  docker-compose -f local.yml down
