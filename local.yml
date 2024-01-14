@@ -56,6 +56,7 @@ services:
     depends_on:
       - rabbitmq
       - redis
+      - web
     volumes:
       - ./exchange_radar/producer:/app/exchange_radar/producer
     command: /start
@@ -73,6 +74,7 @@ services:
     depends_on:
       - rabbitmq
       - redis
+      - web
     volumes:
       - ./exchange_radar/producer:/app/exchange_radar/producer
     command: /start
@@ -90,6 +92,7 @@ services:
     depends_on:
       - rabbitmq
       - redis
+      - web
     volumes:
       - ./exchange_radar/producer:/app/exchange_radar/producer
     command: /start
@@ -107,6 +110,7 @@ services:
     depends_on:
       - rabbitmq
       - redis
+      - web
     volumes:
       - ./exchange_radar/producer:/app/exchange_radar/producer
     command: /start
@@ -120,7 +124,10 @@ services:
       - ./.envs/.local/.rabbitmq
       - ./.envs/.local/.consumer
     depends_on:
-      - rabbitmq
+      - producer-binance
+      - producer-kucoin
+      - producer-coinbase
+      - producer-kraken
     volumes:
       - ./exchange_radar/consumer:/app/exchange_radar/consumer
     command: /start
