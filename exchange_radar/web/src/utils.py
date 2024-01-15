@@ -11,7 +11,9 @@ def get_exchanges(coin: str) -> str:
     if coin in settings.KRAKEN:
         exchanges.append("<span class='kraken'>Kraken</span>")
     if coin in settings.KUCOIN:
-        exchanges.append("<span class='kucoin'>Kucoin</span>")
+        exchanges.append("<span class='kucoin'>KuCoin</span>")
+    if coin in settings.OKX:
+        exchanges.append("<span class='okx'>OKX</span>")
 
     if len(exchanges) == 0:
         raise ValueError(f"No exchanges found for the coin {coin}")

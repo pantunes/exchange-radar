@@ -16,7 +16,7 @@ logger.setLevel(logging.ERROR)
 ITER_SLEEP = 10.0
 
 
-class KucoinTradesTask(Task):
+class KuCoinTradesTask(Task):
     def __init__(self):
         super().__init__()
         self.num_events = 0
