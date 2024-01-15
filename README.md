@@ -11,7 +11,8 @@ Exchange Radar currently supports the following top 4 exchanges by trading volum
 - Binance
 - Coinbase
 - Kraken
-- Kucoin
+- KuCoin
+- OKX
 
 ### Build & Run
 Get started effortlessly:

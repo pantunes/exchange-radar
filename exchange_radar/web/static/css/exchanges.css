@@ -17,3 +17,8 @@
     background: var(--kraken-background-color);
     color: var(--kraken-text-color);
 }
+
+.okx {
+    background: var(--okx-background-color);
+    color: var(--okx-text-color);
+}

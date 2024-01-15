@@ -115,6 +115,24 @@ services:
       - ./exchange_radar/producer:/app/exchange_radar/producer
     command: /start
 
+  producer-okx:
+    build:
+      context: .
+      dockerfile: compose/producer/okx/Dockerfile
+    image: exchange_radar_producer_okx
+    container_name: exchange-radar-producer-okx
+    env_file:
+      - ./.envs/.local/.rabbitmq
+      - ./.envs/.local/.producer
+      - ./.envs/.local/.redis
+    depends_on:
+      - rabbitmq
+      - redis
+      - web
+    volumes:
+      - ./exchange_radar/producer:/app/exchange_radar/producer
+    command: /start
+
   consumer:
     build:
       context: .

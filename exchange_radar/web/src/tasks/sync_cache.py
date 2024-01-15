@@ -1,7 +1,7 @@
 import logging
 
 from exchange_radar.web.src.models import Feed, cache_pks
-from exchange_radar.web.src.settings.base import BINANCE, COINBASE, KRAKEN, KUCOIN
+from exchange_radar.web.src.settings.base import BINANCE, COINBASE, KRAKEN, KUCOIN, OKX
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -12,7 +12,7 @@ def sync_cache():
 
     cache_pks.clear()
 
-    coins = list(set(BINANCE + COINBASE + KRAKEN + KUCOIN))
+    coins = list(set(BINANCE + COINBASE + KRAKEN + KUCOIN + OKX))
 
     for category in (
         "FeedBase",

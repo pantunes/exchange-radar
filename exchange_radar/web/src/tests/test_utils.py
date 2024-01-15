@@ -9,14 +9,16 @@ from exchange_radar.web.src.utils import get_exchanges
         (
             "BTC",
             "<span class='binance'>Binance</span>, <span class='coinbase'>Coinbase</span>, "
-            "<span class='kraken'>Kraken</span>, <span class='kucoin'>Kucoin</span>",
+            "<span class='kraken'>Kraken</span>, <span class='kucoin'>KuCoin</span>, "
+            "<span class='okx'>OKX</span>",
         ),
         (
             "ETH",
             "<span class='binance'>Binance</span>, <span class='coinbase'>Coinbase</span>, "
-            "<span class='kraken'>Kraken</span>, <span class='kucoin'>Kucoin</span>",
+            "<span class='kraken'>Kraken</span>, <span class='kucoin'>KuCoin</span>, "
+            "<span class='okx'>OKX</span>",
         ),
-        ("LTO", "<span class='binance'>Binance</span>, <span class='kucoin'>Kucoin</span>"),
+        ("LTO", "<span class='binance'>Binance</span>, <span class='kucoin'>KuCoin</span>"),
     ],
 )
 def test_get_exchanges(coin, expected):

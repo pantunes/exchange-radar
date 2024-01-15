@@ -30,4 +30,4 @@ class KucoinTradeSerializer(BaseSerializer):
 
     @computed_field
     def exchange(self) -> str:
-        return "Kucoin"
+        return "KuCoin"
