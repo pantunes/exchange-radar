@@ -1,4 +1,5 @@
 import datetime
+import json
 from decimal import Decimal
 from unittest.mock import MagicMock, patch
 
@@ -6,6 +7,7 @@ from exchange_radar.producer.serializers.binance import BinanceTradeSerializer
 from exchange_radar.producer.serializers.coinbase import CoinbaseTradeSerializer
 from exchange_radar.producer.serializers.kraken import KrakenTradeSerializer
 from exchange_radar.producer.serializers.kucoin import KucoinTradeSerializer
+from exchange_radar.producer.serializers.okx import OkxTradeSerializer
 
 
 @patch("exchange_radar.producer.serializers.base.redis")
@@ -90,16 +92,16 @@ def test_serializer_kucoin(mock_redis):
         "total": Decimal("0.0000131344530"),
         "currency": "BTC",
         "trade_symbol": "LTO",
-        "message": "2023-05-03 10:10:39 | <span class='kucoin'>Kucoin  </span> |     0.00000352  BTC |"
+        "message": "2023-05-03 10:10:39 | <span class='kucoin'>KuCoin  </span> |     0.00000352  BTC |"
         "             3.73350000 LTO |        0.00001313  BTC",
-        "message_with_keys": "2023-05-03 10:10:39 | Kucoin   |      PRICE: 0.00000352 BTC |"
+        "message_with_keys": "2023-05-03 10:10:39 | KuCoin   |      PRICE: 0.00000352 BTC |"
         "             QTY: 3.73350000 LTO |         TOTAL: 0.00001313 BTC",
         "number_trades": (
             1,
             100,
         ),
         "is_seller": True,
-        "exchange": "Kucoin",
+        "exchange": "KuCoin",
         "volume": 3.7335,
         "volume_trades": (
             1.0,
@@ -204,4 +206,44 @@ def test_serializer_kraken(mock_redis):
             1.0,
             100.0,
         ),
+    }
+
+
+@patch("exchange_radar.producer.serializers.base.redis")
+def test_serializer_okx(mock_redis):
+    mock_redis.hincrbyfloat.return_value = 3.7335
+    mock_redis.pipeline().execute = MagicMock(return_value=[1.0, 100.0])
+
+    msg = (
+        '{"arg": {"channel": "trades-all", "instId": "BTC-USDT"}, '
+        '"data": [{"instId": "BTC-USDT", "tradeId": "474908816", "px": "42963.9", '
+        '"sz": "0.00021505", "side": "sell", "ts": "1705350981085"}]}'
+    )
+
+    payload = OkxTradeSerializer(**json.loads(msg)["data"][0])
+
+    assert payload.model_dump() == {
+        "symbol": "BTCUSDT",
+        "price": Decimal("42963.9"),
+        "quantity": Decimal("0.00021505"),
+        "trade_time": datetime.datetime(2024, 1, 15, 20, 36, 21),
+        "total": Decimal("9.239386695"),
+        "currency": "USDT",
+        "trade_symbol": "BTC",
+        "volume": 3.7335,
+        "volume_trades": (
+            1.0,
+            100.0,
+        ),
+        "number_trades": (
+            1,
+            100,
+        ),
+        "trade_time_ts": 1705350981,
+        "message": "2024-01-15 20:36:21 | <span class='okx'>OKX     </span> | 42963.90000000 USDT |"
+        "             0.00021505 BTC |        9.23938670 USDT",
+        "message_with_keys": "2024-01-15 20:36:21 | OKX      | PRICE: 42963.90000000 USDT |"
+        "             QTY: 0.00021505 BTC |        TOTAL: 9.23938670 USDT",
+        "exchange": "OKX",
+        "is_seller": True,
     }
