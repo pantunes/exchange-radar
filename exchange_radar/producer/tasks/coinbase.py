@@ -5,7 +5,7 @@ from copra.websocket import Channel, Client
 
 from exchange_radar.producer.publisher import publish
 from exchange_radar.producer.serializers.coinbase import CoinbaseTradeSerializer
-from exchange_radar.producer.task import Task
+from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 

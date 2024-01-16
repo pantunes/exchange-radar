@@ -127,4 +127,5 @@ services:
       - ./.envs/.production/.consumer
     depends_on:
       - rabbitmq
+      - web
     command: /start

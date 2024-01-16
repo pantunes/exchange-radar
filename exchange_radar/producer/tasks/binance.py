@@ -5,7 +5,7 @@ from binance import AsyncClient, BinanceSocketManager, exceptions
 
 from exchange_radar.producer.publisher import publish
 from exchange_radar.producer.serializers.binance import BinanceTradeSerializer
-from exchange_radar.producer.task import Task
+from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 

@@ -3,7 +3,7 @@ import logging
 
 from exchange_radar.producer.publisher import publish
 from exchange_radar.producer.serializers.kraken import KrakenTradeSerializer
-from exchange_radar.producer.task import Task
+from exchange_radar.producer.tasks.base import Task
 from exchange_radar.producer.tasks.libs.kraken import WSKrakenClient, WSKrakenInMsg
 
 logger = logging.getLogger(__name__)

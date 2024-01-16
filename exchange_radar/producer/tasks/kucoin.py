@@ -7,7 +7,7 @@ from kucoin.client import Client
 
 from exchange_radar.producer.publisher import publish
 from exchange_radar.producer.serializers.kucoin import KucoinTradeSerializer
-from exchange_radar.producer.task import Task
+from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
