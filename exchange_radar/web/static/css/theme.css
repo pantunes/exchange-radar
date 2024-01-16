@@ -14,7 +14,7 @@
     --coinbase-text-color: white;
     --kraken-background-color: #5442d0;
     --kraken-text-color: white;
-    --okx-background-color: black;
+    --okx-background-color: #36454F;
     --okx-text-color: white;
 }
 
@@ -34,6 +34,6 @@
     --coinbase-text-color: #b8b8b8;
     --kraken-background-color: #31267a;
     --kraken-text-color: #b8b8b8;
-    --okx-background-color: #212a2e;
+    --okx-background-color: #36454F;
     --okx-text-color: #b8b8b8;
 }
