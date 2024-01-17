@@ -23,4 +23,6 @@ REDIS_HOST = env.str("REDIS_HOST", default=None)
 REDIS_PORT = env.int("REDIS_PORT", default=None)
 REDIS_DB = env.int("REDIS_DB", default=None)
 
+REDIS_EXPIRATION = env.int("REDIS_EXPIRATION")  # in days
+
 CURRENCIES = ["USDT", "BTC", "ETH", "USD"]

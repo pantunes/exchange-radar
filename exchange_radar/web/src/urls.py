@@ -6,6 +6,7 @@ from exchange_radar.web.src.endpoints.http import (
     FeedDolphins,
     FeedOctopuses,
     FeedWhales,
+    History,
     IndexBase,
     IndexDolphins,
     IndexOctopuses,
@@ -26,7 +27,7 @@ routes = [
         StaticFiles(directory="./exchange_radar/web/static"),
         name="static",
     ),
-    # general
+    # main
     Route("/", endpoint=IndexBase),
     Route("/{coin:str}", endpoint=IndexBase),
     Route("/feed/{coin:str}", endpoint=FeedBase),
@@ -45,4 +46,6 @@ routes = [
     WebSocketRoute("/trades/{coin:str}/octopuses", endpoint=trades_octopuses),
     # others
     Route("/stats/{coin:str}", endpoint=Stats),
+    # history
+    Route("/history/{coin:str}", endpoint=History),
 ]

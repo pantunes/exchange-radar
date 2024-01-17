@@ -3,14 +3,12 @@ from decimal import Decimal, localcontext
 from functools import cached_property
 
 from pydantic import BaseModel, computed_field, field_validator
-from redis_om import get_redis_connection
 
+from exchange_radar.producer.models import RedisMixin
 from exchange_radar.producer.settings.base import CURRENCIES
 
-redis = get_redis_connection()
 
-
-class BaseSerializer(BaseModel):
+class BaseSerializer(BaseModel, RedisMixin):
     @field_validator("trade_time", check_fields=False)  # noqa
     @classmethod
     def trade_time_normalization(cls, v) -> str:
@@ -39,42 +37,15 @@ class BaseSerializer(BaseModel):
 
     @computed_field
     def volume(self) -> float:
-        today_date = datetime.today().date().strftime("%Y-%m-%d")
-        return redis.hincrbyfloat(today_date, f"{self.trade_symbol}_VOLUME", float(self.quantity))
+        return super().volume()
 
     @computed_field
     def volume_trades(self) -> tuple[float, float]:
-        today_date = datetime.today().date().strftime("%Y-%m-%d")
-        pipeline = redis.pipeline()
-        if self.is_seller is False:
-            pipeline.hincrbyfloat(
-                today_date,
-                f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS",
-                float(self.quantity),
-            )
-            pipeline.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS")
-        else:
-            pipeline.hget(today_date, f"{self.trade_symbol}_VOLUME_TRADES_BUY_ORDERS")
-            pipeline.hincrbyfloat(
-                today_date,
-                f"{self.trade_symbol}_VOLUME_TRADES_SELL_ORDERS",
-                float(self.quantity),
-            )
-        result = pipeline.execute()
-        return float(result[0]), float(result[1])
+        return super().volume_trades()
 
     @computed_field
     def number_trades(self) -> tuple[int, int]:
-        today_date = datetime.today().date().strftime("%Y-%m-%d")
-        pipeline = redis.pipeline()
-        if self.is_seller is False:
-            pipeline.hincrby(today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS", 1)
-            pipeline.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS")
-        else:
-            pipeline.hget(today_date, f"{self.trade_symbol}_NUMBER_TRADES_BUY_ORDERS")
-            pipeline.hincrby(today_date, f"{self.trade_symbol}_NUMBER_TRADES_SELL_ORDERS", 1)
-        result = pipeline.execute()
-        return int(result[0]), int(result[1])
+        return super().number_trades()
 
     @field_validator("trade_time", mode="after", check_fields=False)  # noqa
     @classmethod

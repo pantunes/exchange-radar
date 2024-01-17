@@ -9,7 +9,8 @@ from exchange_radar.web.src.manager import (
     ConnectionTradesWhalesManager,
 )
 from exchange_radar.web.src.models import Feed
-from exchange_radar.web.src.serializers.stats import StatsSerializer
+from exchange_radar.web.src.models import History as HistoryModel
+from exchange_radar.web.src.models import Stats as StatsModel
 from exchange_radar.web.src.settings import base as settings
 from exchange_radar.web.src.utils import get_exchanges
 
@@ -26,7 +27,7 @@ class IndexBase(HTTPEndpoint):
     http_trades_url = settings.TRADES_HOST_URL
     http_stats_url = settings.TRADES_STATS_URL
     websocket_url = settings.TRADES_SOCKET_URL
-    template_name = "index.html"
+    template_name = "index.j2"
 
     def get(self, request):
         coin = request.path_params.get("coin", "BTC")
@@ -45,19 +46,19 @@ class IndexBase(HTTPEndpoint):
 class IndexWhales(IndexBase):
     http_trades_url = settings.TRADES_WHALES_HOST_URL
     websocket_url = settings.TRADES_WHALES_SOCKET_URL
-    template_name = "index-whales.html"
+    template_name = "index-whales.j2"
 
 
 class IndexDolphins(IndexBase):
     http_trades_url = settings.TRADES_DOLPHINS_HOST_URL
     websocket_url = settings.TRADES_DOLPHINS_SOCKET_URL
-    template_name = "index-dolphins.html"
+    template_name = "index-dolphins.j2"
 
 
 class IndexOctopuses(IndexBase):
     http_trades_url = settings.TRADES_OCTOPUSES_HOST_URL
     websocket_url = settings.TRADES_OCTOPUSES_SOCKET_URL
-    template_name = "index-octopuses.html"
+    template_name = "index-octopuses.j2"
 
 
 class FeedBase(HTTPEndpoint):
@@ -94,6 +95,18 @@ class FeedOctopuses(FeedBase):
 class Stats(HTTPEndpoint):
     @staticmethod
     async def get(request):
-        trade_symbol = request.path_params["coin"]
-        response = StatsSerializer(trade_symbol=trade_symbol)
-        return JSONResponse(response.model_dump(), status_code=200)
+        coin = request.path_params["coin"]
+        data = StatsModel(trade_symbol=coin)
+        return JSONResponse(data.model_dump(), status_code=200)
+
+
+class History(HTTPEndpoint):
+    @staticmethod
+    async def get(request):
+        coin = request.path_params["coin"]
+        data = HistoryModel(trade_symbol=coin)
+        context = {
+            "request": request,
+            "rows": data.model_dump()["rows"],
+        }
+        return templates.TemplateResponse("history.j2", context=context)

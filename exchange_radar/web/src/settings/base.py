@@ -9,6 +9,7 @@ REDIS_PORT = env.int("REDIS_PORT", default=None)
 REDIS_DB = env.int("REDIS_DB", default=None)
 
 REDIS_MAX_ROWS = env.int("REDIS_MAX_ROWS")
+REDIS_EXPIRATION = env.int("REDIS_EXPIRATION")  # in days
 
 TRADES_SOCKET_URL = env.str("TRADES_SOCKET_URL")
 TRADES_WHALES_SOCKET_URL = env.str("TRADES_WHALES_SOCKET_URL")
