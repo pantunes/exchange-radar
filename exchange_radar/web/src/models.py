@@ -1,5 +1,7 @@
 import logging
+from datetime import datetime, timedelta
 
+from pydantic import BaseModel, computed_field
 from redis_om import Field, JsonModel, Migrator, get_redis_connection
 
 from exchange_radar.web.src.settings import base as settings
@@ -105,3 +107,82 @@ class Feed(JsonModel):
 
 
 Migrator().run()
+
+
+class Stats(BaseModel):
+    trade_symbol: str
+    name: str = datetime.today().date().strftime("%Y-%m-%d")
+
+    @computed_field
+    def volume(self) -> float | None:
+        try:
+            return float(redis.hget(self.name, f"{self.trade_symbol}_VOLUME"))
+        except TypeError:
+            pass
+
+    @computed_field
+    def volume_trades(self) -> tuple[float, float] | None:
+        pipe = redis.pipeline()
+        pipe.hget(self.name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")
+        pipe.hget(self.name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")
+        result = pipe.execute()
+        try:
+            return float(result[0]), float(result[1])
+        except TypeError:
+            pass
+
+    @computed_field
+    def number_trades(self) -> tuple[int, int] | None:
+        pipe = redis.pipeline()
+        pipe.hget(self.name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS")
+        pipe.hget(self.name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")
+        result = pipe.execute()
+        try:
+            return int(result[0]), int(result[1])
+        except TypeError:
+            pass
+
+
+class History(BaseModel):
+    trade_symbol: str
+    name: str = datetime.today().date().strftime("%Y-%m-%d")
+
+    @computed_field
+    def rows(self) -> list[str]:
+        current_date = datetime.strptime(self.name, "%Y-%m-%d").date()
+        cached_days = [
+            (current_date - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(settings.REDIS_EXPIRATION)
+        ]
+
+        data = []
+        for name in cached_days:
+            with redis.pipeline() as pipe:
+                pipe.hget(name, f"{self.trade_symbol}_VOLUME")
+                pipe.hget(name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")
+                pipe.hget(name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")
+                pipe.hget(name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS")
+                pipe.hget(name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")
+                result = pipe.execute()
+            try:
+                volume, volume_buy_orders, volume_sell_orders, number_buy_orders, number_sell_orders = (
+                    float(result[0]),
+                    float(result[1]),
+                    float(result[2]),
+                    int(result[3]),
+                    int(result[4]),
+                )
+            except TypeError:
+                break
+            else:
+                row = (
+                    f"{self.name} | "
+                    f"{self.trade_symbol.ljust(4)} | "
+                    f"{'{:.8f} {}'.format(volume_buy_orders, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
+                    f"{'{:.8f} {}'.format(volume_sell_orders, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
+                    f"{'{:.8f} {}'.format(volume, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
+                    f"{'{}'.format(number_buy_orders).rjust(14)} | "
+                    f"{'{}'.format(number_sell_orders).rjust(14)}"
+                )
+                data.append(row)
+
+        return data
