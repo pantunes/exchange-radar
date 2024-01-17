@@ -150,9 +150,9 @@ class History(BaseModel):
     @computed_field
     def rows(self) -> list[str]:
         current_date = datetime.strptime(self.name, "%Y-%m-%d").date()
-        cached_days = [
+        cached_days = (
             (current_date - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(settings.REDIS_EXPIRATION)
-        ]
+        )
 
         data = []
         for name in cached_days:
