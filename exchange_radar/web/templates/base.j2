@@ -2,29 +2,8 @@
 <html lang="en">
 
     <head>
-        <title>{% block title %}{% endblock %}</title>
-        <meta charset="utf-8"/>
-        <!-- Favicon -->
-        <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='favicon/favicon.ico') }}">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='favicon/favicon-32x32.png') }}">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='favicon/favicon-16x16.png') }}">
-        <!--Open Graph Protocol -->
-        <meta name="title" property="og:title" content="Exchange Radar"/>
-        <meta property="og:type" content="website">
-        <meta name="image" property="og:image" content="{{ url_for('static', path='favicon/favicon-180x180.png') }}"/>
-        <meta name="description" property="og:description" content="Get real-time trading data from different Crypto Exchanges and configure hooks, trends, notifications, messages based on custom rules."/>
-        <meta property="og:url" content="{{ http_trades_url }}"/>
-        <!-- CSS -->
-        <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}" type="text/css"/>
-        <link rel="stylesheet" href="{{ url_for('static', path='css/theme.css') }}" type="text/css"/>
-        <link rel="stylesheet" href="{{ url_for('static', path='css/custom.css') }}" type="text/css"/>
-        <link rel="stylesheet" href="{{ url_for('static', path='css/exchanges.css') }}" type="text/css"/>
-        <link rel="stylesheet" href="{{ url_for('static', path='css/toggle-switch.css') }}" type="text/css"/>
-        <!-- Fonts -->
-        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" type="text/css"/>
-        <!-- JS -->
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/web-socket-js/1.0.0/web_socket.min.js"></script>
+{% include 'snippets/headers.j2' %}
+{% include 'snippets/switch.j2' %}
 
         <script>
             function createElement(obj) {
@@ -84,8 +63,8 @@
             }
 
             function setNumberTrades(obj) {
-                $(`#${obj.trade_symbol}_number_trades_buy_orders`).text(obj.number_trades[0]);
-                $(`#${obj.trade_symbol}_number_trades_sell_orders`).text(obj.number_trades[1]);
+                $(`#${obj.trade_symbol}_number_trades_buy_orders`).text(obj.number_trades[0].toLocaleString('en-US'));
+                $(`#${obj.trade_symbol}_number_trades_sell_orders`).text(obj.number_trades[1].toLocaleString('en-US'));
             }
 
             function retrieveData() {
@@ -150,32 +129,6 @@
                 formatPage();
             });
         </script>
-        <script>
-            $(document).ready(function () {
-                const toggleSwitch = document.querySelector('.switch input[type="checkbox"]');
-                const currentTheme = localStorage.getItem('theme') || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-
-                if (currentTheme) {
-                    document.documentElement.setAttribute('data-theme', currentTheme);
-
-                    if (currentTheme === 'dark') {
-                        toggleSwitch.checked = true;
-                    }
-                }
-
-                function switchTheme(e) {
-                    if (e.target.checked) {
-                        document.documentElement.setAttribute('data-theme', 'dark');
-                        localStorage.setItem('theme', 'dark');
-                    } else {
-                        document.documentElement.setAttribute('data-theme', 'light');
-                        localStorage.setItem('theme', 'light');
-                    }
-                }
-
-                toggleSwitch.addEventListener('change', switchTheme, false);
-            });
-        </script>
 
         {% block javascript %}{% endblock %}
     </head>
@@ -203,7 +156,7 @@
 
 <b>Bitcoin:</b>
 
-<a href="/BTC">BTC all trades</a>
+<a href="/BTC">BTC all trades</a> | <a href="/history/BTC">history</a>
 {%- if coin == "BTC" %}
   <i>Daily Volume: <span id="BTC_volume">-</span> BTC @ <span id="BTC_volume_in_currency">-</span></i>
   <i>Daily Trades Volume: Buys <span id="BTC_volume_trades_buy_orders">-</span> BTC, Sells <span id="BTC_volume_trades_sell_orders">-</span> BTC</i>
@@ -215,7 +168,7 @@
 
 <b>Ethereum:</b>
 
-<a href="/ETH">ETH all trades</a>
+<a href="/ETH">ETH all trades</a> | <a href="/history/ETH">history</a>
 {%- if coin == "ETH" %}
   <i>Daily Volume: <span id="ETH_volume">-</span> ETH @ <span id="ETH_volume_in_currency">-</span></i>
   <i>Daily Trades Volume: Buys <span id="ETH_volume_trades_buy_orders">-</span> ETH, Sells <span id="ETH_volume_trades_sell_orders">-</span> ETH</i>
@@ -227,7 +180,7 @@
 
 <b>Chainlink:</b>
 
-<a href="/LINK">LINK all trades</a>
+<a href="/LINK">LINK all trades</a> | <a href="/history/LINK">history</a>
 {%- if coin == "LINK" %}
   <i>Daily Volume: <span id="LINK_volume">-</span> LINK @ <span id="LINK_volume_in_currency">-</span></i>
   <i>Daily Trades Volume: Buys <span id="LINK_volume_trades_buy_orders">-</span> LINK, Sells <span id="LINK_volume_trades_sell_orders">-</span> LINK</i>
@@ -239,7 +192,7 @@
 
 <b>Fantom:</b>
 
-<a href="/FTM">FTM all trades</a>
+<a href="/FTM">FTM all trades</a> | <a href="/history/FTM">history</a>
 {%- if coin == "FTM" %}
   <i>Daily Volume: <span id="FTM_volume">-</span> FTM @ <span id="FTM_volume_in_currency">-</span></i>
   <i>Daily Trades Volume: Buys <span id="FTM_volume_trades_buy_orders">-</span> FTM, Sells <span id="FTM_volume_trades_sell_orders">-</span> FTM</i>
@@ -251,7 +204,7 @@
 
 <b>Pepe:</b>
 
-<a href="/PEPE">PEPE all trades</a>
+<a href="/PEPE">PEPE all trades</a> | <a href="/history/PEPE">history</a>
 {%- if coin == "PEPE" %}
   <i>Daily Volume: <span id="PEPE_volume">-</span> PEPE @ <span id="PEPE_volume_in_currency">-</span></i>
   <i>Daily Trades Volume: Buys <span id="PEPE_volume_trades_buy_orders">-</span> PEPE, Sells <span id="PEPE_volume_trades_sell_orders">-</span> PEPE</i>
@@ -263,7 +216,7 @@
 
 <b>LTO Network:</b>
 
-<a href="/LTO">LTO all trades</a> 💾
+<a href="/LTO">LTO all trades</a> 💾 | <a href="/history/LTO">history</a>
 {%- if coin == "LTO" %}
   <i>Daily Volume: <span id="LTO_volume">-</span> LTO @ <span id="LTO_volume_in_currency">-</span></i>
   <i>Daily Trades Volume: Buys <span id="LTO_volume_trades_buy_orders">-</span> LTO, Sells <span id="LTO_volume_trades_sell_orders">-</span> LTO</i>

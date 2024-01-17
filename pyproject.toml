@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "exchange-radar"
 version = "1.0.0"
-description = "Get real-time trading data from different Crypto Exchanges and configure hooks, trends, notifications, messages based on custom rules."
+description = "Real-time trading data from different Crypto Exchanges and configure hooks, trends, notifications, messages based on custom rules."
 authors = ["Paulo Antunes <pjmlantunes@gmail.com>"]
 license = "GNU GPLv3"
 readme = "README.md"

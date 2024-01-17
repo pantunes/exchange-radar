@@ -1,0 +1,23 @@
+        <title>{% block title %}{% endblock %}</title>
+        <meta charset="utf-8"/>
+        <!-- Favicon -->
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='favicon/favicon.ico') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='favicon/favicon-32x32.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='favicon/favicon-16x16.png') }}">
+        <!--Open Graph Protocol -->
+        <meta name="title" property="og:title" content="Exchange Radar"/>
+        <meta property="og:type" content="website">
+        <meta name="image" property="og:image" content="{{ url_for('static', path='favicon/favicon-180x180.png') }}"/>
+        <meta name="description" property="og:description" content="Real-time trading data from different Crypto Exchanges and configure hooks, trends, notifications, messages based on custom rules."/>
+        <meta property="og:url" content="{{ http_trades_url }}"/>
+        <!-- CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/theme.css') }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/custom.css') }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/exchanges.css') }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/toggle-switch.css') }}" type="text/css"/>
+        <!-- Fonts -->
+        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" type="text/css"/>
+        <!-- JS -->
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/web-socket-js/1.0.0/web_socket.min.js"></script>
