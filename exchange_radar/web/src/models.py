@@ -177,11 +177,11 @@ class History(BaseModel):
                 row = (
                     f"{self.name} | "
                     f"{self.trade_symbol.ljust(4)} | "
+                    f"{'{:,.8f} {}'.format(volume, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
                     f"{'{:,.8f} {}'.format(volume_buy_orders, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
                     f"{'{:,.8f} {}'.format(volume_sell_orders, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
-                    f"{'{:,.8f} {}'.format(volume, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
                     f"{'{:,}'.format(number_buy_orders).rjust(14)} | "
-                    f"{'{:,}'.format(number_sell_orders).rjust(14)}"
+                    f"{'{:,}'.format(number_sell_orders).rjust(15)} |"
                 )
                 data.append(row)
 
