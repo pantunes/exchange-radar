@@ -4,7 +4,7 @@ from exchange_radar.web.src.serializers.mixins import Validations
 from exchange_radar.web.src.settings import base as settings
 
 
-@dataclass
+@dataclass(slots=True)
 class ParamsInputSerializer(Validations):
     coin: str
 
@@ -14,6 +14,6 @@ class ParamsInputSerializer(Validations):
         return value
 
 
-@dataclass
+@dataclass(slots=True)
 class IndexParamsInputSerializer(ParamsInputSerializer):
     coin: str = "BTC"
