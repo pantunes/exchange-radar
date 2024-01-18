@@ -4,9 +4,8 @@ import pytest
 
 
 @pytest.fixture
-def ch():
-    ch = Mock()
-    return ch
+def channel():
+    return Mock()
 
 
 @pytest.fixture
