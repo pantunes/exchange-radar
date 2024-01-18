@@ -72,11 +72,12 @@ class FeedBase(HTTPEndpoint):
     def __str__(self):
         return type(self).__name__
 
-    @validate(serializer=ParamsInputSerializer)
-    async def post(self, request, data: ParamsInputSerializer):
+    async def post(self, request):
+        """internal endpoint"""
+        coin = request.path_params["coin"]
         message = await request.json()
-        await self.manager.broadcast(message, data.coin)
-        is_saved = Feed.save_or_not(coin=data.coin, category=str(self), message=message)
+        await self.manager.broadcast(message, coin)
+        is_saved = Feed.save_or_not(coin=coin, category=str(self), message=message)
         return JSONResponse({"r": is_saved}, status_code=201 if is_saved else 200)
 
     @validate(serializer=ParamsInputSerializer)
