@@ -22,11 +22,7 @@ from exchange_radar.web.src.endpoints.websockets import (
 
 routes = [
     # Preferably should be served by a load-balancer and not this web-app
-    Mount(
-        "/static",
-        StaticFiles(directory="./exchange_radar/web/static"),
-        name="static",
-    ),
+    Mount("/static", app=StaticFiles(directory="./exchange_radar/web/static"), name="static"),
     # main
     Route("/", endpoint=IndexBase),
     Route("/{coin:str}", endpoint=IndexBase),
