@@ -5,9 +5,9 @@ from exchange_radar.producer.tasks.kucoin import KuCoinTradesTask
 from exchange_radar.producer.tasks.okx import OkxTradesTask
 
 EXCHANGES = {
-    "Binance": BinanceTradesTask,
-    "KuCoin": KuCoinTradesTask,
-    "Coinbase": CoinbaseTradesTask,
-    "Kraken": KrakenTradesTask,
-    "OKX": OkxTradesTask,
+    "binance": BinanceTradesTask,
+    "kucoin": KuCoinTradesTask,
+    "coinbase": CoinbaseTradesTask,
+    "kraken": KrakenTradesTask,
+    "okx": OkxTradesTask,
 }

@@ -4,4 +4,4 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-exec poetry run producer ${OKX_COINS} --exchange OKX
+exec poetry run producer ${OKX_COINS} --exchange okx
