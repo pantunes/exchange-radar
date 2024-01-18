@@ -4,4 +4,4 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-exec poetry run producer ${BINANCE_COINS} --exchange Binance
+exec poetry run producer ${BINANCE_COINS} --exchange binance
