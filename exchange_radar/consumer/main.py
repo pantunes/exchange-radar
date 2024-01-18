@@ -31,7 +31,7 @@ class Callback:
 
     def callback(
         self,
-        ch: BlockingChannel,
+        channel: BlockingChannel,
         method: Basic.Deliver,
         properties: pika.BasicProperties,
         body: bytes,
@@ -58,7 +58,7 @@ class Callback:
         ) as error:
             logger.error(f"POST {url} Error: {error}")
 
-        ch.basic_ack(delivery_tag=method.delivery_tag)
+        channel.basic_ack(delivery_tag=method.delivery_tag)
 
         logger.info("CONSUMER - end")
 
