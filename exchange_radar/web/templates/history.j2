@@ -15,7 +15,7 @@
 --------------------------------------------------------------------------------------------------------------------------------------------
     <b>DAY    | COIN |        TOTAL VOLUME        |         VOLUME BUYS        |        VOLUME SELLS        | NUM BUY TRADES | NUM SELL TRADES</b> |
 --------------------------------------------------------------------------------------------------------------------------------------------
-<span id="messages">{% for row in rows %}{{ row }}{% endfor %}</span>
+<span id="messages">{% for row in rows %}{{ row + "\n"}}{% endfor %}</span>
 
 
 * Showing the last {{ num_months }} month's data

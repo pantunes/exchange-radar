@@ -9,7 +9,7 @@ redis = get_redis_connection()
 
 class RedisMixin:
     @staticmethod
-    def _get_name():
+    def _get_name() -> str:
         return datetime.today().date().strftime("%Y-%m-%d")
 
     def volume(self) -> float:
