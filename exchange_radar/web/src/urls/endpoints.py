@@ -1,13 +1,13 @@
 from starlette.routing import Route, WebSocketRoute
 
-from exchange_radar.web.src.endpoints.http import (
+from exchange_radar.web.src.api.http import (
     FeedBase,
     FeedDolphins,
     FeedOctopuses,
     FeedWhales,
     Stats,
 )
-from exchange_radar.web.src.endpoints.websockets import (
+from exchange_radar.web.src.api.websockets import (
     trades,
     trades_dolphins,
     trades_octopuses,
