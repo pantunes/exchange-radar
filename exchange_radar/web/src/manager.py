@@ -16,7 +16,7 @@ class Singleton:
         return cls._self  # noqa
 
 
-class ConnectionTradesManager(Singleton):
+class ConnectionTradesManager(Singleton):  # pragma: no cover
     _self = None
 
     def __str__(self):

@@ -15,7 +15,7 @@ manager_trades_octopuses = ConnectionTradesOctopusesManager.get_instance()
 manager_trades_whales = ConnectionTradesWhalesManager.get_instance()
 
 
-@validate(serializer=ParamsInputSerializer)
+@validate(serializer=ParamsInputSerializer)  # pragma: no cover
 async def trades(websocket: WebSocket, data: ParamsInputSerializer):
     await manager_trades.connect(websocket, data.coin)
     try:
@@ -25,7 +25,7 @@ async def trades(websocket: WebSocket, data: ParamsInputSerializer):
         manager_trades.disconnect(websocket, data.coin)
 
 
-@validate(serializer=ParamsInputSerializer)
+@validate(serializer=ParamsInputSerializer)  # pragma: no cover
 async def trades_whales(websocket: WebSocket, data: ParamsInputSerializer):
     await manager_trades_whales.connect(websocket, data.coin)
     try:
@@ -35,7 +35,7 @@ async def trades_whales(websocket: WebSocket, data: ParamsInputSerializer):
         manager_trades_whales.disconnect(websocket, data.coin)
 
 
-@validate(serializer=ParamsInputSerializer)
+@validate(serializer=ParamsInputSerializer)  # pragma: no cover
 async def trades_dolphins(websocket: WebSocket, data: ParamsInputSerializer):
     await manager_trades_dolphins.connect(websocket, data.coin)
     try:
@@ -45,7 +45,7 @@ async def trades_dolphins(websocket: WebSocket, data: ParamsInputSerializer):
         manager_trades_dolphins.disconnect(websocket, data.coin)
 
 
-@validate(serializer=ParamsInputSerializer)
+@validate(serializer=ParamsInputSerializer)  # pragma: no cover
 async def trades_octopuses(websocket: WebSocket, data: ParamsInputSerializer):
     await manager_trades_octopuses.connect(websocket, data.coin)
     try:

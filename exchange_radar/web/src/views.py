@@ -34,7 +34,6 @@ class IndexBase(HTTPEndpoint):
     @validate(serializer=IndexParamsInputSerializer)
     async def get(self, request, data: ParamsInputSerializer):
         context = {
-            "request": request,
             "coin": data.coin,
             "http_trades_url": self.http_trades_url.format(coin=data.coin),
             "http_stats_url": self.http_stats_url.format(coin=data.coin),
@@ -42,7 +41,7 @@ class IndexBase(HTTPEndpoint):
             "exchanges": get_exchanges(coin=data.coin),
             "max_rows": settings.REDIS_MAX_ROWS,
         }
-        return templates.TemplateResponse(self.template_name, context=context)
+        return templates.TemplateResponse(request, self.template_name, context=context)
 
 
 class IndexWhales(IndexBase):
@@ -69,13 +68,7 @@ class History(HTTPEndpoint):
     async def get(request, data: ParamsInputSerializer):
         data = HistoryModel(trade_symbol=data.coin)
         context = {
-            "request": request,
             "rows": data.model_dump()["rows"],
             "num_months": int(settings.REDIS_EXPIRATION / 30),
         }
-        return templates.TemplateResponse("history.j2", context=context)
-
-
-async def exc_handler(request, exc):
-    context = {"request": request, "error_message": exc.detail}
-    return templates.TemplateResponse("error.j2", context=context, status_code=exc.status_code)
+        return templates.TemplateResponse(request, "history.j2", context=context)

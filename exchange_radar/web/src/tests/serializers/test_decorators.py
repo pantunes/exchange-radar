@@ -88,6 +88,6 @@ async def test_validate__coin_errors(protocol, exc_class, expected):
 async def test_validate__typeerror():
     request = MagicMock()
     request.scope = None
-    with pytest.raises(HTTPException) as exc_info:
+    with pytest.raises(ERException) as exc_info:
         assert await f(request) is None
     assert str(exc_info.value) == "400: Unset request type"
