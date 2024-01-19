@@ -19,7 +19,7 @@ tests-shell:
 
 coverage:
 	@docker-compose -f local.yml run --rm tests bash -c \
-"coverage run -m pytest -v --tb=short -p no:warnings && \
+"coverage run -m pytest && \
 coverage report && \
 coverage html"
 	open htmlcov/index.html

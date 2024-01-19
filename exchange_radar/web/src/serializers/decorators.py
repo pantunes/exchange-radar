@@ -5,13 +5,21 @@ from starlette.exceptions import HTTPException, WebSocketException
 from starlette.requests import Request
 
 
+class ERException(HTTPException):
+    pass
+
+
 class RaiseValidationException:
     def __init__(self, request: Request, message: str):
-        if request.scope["type"] == "http":
-            raise HTTPException(400, detail=message)
-        elif request.scope["type"] == "websocket":
-            raise WebSocketException(code=1008, reason=None)
-        raise HTTPException(400, detail="Invalid request type")
+        try:
+            if request.scope["type"] == "http":
+                raise HTTPException(400, detail=message)
+            elif request.scope["type"] == "websocket":
+                raise WebSocketException(code=1008, reason=None)
+        except TypeError:
+            raise HTTPException(400, detail="Unset request type")
+        else:
+            raise ERException(400, "Invalid request type")
 
 
 def validate(serializer) -> Callable:
