@@ -111,20 +111,24 @@ Migrator().run()
 
 class Stats(BaseModel):
     trade_symbol: str
-    name: str = datetime.today().date().strftime("%Y-%m-%d")
+
+    @staticmethod
+    def _get_name() -> str:
+        return datetime.today().date().strftime("%Y-%m-%d")
 
     @computed_field
     def volume(self) -> float | None:
         try:
-            return float(redis.hget(self.name, f"{self.trade_symbol}_VOLUME"))
+            return float(redis.hget(self._get_name(), f"{self.trade_symbol}_VOLUME"))
         except TypeError:
             pass
 
     @computed_field
     def volume_trades(self) -> tuple[float, float] | None:
+        name = self._get_name()
         pipe = redis.pipeline()
-        pipe.hget(self.name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")
-        pipe.hget(self.name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")
+        pipe.hget(name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")
+        pipe.hget(name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")
         result = pipe.execute()
         try:
             return float(result[0]), float(result[1])
@@ -133,9 +137,10 @@ class Stats(BaseModel):
 
     @computed_field
     def number_trades(self) -> tuple[int, int] | None:
+        name = self._get_name()
         pipe = redis.pipeline()
-        pipe.hget(self.name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS")
-        pipe.hget(self.name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")
+        pipe.hget(name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS")
+        pipe.hget(name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")
         result = pipe.execute()
         try:
             return int(result[0]), int(result[1])
@@ -145,11 +150,15 @@ class Stats(BaseModel):
 
 class History(BaseModel):
     trade_symbol: str
-    name: str = datetime.today().date().strftime("%Y-%m-%d")
+
+    @staticmethod
+    def _get_name() -> tuple[datetime.date, str]:
+        current_date = datetime.today().date()
+        return current_date, current_date.strftime("%Y-%m-%d")
 
     @computed_field
     def rows(self) -> list[str]:
-        current_date = datetime.strptime(self.name, "%Y-%m-%d").date()
+        current_date, name = self._get_name()
         cached_days = (
             (current_date - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(settings.REDIS_EXPIRATION)
         )
@@ -175,7 +184,7 @@ class History(BaseModel):
                 break
             else:
                 row = (
-                    f"{self.name} | "
+                    f"{name} | "
                     f"{self.trade_symbol.ljust(4)} | "
                     f"{'{:,.8f} {}'.format(volume, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
                     f"{'{:,.8f} {}'.format(volume_buy_orders, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
