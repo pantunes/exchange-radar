@@ -56,3 +56,12 @@ class Stats(HTTPEndpoint):
     async def get(_, data: ParamsInputSerializer):
         data = StatsModel(trade_symbol=data.coin)
         return JSONResponse(data.model_dump(), status_code=200)
+
+
+REST_ENDPOINTS = (
+    FeedBase,
+    FeedWhales,
+    FeedDolphins,
+    FeedOctopuses,
+    Stats,
+)
