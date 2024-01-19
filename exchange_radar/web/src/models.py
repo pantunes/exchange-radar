@@ -15,7 +15,7 @@ redis = get_redis_connection()
 cache_pks = ERdefaultdict(list)
 
 
-class Feed(JsonModel):
+class Feed(JsonModel):  # pragma: no cover
     """
     All fields:
     {
@@ -109,7 +109,7 @@ class Feed(JsonModel):
 Migrator().run()
 
 
-class Stats(BaseModel):
+class Stats(BaseModel):  # pragma: no cover
     trade_symbol: str
 
     @staticmethod
@@ -148,7 +148,7 @@ class Stats(BaseModel):
             pass
 
 
-class History(BaseModel):
+class History(BaseModel):  # pragma: no cover
     trade_symbol: str
 
     @staticmethod

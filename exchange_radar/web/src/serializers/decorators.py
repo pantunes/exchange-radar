@@ -4,9 +4,7 @@ from functools import wraps
 from starlette.exceptions import HTTPException, WebSocketException
 from starlette.requests import Request
 
-
-class ERException(HTTPException):
-    pass
+from exchange_radar.web.src.exceptions import ERException
 
 
 class RaiseValidationException:
@@ -17,7 +15,7 @@ class RaiseValidationException:
             elif request.scope["type"] == "websocket":
                 raise WebSocketException(code=1008, reason=None)
         except TypeError:
-            raise HTTPException(400, detail="Unset request type")
+            raise ERException(400, detail="Unset request type")
         else:
             raise ERException(400, "Invalid request type")
 
