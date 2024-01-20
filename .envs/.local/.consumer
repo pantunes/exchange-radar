@@ -1,6 +1,6 @@
 DEBUG=True
 
-TRADES_HOST_URL=http://exchange-radar-web:9000/feed/{coin}
-TRADES_WHALES_HOST_URL=http://exchange-radar-web:9000/feed/{coin}/whales
-TRADES_DOLPHINS_HOST_URL=http://exchange-radar-web:9000/feed/{coin}/dolphins
-TRADES_OCTOPUSES_HOST_URL=http://exchange-radar-web:9000/feed/{coin}/octopuses
+TRADES_HOST_URL=http://exchange-radar-web:9000/api/feed/{coin}
+TRADES_WHALES_HOST_URL=http://exchange-radar-web:9000/api/feed/{coin}/whales
+TRADES_DOLPHINS_HOST_URL=http://exchange-radar-web:9000/api/feed/{coin}/dolphins
+TRADES_OCTOPUSES_HOST_URL=http://exchange-radar-web:9000/api/feed/{coin}/octopuses

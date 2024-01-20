@@ -3,17 +3,17 @@ DEBUG=True
 REDIS_MAX_ROWS=64
 REDIS_EXPIRATION=90
 
-TRADES_SOCKET_URL=ws://127.0.0.1:9000/trades/{coin}
-TRADES_WHALES_SOCKET_URL=ws://127.0.0.1:9000/trades/{coin}/whales
-TRADES_DOLPHINS_SOCKET_URL=ws://127.0.0.1:9000/trades/{coin}/dolphins
-TRADES_OCTOPUSES_SOCKET_URL=ws://127.0.0.1:9000/trades/{coin}/octopuses
+TRADES_SOCKET_URL=ws://127.0.0.1:9000/api/trades/{coin}
+TRADES_WHALES_SOCKET_URL=ws://127.0.0.1:9000/api/trades/{coin}/whales
+TRADES_DOLPHINS_SOCKET_URL=ws://127.0.0.1:9000/api/trades/{coin}/dolphins
+TRADES_OCTOPUSES_SOCKET_URL=ws://127.0.0.1:9000/api/trades/{coin}/octopuses
 
-TRADES_HOST_URL=http://127.0.0.1:9000/feed/{coin}
-TRADES_WHALES_HOST_URL=http://127.0.0.1:9000/feed/{coin}/whales
-TRADES_DOLPHINS_HOST_URL=http://127.0.0.1:9000/feed/{coin}/dolphins
-TRADES_OCTOPUSES_HOST_URL=http://127.0.0.1:9000/feed/{coin}/octopuses
+TRADES_HOST_URL=http://127.0.0.1:9000/api/feed/{coin}
+TRADES_WHALES_HOST_URL=http://127.0.0.1:9000/api/feed/{coin}/whales
+TRADES_DOLPHINS_HOST_URL=http://127.0.0.1:9000/api/feed/{coin}/dolphins
+TRADES_OCTOPUSES_HOST_URL=http://127.0.0.1:9000/api/feed/{coin}/octopuses
 
-TRADES_STATS_URL=http://127.0.0.1:9000/stats/{coin}
+TRADES_STATS_URL=http://127.0.0.1:9000/api/stats/{coin}
 
 BINANCE=LTO,ETH,BTC,LINK,FTM,PEPE
 COINBASE=ETH,BTC,LINK

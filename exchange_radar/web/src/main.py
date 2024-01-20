@@ -10,7 +10,7 @@ from exchange_radar.web.src.errors import (
 )
 from exchange_radar.web.src.settings import base as settings
 from exchange_radar.web.src.tasks.sync_cache import sync_cache
-from exchange_radar.web.src.urls.endpoints import routes as routes_endpoints
+from exchange_radar.web.src.urls.api import routes as routes_endpoints
 from exchange_radar.web.src.urls.views import routes as routes_views
 
 logger = logging.getLogger(__name__)
