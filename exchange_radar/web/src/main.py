@@ -33,4 +33,4 @@ async def lifespan(app: Starlette):  # noqa
     logger.info("END Lifespan")
 
 
-app = Starlette(debug=settings.DEBUG, routes=routes, exception_handlers=exception_handlers, lifespan=lifespan)  # noqa
+app = Starlette(debug=settings.DEBUG, routes=routes, exception_handlers=exception_handlers, lifespan=lifespan)

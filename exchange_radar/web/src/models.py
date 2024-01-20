@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from pydantic import BaseModel, computed_field
 from redis_om import Field, JsonModel, Migrator, get_redis_connection
@@ -66,7 +66,7 @@ class Feed(JsonModel):  # pragma: no cover
         )
 
     @classmethod
-    def select_rows(cls, coin: str, category: str) -> list[dict[str]]:
+    def select_rows(cls, coin: str, category: str) -> list[dict[str, str]]:
         return [
             item.dict()
             for item in cls.find((cls.trade_symbol == coin) & (cls.type == category))
@@ -119,9 +119,10 @@ class Stats(BaseModel):  # pragma: no cover
     @computed_field
     def volume(self) -> float | None:
         try:
-            return float(redis.hget(self._get_name(), f"{self.trade_symbol}_VOLUME"))
+            result = float(redis.hget(self._get_name(), f"{self.trade_symbol}_VOLUME"))
         except TypeError:
-            pass
+            return None
+        return result
 
     @computed_field
     def volume_trades(self) -> tuple[float, float] | None:
@@ -131,9 +132,10 @@ class Stats(BaseModel):  # pragma: no cover
         pipe.hget(name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")
         result = pipe.execute()
         try:
-            return float(result[0]), float(result[1])
+            result = float(result[0]), float(result[1])
         except TypeError:
-            pass
+            return None
+        return result
 
     @computed_field
     def number_trades(self) -> tuple[int, int] | None:
@@ -143,16 +145,17 @@ class Stats(BaseModel):  # pragma: no cover
         pipe.hget(name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")
         result = pipe.execute()
         try:
-            return int(result[0]), int(result[1])
+            result = int(result[0]), int(result[1])
         except TypeError:
-            pass
+            return None
+        return result
 
 
 class History(BaseModel):  # pragma: no cover
     trade_symbol: str
 
     @staticmethod
-    def _get_name() -> tuple[datetime.date, str]:
+    def _get_name() -> tuple[date, str]:
         current_date = datetime.today().date()
         return current_date, current_date.strftime("%Y-%m-%d")
 
