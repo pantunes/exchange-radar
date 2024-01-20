@@ -8,7 +8,6 @@ from exchange_radar.web.src.manager import (
     ConnectionTradesOctopusesManager,
     ConnectionTradesWhalesManager,
 )
-from exchange_radar.web.src.models import History as HistoryModel
 from exchange_radar.web.src.serializers.decorators import validate
 from exchange_radar.web.src.serializers.http import (
     IndexParamsInputSerializer,
@@ -68,9 +67,8 @@ class History(HTTPEndpoint):
     @staticmethod
     @validate(serializer=ParamsInputSerializer)
     async def get(request, data: ParamsInputSerializer):
-        data = HistoryModel(trade_symbol=data.coin)
         context = {
-            "rows": data.model_dump()["rows"],
+            "http_history_url": settings.TRADES_HISTORY_URL.format(coin=data.coin),
             "num_months": int(settings.REDIS_EXPIRATION / 30),
             "version": __version__,
         }

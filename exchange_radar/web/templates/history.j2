@@ -4,10 +4,18 @@
     <head>
 {% include 'snippets/headers.j2' %}
 {% include 'snippets/switch.j2' %}
-
         <script>
+            const http_history_url = "{{ http_history_url }}";
+        </script>
+        <script>
+            function get_history() {
+                $.get(http_history_url).done(function (response) {
+                    $("#messages").text(response.rows.join([separator = "\n"]));
+                })
+            }
             $(document).ready(function() {
-
+                get_history();
+                setInterval(get_history, 2000);
             });
         </script>
 
