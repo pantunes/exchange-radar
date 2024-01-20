@@ -1,3 +1,29 @@
+function addRow(obj) {
+    const elem = createElement(obj)
+
+    const selector = '#messages';
+
+    $(`${selector}`).prepend(elem);
+
+    const length = $(selector).find('span').length;
+    if (length > max_rows * 2) {
+        $(`${selector} > span:last`).remove();
+    }
+}
+
+function retrieveData() {
+    $.get(http_stats_url).done(function (response) {
+        setVolume(response);
+        setVolumeTrades(response);
+        setNumberTrades(response);
+    })
+    $.get(http_trades_url).done(function (response) {
+        for (const obj of response.r) {
+            addRow(obj);
+        }
+    })
+}
+
 function createElement(obj) {
     const span = document.createElement("span");
 
@@ -44,4 +70,14 @@ function setVolumeTrades(obj) {
 function setNumberTrades(obj) {
     $(`#${obj.trade_symbol}_number_trades_buy_orders`).text(obj.number_trades[0].toLocaleString('en-US'));
     $(`#${obj.trade_symbol}_number_trades_sell_orders`).text(obj.number_trades[1].toLocaleString('en-US'));
+}
+
+function formatPage() {
+    const subURL = new URL(http_trades_url).pathname.replace(/^\/feed/, "");
+    $("a").each(function () {
+        const link = $(this).attr('href');
+        if (link === subURL) {
+            $(this).css({'font-weight': 'bold', 'font-size': '1.2em'});
+        }
+    });
 }
