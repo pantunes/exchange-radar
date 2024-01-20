@@ -14,6 +14,7 @@ TRADES_DOLPHINS_HOST_URL=http://127.0.0.1:9000/api/feed/{coin}/dolphins
 TRADES_OCTOPUSES_HOST_URL=http://127.0.0.1:9000/api/feed/{coin}/octopuses
 
 TRADES_STATS_URL=http://127.0.0.1:9000/api/stats/{coin}
+TRADES_HISTORY_URL=http://127.0.0.1:9000/api/history/{coin}
 
 BINANCE=LTO,ETH,BTC,LINK,FTM,PEPE
 COINBASE=ETH,BTC,LINK

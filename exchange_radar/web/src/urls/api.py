@@ -5,6 +5,7 @@ from exchange_radar.web.src.api.http import (
     FeedDolphins,
     FeedOctopuses,
     FeedWhales,
+    History,
     Stats,
 )
 from exchange_radar.web.src.api.websockets import (
@@ -32,6 +33,7 @@ routes = [
             WebSocketRoute("/trades/{coin:str}/octopuses", endpoint=trades_octopuses),
             # others
             Route("/stats/{coin:str}", endpoint=Stats),
+            Route("/history/{coin:str}", endpoint=History),
         ],
     )
 ]

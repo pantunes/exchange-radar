@@ -8,6 +8,7 @@ from exchange_radar.web.src.manager import (
     ConnectionTradesWhalesManager,
 )
 from exchange_radar.web.src.models import Feed
+from exchange_radar.web.src.models import History as HistoryModel
 from exchange_radar.web.src.models import Stats as StatsModel
 from exchange_radar.web.src.serializers.decorators import validate
 from exchange_radar.web.src.serializers.http import ParamsInputSerializer
@@ -58,10 +59,19 @@ class Stats(HTTPEndpoint):
         return JSONResponse(data.model_dump(), status_code=200)
 
 
+class History(HTTPEndpoint):
+    @staticmethod
+    @validate(serializer=ParamsInputSerializer)
+    async def get(_, data: ParamsInputSerializer):
+        data = HistoryModel(trade_symbol=data.coin)
+        return JSONResponse(data.model_dump(), status_code=200)
+
+
 REST_ENDPOINTS = (
     FeedBase,
     FeedWhales,
     FeedDolphins,
     FeedOctopuses,
     Stats,
+    History,
 )
