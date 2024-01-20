@@ -73,7 +73,7 @@ function setNumberTrades(obj) {
 }
 
 function formatPage() {
-    const subURL = new URL(http_trades_url).pathname.replace(/^\/feed/, "");
+    const subURL = new URL(http_trades_url).pathname.replace(/^\/api\/feed/, "");
     $("a").each(function () {
         const link = $(this).attr('href');
         if (link === subURL) {
