@@ -1,6 +1,7 @@
 from starlette.endpoints import HTTPEndpoint
 from starlette.templating import Jinja2Templates
 
+from exchange_radar import __version__
 from exchange_radar.web.src.manager import (
     ConnectionTradesDolphinsManager,
     ConnectionTradesManager,
@@ -40,6 +41,7 @@ class IndexBase(HTTPEndpoint):
             "websocket_url": self.websocket_url.format(coin=data.coin),
             "exchanges": get_exchanges(coin=data.coin),
             "max_rows": settings.REDIS_MAX_ROWS,
+            "version": __version__,
         }
         return templates.TemplateResponse(request, self.template_name, context=context)
 
