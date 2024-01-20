@@ -18,4 +18,4 @@ def get_exchanges(coin: str) -> str:
     if len(exchanges) == 0:
         raise ValueError(f"No exchanges found for the coin {coin}")
 
-    return ", ".join(exchanges)
+    return " ".join(exchanges)

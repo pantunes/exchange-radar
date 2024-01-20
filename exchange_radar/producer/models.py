@@ -15,7 +15,7 @@ class RedisMixin:
     def volume(self) -> float:
         return redis.hincrbyfloat(self._get_name(), f"{self.trade_symbol}_VOLUME", float(self.quantity))  # noqa
 
-    def volume_trades(self) -> tuple[float, float]:
+    def volume_trades(self) -> tuple[float, float] | None:
         name = self._get_name()
 
         with redis.pipeline() as pipe:
@@ -39,11 +39,12 @@ class RedisMixin:
             result = pipe.execute()
 
         try:
-            return float(result[1]), float(result[2])
+            result = float(result[1]), float(result[2])
         except TypeError:
-            pass
+            return None
+        return result
 
-    def number_trades(self) -> tuple[int, int]:
+    def number_trades(self) -> tuple[int, int] | None:
         name = self._get_name()
 
         with redis.pipeline() as pipe:
@@ -58,6 +59,7 @@ class RedisMixin:
             result = pipe.execute()
 
         try:
-            return int(result[1]), int(result[2])
+            result = int(result[1]), int(result[2])
         except TypeError:
-            pass
+            return None
+        return result

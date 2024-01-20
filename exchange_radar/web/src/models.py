@@ -163,11 +163,15 @@ class History(BaseModel):  # pragma: no cover
     def rows(self) -> list[str]:
         current_date, name = self._get_name()
         cached_days = (
-            (current_date - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(settings.REDIS_EXPIRATION)
+            (
+                (current_date - timedelta(days=i)).strftime("%Y-%m-%d"),
+                (current_date - timedelta(days=i)).strftime("%A")[:3],
+            )
+            for i in range(settings.REDIS_EXPIRATION)
         )
 
         data = []
-        for name in cached_days:
+        for name, dow in cached_days:
             with redis.pipeline() as pipe:
                 pipe.hget(name, f"{self.trade_symbol}_VOLUME")
                 pipe.hget(name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")
@@ -188,6 +192,7 @@ class History(BaseModel):  # pragma: no cover
             else:
                 row = (
                     f"{name} | "
+                    f"{dow} | "
                     f"{self.trade_symbol.ljust(4)} | "
                     f"{'{:,.8f} {}'.format(volume, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
                     f"{'{:,.8f} {}'.format(volume_buy_orders, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
