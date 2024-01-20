@@ -72,5 +72,6 @@ class History(HTTPEndpoint):
         context = {
             "rows": data.model_dump()["rows"],
             "num_months": int(settings.REDIS_EXPIRATION / 30),
+            "version": __version__,
         }
         return templates.TemplateResponse(request, "history.j2", context=context)
