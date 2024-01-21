@@ -1,12 +1,8 @@
-<!doctype html>
-<html lang="en">
-
-    <head>
-{% include 'snippets/headers.j2' %}
-{% include 'snippets/switch.j2' %}
-    </head>
-
+{% extends "base.j2" %}
+{% block title %}Error{% endblock %}
+{% block javascript_default %}{% endblock %}
     <body>
+{% block body %}
         <div class="padded-boxes">
             <section>
                 <div class="padded">
@@ -25,5 +21,4 @@
             </section>
         </div>
     </body>
-
-</html>
+{% endblock %}

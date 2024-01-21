@@ -36,6 +36,10 @@ class RedisMixin:
                     f"{self.trade_symbol}_VOLUME_SELL_ORDERS",  # noqa
                     float(self.quantity),  # noqa
                 )
+
+            pipe.hsetnx(name, f"{self.trade_symbol}_PRICE", float(self.price))  # noqa
+            pipe.hsetnx(name, f"{self.trade_symbol}_CURRENCY", self.currency)  # noqa
+
             result = pipe.execute()
 
         try:
