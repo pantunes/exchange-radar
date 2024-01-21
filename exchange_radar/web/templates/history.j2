@@ -1,9 +1,6 @@
-<!doctype html>
-<html lang="en">
-
-    <head>
-{% include 'snippets/headers.j2' %}
-{% include 'snippets/switch.j2' %}
+{% extends "base.j2" %}
+{% block title %}History - {{ coin }}{% endblock %}
+{% block javascript_default %}
         <script>
             const http_history_url = "{{ http_history_url }}";
         </script>
@@ -18,10 +15,10 @@
                 setInterval(get_history, 2000);
             });
         </script>
-
-    </head>
+{% endblock %}
 
     <body>
+{% block body %}
         <div class="padded-boxes">
             <section>
                 <div class="padded">
@@ -43,5 +40,4 @@
             </section>
         </div>
     </body>
-
-</html>
+{% endblock %}

@@ -68,6 +68,7 @@ class History(HTTPEndpoint):
     @validate(serializer=ParamsInputSerializer)
     async def get(request, data: ParamsInputSerializer):
         context = {
+            "coin": data.coin,
             "http_history_url": settings.TRADES_HISTORY_URL.format(coin=data.coin),
             "num_months": int(settings.REDIS_EXPIRATION / 30),
             "version": __version__,

@@ -2,8 +2,10 @@
 <html lang="en">
 
     <head>
+        <title>{% block title %}{% endblock %}</title>
 {% include 'snippets/headers.j2' %}
 {% include 'snippets/switch.j2' %}
+{% block javascript_default %}
         <script>
             const http_trades_url = "{{ http_trades_url }}";
             const http_stats_url = "{{ http_stats_url }}";
@@ -50,11 +52,12 @@
                 formatPage();
             });
         </script>
-
-        {% block javascript %}{% endblock %}
+{% endblock %}
+{%- block javascript %}{% endblock %}
     </head>
 
     <body>
+{% block body %}
         <div class="padded-boxes">
             <section>
                 <div class="padded">
@@ -170,5 +173,5 @@ More than 100,000 USD/USDT or 4 BTC or 60 ETH
             </section>
         </div>
     </body>
-
+{% endblock %}
 </html>
