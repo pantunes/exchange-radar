@@ -178,6 +178,8 @@ class History(BaseModel):  # pragma: no cover
                 pipe.hget(name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")
                 pipe.hget(name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS")
                 pipe.hget(name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")
+                pipe.hget(name, f"{self.trade_symbol}_PRICE")
+                pipe.hget(name, f"{self.trade_symbol}_CURRENCY")
                 result = pipe.execute()
             try:
                 volume, volume_buy_orders, volume_sell_orders, number_buy_orders, number_sell_orders = (
@@ -190,15 +192,22 @@ class History(BaseModel):  # pragma: no cover
             except TypeError:
                 break
             else:
+                try:
+                    price, currency = float(result[5]), result[6]
+                except TypeError:
+                    price = 0.0
+                    currency = "-"
+
                 row = (
                     f"{name} | "
                     f"{dow} | "
                     f"{self.trade_symbol.ljust(4)} | "
-                    f"{'{:,.8f} {}'.format(volume, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
-                    f"{'{:,.8f} {}'.format(volume_buy_orders, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
-                    f"{'{:,.8f} {}'.format(volume_sell_orders, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
+                    f"{'{:,.2f} {}'.format(volume, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
+                    f"{'{:,.2f} {}'.format(volume_buy_orders, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
+                    f"{'{:,.2f} {}'.format(volume_sell_orders, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
                     f"{'{:,}'.format(number_buy_orders).rjust(14)} | "
                     f"{'{:,}'.format(number_sell_orders).rjust(15)} |"
+                    f"{'{:,.8f} {}'.format(price, currency.rjust(4)).rjust(16 + 5, ' ')} | "
                 )
                 data.append(row)
 
