@@ -1,9 +1,6 @@
-<!doctype html>
-<html lang="en">
-
-    <head>
-{% include 'snippets/headers.j2' %}
-{% include 'snippets/switch.j2' %}
+{% extends "base.j2" %}
+{% block title %}History - {{ coin }}{% endblock %}
+{% block javascript_default %}
         <script>
             const http_history_url = "{{ http_history_url }}";
         </script>
@@ -18,18 +15,18 @@
                 setInterval(get_history, 2000);
             });
         </script>
-
-    </head>
+{% endblock %}
 
     <body>
+{% block body %}
         <div class="padded-boxes">
             <section>
                 <div class="padded">
                     <!-- box 1 content -->
 <pre>
---------------------------------------------------------------------------------------------------------------------------------------------------
-    <b>DAY    | DOW | COIN |        TOTAL VOLUME        |         VOLUME BUYS        |        VOLUME SELLS        | NUM BUY TRADES | NUM SELL TRADES</b> |
---------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    <b>DAY    | DOW | COIN |        TOTAL VOLUME        |         VOLUME BUYS        |        VOLUME SELLS        | NUM BUY TRADES | NUM SELL TRADES |      PRICE OPEN      |</b>
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <span id="messages"></span>
 
 
@@ -43,5 +40,4 @@
             </section>
         </div>
     </body>
-
-</html>
+{% endblock %}

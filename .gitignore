@@ -166,3 +166,5 @@ cython_debug/
 /.idea/exchange-radar.iml
 /.idea/vcs.xml
 /.envs/.production/
+
+.DS_Store
