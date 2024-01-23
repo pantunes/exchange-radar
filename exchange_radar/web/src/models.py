@@ -112,8 +112,8 @@ Migrator().run()
 class Stats(BaseModel):  # pragma: no cover
     trade_symbol: str
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self._name = datetime.today().date().strftime("%Y-%m-%d")
 
     @computed_field

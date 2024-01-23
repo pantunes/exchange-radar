@@ -10,6 +10,7 @@ from exchange_radar.producer.serializers.okx import OkxTradeSerializer
 from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.ERROR)
 
 logging.getLogger("WsPublic").propagate = False
 
