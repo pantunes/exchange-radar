@@ -16,6 +16,8 @@
     --kraken-text-color: white;
     --okx-background-color: #36454F;
     --okx-text-color: white;
+    --bybit-background-color: white;
+    --bybit-text-color: #ffbf00;
 }
 
 [data-theme="dark"] {
@@ -36,4 +38,6 @@
     --kraken-text-color: #b8b8b8;
     --okx-background-color: #36454F;
     --okx-text-color: #b8b8b8;
+    --bybit-background-color: #e6e6e6;
+    --bybit-text-color: #997300;
 }

@@ -1,6 +1,7 @@
 from exchange_radar.producer.enums import Ranking
 from exchange_radar.producer.settings.exchanges import (
     BINANCE_COINS,
+    BYBIT_COINS,
     COINBASE_COINS,
     KRAKEN_COINS,
     KUCOIN_COINS,
@@ -49,6 +50,7 @@ def get_exchanges(coin: str) -> str:
         (KRAKEN_COINS, "Kraken"),
         (KUCOIN_COINS, "Kucoin"),
         (OKX_COINS, "OKX"),
+        (BYBIT_COINS, "Bybit"),
     ]
     coin_length = len(coin)
     exchanges_selected = []

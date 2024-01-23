@@ -128,6 +128,23 @@ services:
       - ./exchange_radar/producer:/app/exchange_radar/producer
     command: /start
 
+  producer-bybit:
+    build:
+      context: .
+      dockerfile: compose/producer/bybit/Dockerfile
+    image: exchange_radar_producer_bybit
+    container_name: exchange-radar-producer-bybit
+    env_file:
+      - ./.envs/.local/.rabbitmq
+      - ./.envs/.local/.producer
+      - ./.envs/.local/.redis
+    depends_on:
+      - rabbitmq
+      - redis
+    volumes:
+      - ./exchange_radar/producer:/app/exchange_radar/producer
+    command: /start
+
   consumer:
     build:
       context: .
