@@ -13,7 +13,7 @@ from exchange_radar.producer.serializers.okx import OkxTradeSerializer
 @patch("exchange_radar.producer.models.redis")
 def test_serializer_binance(mock_redis):
     mock_redis.hincrbyfloat.return_value = 100.0
-    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[True, 1.0, 100.0])
+    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[1.0, 100.0])
 
     msg = {
         "e": "trade",  # Event type
@@ -61,7 +61,7 @@ def test_serializer_binance(mock_redis):
 @patch("exchange_radar.producer.models.redis")
 def test_serializer_kucoin(mock_redis):
     mock_redis.hincrbyfloat.return_value = 3.7335
-    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[False, 1.0, 100.0])
+    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[1.0, 100.0])
 
     msg = {
         "type": "message",
@@ -113,7 +113,7 @@ def test_serializer_kucoin(mock_redis):
 @patch("exchange_radar.producer.models.redis")
 def test_serializer_coinbase(mock_redis):
     mock_redis.hincrbyfloat.return_value = 0.00251665
-    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[True, 1.0, 100.0])
+    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[1.0, 100.0])
 
     msg = {
         "type": "last_match",
@@ -160,7 +160,7 @@ def test_serializer_coinbase(mock_redis):
 @patch("exchange_radar.producer.models.redis")
 def test_serializer_kraken(mock_redis):
     mock_redis.hincrbyfloat.return_value = 0.03409475
-    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[False, 1.0, 100.0])
+    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[1.0, 100.0])
 
     msg = [
         337,
@@ -212,7 +212,7 @@ def test_serializer_kraken(mock_redis):
 @patch("exchange_radar.producer.models.redis")
 def test_serializer_okx(mock_redis):
     mock_redis.hincrbyfloat.return_value = 3.7335
-    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[False, 1.0, 100.0])
+    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[1.0, 100.0])
 
     msg = (
         '{"arg": {"channel": "trades-all", "instId": "BTC-USDT"}, '
