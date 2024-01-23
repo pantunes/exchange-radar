@@ -117,6 +117,21 @@ services:
       - redis
     command: /start
 
+  producer-bybit:
+    build:
+      context: .
+      dockerfile: compose/producer/bybit/Dockerfile
+    image: exchange_radar_producer_bybit
+    container_name: exchange-radar-producer-bybit
+    env_file:
+      - ./.envs/.production/.rabbitmq
+      - ./.envs/.production/.producer
+      - ./.envs/.production/.redis
+    depends_on:
+      - rabbitmq
+      - redis
+    command: /start
+
   consumer:
     build:
       context: .

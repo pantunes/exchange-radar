@@ -5,6 +5,7 @@ env = Env()
 
 EXCHANGES: dict[str:str] = {
     "binance": "BinanceTradesTask",
+    "bybit": "BybitTradesTask",
     "kucoin": "KuCoinTradesTask",
     "coinbase": "CoinbaseTradesTask",
     "kraken": "KrakenTradesTask",
@@ -14,6 +15,7 @@ EXCHANGES: dict[str:str] = {
 EXCHANGES_LIST = list(EXCHANGES.keys())
 
 BINANCE_COINS = env.list("BINANCE_COINS", delimiter=" ")
+BYBIT_COINS = env.list("BYBIT_COINS", delimiter=" ")
 KUCOIN_COINS = env.list("KUCOIN_COINS", delimiter=" ")
 COINBASE_COINS = env.list("COINBASE_COINS", delimiter=" ")
 KRAKEN_COINS = env.list("KRAKEN_COINS", delimiter=" ")

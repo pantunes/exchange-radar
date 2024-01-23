@@ -4,6 +4,7 @@ from decimal import Decimal
 from unittest.mock import MagicMock, patch
 
 from exchange_radar.producer.serializers.binance import BinanceTradeSerializer
+from exchange_radar.producer.serializers.bybit import BybitTradeSerializer
 from exchange_radar.producer.serializers.coinbase import CoinbaseTradeSerializer
 from exchange_radar.producer.serializers.kraken import KrakenTradeSerializer
 from exchange_radar.producer.serializers.kucoin import KucoinTradeSerializer
@@ -246,4 +247,42 @@ def test_serializer_okx(mock_redis):
         "             QTY: 0.00021505 BTC |        TOTAL: 9.23938670 USDT",
         "exchange": "OKX",
         "is_seller": True,
+    }
+
+
+@patch("exchange_radar.producer.models.redis")
+def test_serializer_bybit(mock_redis):
+    mock_redis.hincrbyfloat.return_value = 3.7335
+    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[1.0, 100.0])
+
+    msg = {
+        "i": "2280000000179998536",
+        "T": 1706016564433,
+        "p": "2211.18",
+        "v": "0.00268",
+        "S": "Buy",
+        "s": "ETHUSDT",
+        "BT": False,
+    }
+
+    payload = BybitTradeSerializer(**msg)
+
+    assert payload.model_dump() == {
+        "symbol": "ETHUSDT",
+        "price": Decimal("2211.18"),
+        "quantity": Decimal("0.00268"),
+        "trade_time": datetime.datetime(2024, 1, 23, 13, 29, 24),
+        "total": Decimal("5.9259624"),
+        "currency": "USDT",
+        "trade_symbol": "ETH",
+        "volume": 3.7335,
+        "volume_trades": (1.0, 100.0),
+        "number_trades": (1, 100),
+        "trade_time_ts": 1706016564,
+        "message": "2024-01-23 13:29:24 | <span class='bybit'>Bybit   </span> |  2211.18000000 USDT |"
+        "             0.00268000 ETH |        5.92596240 USDT",
+        "message_with_keys": "2024-01-23 13:29:24 | Bybit    |  PRICE: 2211.18000000 USDT |"
+        "             QTY: 0.00268000 ETH |        TOTAL: 5.92596240 USDT",
+        "exchange": "Bybit",
+        "is_seller": False,
     }

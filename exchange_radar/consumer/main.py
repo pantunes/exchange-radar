@@ -40,7 +40,7 @@ class Callback:
 
         data = json.loads(body)
 
-        logger.info(f"CONSUMER - data: {str(data)[:128]}")
+        logger.info(f"CONSUMER - data: {data}")
 
         url = self.url.format(coin=data["trade_symbol"])
         try:
