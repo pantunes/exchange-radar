@@ -22,3 +22,8 @@
     background: var(--okx-background-color);
     color: var(--okx-text-color);
 }
+
+.bybit {
+    background: var(--bybit-background-color);
+    color: var(--bybit-text-color);
+}

@@ -25,6 +25,7 @@ TRADES_STATS_URL = env.str("TRADES_STATS_URL")
 TRADES_HISTORY_URL = env.str("TRADES_HISTORY_URL")
 
 BINANCE = env.list("BINANCE")
+BYBIT = env.list("BYBIT")
 COINBASE = env.list("COINBASE")
 KRAKEN = env.list("KRAKEN")
 KUCOIN = env.list("KUCOIN")
