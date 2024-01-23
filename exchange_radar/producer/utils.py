@@ -1,8 +1,14 @@
 from exchange_radar.producer.enums import Ranking
-from exchange_radar.producer.serializers.base import BaseSerializer
+from exchange_radar.producer.settings.exchanges import (
+    BINANCE_COINS,
+    COINBASE_COINS,
+    KRAKEN_COINS,
+    KUCOIN_COINS,
+    OKX_COINS,
+)
 
 
-def get_ranking(data: BaseSerializer) -> Ranking | None:
+def get_ranking(data) -> Ranking | None:
     if data.currency in (
         "USDT",
         "USD",
@@ -34,3 +40,23 @@ def get_ranking(data: BaseSerializer) -> Ranking | None:
         return
 
     raise ValueError(f"Currency not configured {data.currency}")
+
+
+def get_exchanges(coin: str) -> str:
+    exchanges = [
+        (BINANCE_COINS, "Binance"),
+        (COINBASE_COINS, "Coinbase"),
+        (KRAKEN_COINS, "Kraken"),
+        (KUCOIN_COINS, "Kucoin"),
+        (OKX_COINS, "OKX"),
+    ]
+    coin_length = len(coin)
+    exchanges_selected = []
+
+    for coins, exchange in exchanges:
+        for _coin in coins:
+            if _coin[:coin_length] == coin:
+                exchanges_selected.append(exchange)
+                break
+
+    return ", ".join(exchanges_selected)

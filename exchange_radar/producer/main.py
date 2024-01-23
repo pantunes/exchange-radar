@@ -1,8 +1,9 @@
+import importlib
 import logging
 
 import click
 
-from exchange_radar.producer.settings.exchanges import EXCHANGES
+from exchange_radar.producer.settings.exchanges import EXCHANGES, EXCHANGES_LIST
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -10,9 +11,11 @@ logger.setLevel(logging.INFO)
 
 @click.command()
 @click.argument("symbols", nargs=-1, required=True, type=str)
-@click.option("--exchange", "-e", required=True, type=click.Choice(list(EXCHANGES.keys())))
+@click.option("--exchange", "-e", required=True, type=click.Choice(EXCHANGES_LIST))
 def main(symbols: tuple, exchange: str):
-    task = EXCHANGES[exchange]()
+    module_path = f"exchange_radar.producer.tasks.{exchange}"
+    module = importlib.import_module(module_path)
+    task = getattr(module, EXCHANGES[exchange])()
 
     logger.info(f"Exchange: {exchange}")
     logger.info(f"Symbols: {symbols}")

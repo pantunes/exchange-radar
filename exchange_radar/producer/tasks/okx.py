@@ -10,7 +10,6 @@ from exchange_radar.producer.serializers.okx import OkxTradeSerializer
 from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
 
 logging.getLogger("WsPublic").propagate = False
 
@@ -38,10 +37,9 @@ class OkxTradesTask(Task):
                 self.num_events = 0
 
                 try:
-                    data = OkxTradeSerializer(**json.loads(message)["data"][0])
-                    publish(data)
-                except KeyError:
-                    pass
+                    for message in json.loads(message)["data"]:
+                        data = OkxTradeSerializer(**message)
+                        publish(data)
                 except Exception as error1:
                     logger.error(f"ERROR(1): {error1}")
 

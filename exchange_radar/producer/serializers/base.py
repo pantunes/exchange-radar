@@ -8,7 +8,7 @@ from exchange_radar.producer.models import RedisMixin
 from exchange_radar.producer.settings.base import CURRENCIES
 
 
-class BaseSerializer(BaseModel, RedisMixin):
+class BaseSerializer(RedisMixin, BaseModel):
     @field_validator("trade_time", check_fields=False)  # noqa
     @classmethod
     def trade_time_normalization(cls, v) -> str:

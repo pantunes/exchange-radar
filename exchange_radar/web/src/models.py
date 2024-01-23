@@ -1,5 +1,5 @@
 import logging
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 from pydantic import BaseModel, computed_field
 from redis_om import Field, JsonModel, Migrator, get_redis_connection
@@ -112,24 +112,23 @@ Migrator().run()
 class Stats(BaseModel):  # pragma: no cover
     trade_symbol: str
 
-    @staticmethod
-    def _get_name() -> str:
-        return datetime.today().date().strftime("%Y-%m-%d")
+    def __init__(self):
+        super().__init__()
+        self._name = datetime.today().date().strftime("%Y-%m-%d")
 
     @computed_field
     def volume(self) -> float | None:
         try:
-            result = float(redis.hget(self._get_name(), f"{self.trade_symbol}_VOLUME"))
+            result = float(redis.hget(self._name, f"{self.trade_symbol}_VOLUME"))
         except TypeError:
             return None
         return result
 
     @computed_field
     def volume_trades(self) -> tuple[float, float] | None:
-        name = self._get_name()
         pipe = redis.pipeline()
-        pipe.hget(name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")
-        pipe.hget(name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")
+        pipe.hget(self._name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")
+        pipe.hget(self._name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")
         result = pipe.execute()
         try:
             result = float(result[0]), float(result[1])
@@ -139,10 +138,9 @@ class Stats(BaseModel):  # pragma: no cover
 
     @computed_field
     def number_trades(self) -> tuple[int, int] | None:
-        name = self._get_name()
         pipe = redis.pipeline()
-        pipe.hget(name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS")
-        pipe.hget(name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")
+        pipe.hget(self._name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS")
+        pipe.hget(self._name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")
         result = pipe.execute()
         try:
             result = int(result[0]), int(result[1])
@@ -154,18 +152,16 @@ class Stats(BaseModel):  # pragma: no cover
 class History(BaseModel):  # pragma: no cover
     trade_symbol: str
 
-    @staticmethod
-    def _get_name() -> tuple[date, str]:
-        current_date = datetime.today().date()
-        return current_date, current_date.strftime("%Y-%m-%d")
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._current_date = datetime.today().date()
 
     @computed_field
     def rows(self) -> list[str]:
-        current_date, name = self._get_name()
         cached_days = (
             (
-                (current_date - timedelta(days=i)).strftime("%Y-%m-%d"),
-                (current_date - timedelta(days=i)).strftime("%A")[:3],
+                (self._current_date - timedelta(days=i)).strftime("%Y-%m-%d"),
+                (self._current_date - timedelta(days=i)).strftime("%A")[:3],
             )
             for i in range(settings.REDIS_EXPIRATION)
         )
@@ -180,24 +176,31 @@ class History(BaseModel):  # pragma: no cover
                 pipe.hget(name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")
                 pipe.hget(name, f"{self.trade_symbol}_PRICE")
                 pipe.hget(name, f"{self.trade_symbol}_CURRENCY")
+                pipe.hget(name, f"{self.trade_symbol}_EXCHANGES")
                 result = pipe.execute()
             try:
-                volume, volume_buy_orders, volume_sell_orders, number_buy_orders, number_sell_orders = (
+                (
+                    volume,
+                    volume_buy_orders,
+                    volume_sell_orders,
+                    number_buy_orders,
+                    number_sell_orders,
+                    price_open,
+                    currency,
+                    exchanges,
+                ) = (
                     float(result[0]),
                     float(result[1]),
                     float(result[2]),
                     int(result[3]),
                     int(result[4]),
+                    float(result[5]),
+                    result[6] or "-",
+                    result[7] or "-",
                 )
             except TypeError:
                 break
             else:
-                try:
-                    price, currency = float(result[5]), result[6]
-                except TypeError:
-                    price = 0.0
-                    currency = "-"
-
                 row = (
                     f"{name} | "
                     f"{dow} | "
@@ -207,7 +210,8 @@ class History(BaseModel):  # pragma: no cover
                     f"{'{:,.2f} {}'.format(volume_sell_orders, self.trade_symbol.rjust(4)).rjust(21 + 5, ' ')} | "
                     f"{'{:,}'.format(number_buy_orders).rjust(14)} | "
                     f"{'{:,}'.format(number_sell_orders).rjust(15)} |"
-                    f"{'{:,.8f} {}'.format(price, currency.rjust(4)).rjust(16 + 5, ' ')} | "
+                    f"{'{:,.8f} {}'.format(price_open, currency.rjust(4)).rjust(16 + 5, ' ')} | "
+                    f"{exchanges}"
                 )
                 data.append(row)
 
