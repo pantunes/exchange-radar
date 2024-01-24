@@ -67,14 +67,3 @@ class BaseSerializer(RedisMixin, BaseModel):
             f"{'{:.8f} {}'.format(self.quantity, self.trade_symbol).rjust(21 + 5, ' ')} | "
             f"{'{:.8f} {}'.format(self.total, self.currency.rjust(4)).rjust(17 + 5, ' ')}"
         )
-
-    @computed_field
-    @cached_property
-    def message_with_keys(self) -> str:
-        return (
-            f"{self.trade_time} | "
-            f"{self.exchange.ljust(8, ' ')} | "
-            f"{'PRICE: {:.8f} {}'.format(self.price, self.currency).rjust(7 + 14 + 5, ' ')} | "
-            f"{'QTY: {:.8f} {}'.format(self.quantity, self.trade_symbol).rjust(5 + 21 + 5, ' ')} | "
-            f"{'TOTAL: {:.8f} {}'.format(self.total, self.currency).rjust(7 + 17 + 5, ' ')}"
-        )
