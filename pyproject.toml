@@ -20,6 +20,8 @@ keywords=[
     "coinbase",
     "kraken",
     "kucoin",
+    "okx",
+    "bybit"
 ]
 classifiers=[
     "Development Status :: 5 - Production/Stable",
