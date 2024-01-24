@@ -8,7 +8,6 @@
   "currency": "USD",
   "trade_symbol": "BTC",
   "message": "2024-07-23 12:23:40 | <span class='kraken'>Kraken  </span> | 100000  USD |             10.123 BTC |     1012300  USD",
-  "message_with_keys": "2023-07-23 12:23:40 | Kraken   |  PRICE: 100000 USD |             QTY: 10.123 BTC |      TOTAL: 1012300 USD",
   "number_trades":["1", "1"],
   "is_seller": true,
   "exchange": "Kraken",

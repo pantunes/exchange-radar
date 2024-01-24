@@ -44,8 +44,6 @@ def test_serializer_binance(mock_redis):
         "trade_symbol": "BNB",
         "message": "2022-12-31 19:43:02 | <span class='binance'>Binance </span> |     0.00100000  BTC |"
         "           100.00000000 BNB |        0.10000000  BTC",
-        "message_with_keys": "2022-12-31 19:43:02 | Binance  |      PRICE: 0.00100000 BTC |"
-        "           QTY: 100.00000000 BNB |         TOTAL: 0.10000000 BTC",
         "number_trades": (
             1,
             100,
@@ -95,8 +93,6 @@ def test_serializer_kucoin(mock_redis):
         "trade_symbol": "LTO",
         "message": "2023-05-03 10:10:39 | <span class='kucoin'>KuCoin  </span> |     0.00000352  BTC |"
         "             3.73350000 LTO |        0.00001313  BTC",
-        "message_with_keys": "2023-05-03 10:10:39 | KuCoin   |      PRICE: 0.00000352 BTC |"
-        "             QTY: 3.73350000 LTO |         TOTAL: 0.00001313 BTC",
         "number_trades": (
             1,
             100,
@@ -142,8 +138,6 @@ def test_serializer_coinbase(mock_redis):
         "trade_symbol": "ETH",
         "message": "2023-07-16 12:19:57 | <span class='coinbase'>Coinbase</span> |  1933.93000000  USD |"
         "             0.00251665 ETH |        4.86702493  USD",
-        "message_with_keys": "2023-07-16 12:19:57 | Coinbase |   PRICE: 1933.93000000 USD |"
-        "             QTY: 0.00251665 ETH |         TOTAL: 4.86702493 USD",
         "number_trades": (
             1,
             100,
@@ -194,8 +188,6 @@ def test_serializer_kraken(mock_redis):
         "trade_symbol": "BTC",
         "message": "2023-07-23 12:23:40 | <span class='kraken'>Kraken  </span> | 29911.20000000  USD |"
         "             0.03409475 BTC |     1019.81488620  USD",
-        "message_with_keys": "2023-07-23 12:23:40 | Kraken   |  PRICE: 29911.20000000 USD |"
-        "             QTY: 0.03409475 BTC |      TOTAL: 1019.81488620 USD",
         "number_trades": (
             1,
             100,
@@ -243,8 +235,6 @@ def test_serializer_okx(mock_redis):
         "trade_time_ts": 1705350981,
         "message": "2024-01-15 20:36:21 | <span class='okx'>OKX     </span> | 42963.90000000 USDT |"
         "             0.00021505 BTC |        9.23938670 USDT",
-        "message_with_keys": "2024-01-15 20:36:21 | OKX      | PRICE: 42963.90000000 USDT |"
-        "             QTY: 0.00021505 BTC |        TOTAL: 9.23938670 USDT",
         "exchange": "OKX",
         "is_seller": True,
     }
@@ -281,8 +271,6 @@ def test_serializer_bybit(mock_redis):
         "trade_time_ts": 1706016564,
         "message": "2024-01-23 13:29:24 | <span class='bybit'>Bybit   </span> |  2211.18000000 USDT |"
         "             0.00268000 ETH |        5.92596240 USDT",
-        "message_with_keys": "2024-01-23 13:29:24 | Bybit    |  PRICE: 2211.18000000 USDT |"
-        "             QTY: 0.00268000 ETH |        TOTAL: 5.92596240 USDT",
         "exchange": "Bybit",
         "is_seller": False,
     }

@@ -31,7 +31,6 @@ class Feed(JsonModel):  # pragma: no cover
         "volume_trades": [38839.13855542, 38650.71084956],
         "number_trades": [96918, 95907],
         "message": "2024-01-10 22:37:02 | <span class='binance'>Binance </span> |  2549.83000000 USDT | ....."
-        "message_with_keys": "2024-01-10 22:37:02 | Binance  |  PRICE: 2549.83000000 USDT | ....."
         "exchange": "Binance",
     }
     Thin version:
