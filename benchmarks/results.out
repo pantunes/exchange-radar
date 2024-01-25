@@ -1,0 +1,233 @@
+$ make benchmark
+
+This is ApacheBench, Version 2.3 <$Revision: 1903618 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+Completed 9000 requests
+Completed 10000 requests
+Finished 10000 requests
+
+
+Server Software:        uvicorn
+Server Hostname:        127.0.0.1
+Server Port:            9000
+
+Document Path:          /BTC
+Document Length:        9509 bytes
+
+Concurrency Level:      1
+Time taken for tests:   7.320 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      96440000 bytes
+HTML transferred:       95090000 bytes
+Requests per second:    1366.09 [#/sec] (mean)
+Time per request:       0.732 [ms] (mean)
+Time per request:       0.732 [ms] (mean, across all concurrent requests)
+Transfer rate:          12865.78 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.1      0       3
+Processing:     0    1   0.4      1      11
+Waiting:        0    1   0.4      1      11
+Total:          0    1   0.4      1      11
+
+Percentage of the requests served within a certain time (ms)
+  50%      1
+  66%      1
+  75%      1
+  80%      1
+  90%      1
+  95%      1
+  98%      1
+  99%      2
+ 100%     11 (longest request)
+This is ApacheBench, Version 2.3 <$Revision: 1903618 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+Completed 9000 requests
+Completed 10000 requests
+Finished 10000 requests
+
+
+Server Software:        uvicorn
+Server Hostname:        127.0.0.1
+Server Port:            9000
+
+Document Path:          /BTC
+Document Length:        9509 bytes
+
+Concurrency Level:      50
+Time taken for tests:   26.736 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      96440000 bytes
+HTML transferred:       95090000 bytes
+Requests per second:    374.03 [#/sec] (mean)
+Time per request:       133.678 [ms] (mean)
+Time per request:       2.674 [ms] (mean, across all concurrent requests)
+Transfer rate:          3522.64 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0   21 400.9      0   19507
+Processing:     0   10  10.1     13     198
+Waiting:        0   10  10.0     13     198
+Total:          0   31 401.1     13   19513
+
+Percentage of the requests served within a certain time (ms)
+  50%     13
+  66%     14
+  75%     14
+  80%     15
+  90%     17
+  95%     25
+  98%     42
+  99%     59
+ 100%  19513 (longest request)
+This is ApacheBench, Version 2.3 <$Revision: 1903618 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+Completed 9000 requests
+Completed 10000 requests
+Finished 10000 requests
+
+
+Server Software:        uvicorn
+Server Hostname:        127.0.0.1
+Server Port:            9000
+
+Document Path:          /BTC
+Document Length:        9509 bytes
+
+Concurrency Level:      50
+Time taken for tests:   6.042 seconds
+Complete requests:      10000
+Failed requests:        0
+Keep-Alive requests:    0
+Total transferred:      96440000 bytes
+HTML transferred:       95090000 bytes
+Requests per second:    1655.05 [#/sec] (mean)
+Time per request:       30.211 [ms] (mean)
+Time per request:       0.604 [ms] (mean, across all concurrent requests)
+Transfer rate:          15587.23 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0   15 104.1      0     865
+Processing:     1   15   3.5     15      40
+Waiting:        1   15   3.5     14      40
+Total:          1   30 106.0     15     900
+
+Percentage of the requests served within a certain time (ms)
+  50%     15
+  66%     15
+  75%     16
+  80%     17
+  90%     19
+  95%     22
+  98%    621
+  99%    821
+ 100%    900 (longest request)
+This is ApacheBench, Version 2.3 <$Revision: 1903618 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+apr_socket_recv: Operation timed out (60)
+Total of 8145 requests completed
+This is ApacheBench, Version 2.3 <$Revision: 1903618 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+Completed 9000 requests
+Completed 10000 requests
+Finished 10000 requests
+
+
+Server Software:        uvicorn
+Server Hostname:        127.0.0.1
+Server Port:            9000
+
+Document Path:          /api/feed/BTC/whales
+Document Length:        10 bytes
+
+Concurrency Level:      50
+Time taken for tests:   10.989 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      1400000 bytes
+Total body sent:        6380000
+HTML transferred:       100000 bytes
+Requests per second:    909.98 [#/sec] (mean)
+Time per request:       54.946 [ms] (mean)
+Time per request:       1.099 [ms] (mean, across all concurrent requests)
+Transfer rate:          124.41 [Kbytes/sec] received
+                        566.96 kb/s sent
+                        691.37 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.2      0       4
+Processing:     2   55  56.2     47     682
+Waiting:        2   55  56.1     46     682
+Total:          3   55  56.2     47     682
+
+Percentage of the requests served within a certain time (ms)
+  50%     47
+  66%     48
+  75%     50
+  80%     52
+  90%     56
+  95%     60
+  98%    109
+  99%    425
+ 100%    682 (longest request)
