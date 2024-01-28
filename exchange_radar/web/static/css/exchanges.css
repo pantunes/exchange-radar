@@ -27,3 +27,8 @@
     background: var(--bybit-background-color);
     color: var(--bybit-text-color);
 }
+
+.bitstamp {
+    background: var(--bitstamp-background-color);
+    color: var(--bitstamp-text-color);
+}

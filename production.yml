@@ -132,6 +132,21 @@ services:
       - redis
     command: /start
 
+  producer-bitstamp:
+    build:
+      context: .
+      dockerfile: compose/producer/bitstamp/Dockerfile
+    image: exchange_radar_producer_bitstamp
+    container_name: exchange-radar-producer-bitstamp
+    env_file:
+      - ./.envs/.production/.rabbitmq
+      - ./.envs/.production/.producer
+      - ./.envs/.production/.redis
+    depends_on:
+      - rabbitmq
+      - redis
+    command: /start
+
   consumer:
     build:
       context: .

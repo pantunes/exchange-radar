@@ -18,6 +18,8 @@
     --okx-text-color: white;
     --bybit-background-color: white;
     --bybit-text-color: #ffbf00;
+    --bitstamp-background-color: #07342a;
+    --bitstamp-text-color: #2ffb97;
 }
 
 [data-theme="dark"] {
@@ -40,4 +42,6 @@
     --okx-text-color: #b8b8b8;
     --bybit-background-color: #b8b8b8;
     --bybit-text-color: #997300;
+    --bitstamp-background-color: #041c17;
+    --bitstamp-text-color: #367a59;
 }
