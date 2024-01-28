@@ -9,9 +9,9 @@ homepage = "https://exchangeradar.tech"
 repository = "https://github.com/pantunes/exchange-radar"
 keywords=[
     "cryptocurrency",
-    "bitcoin",
-    "ethereum",
-    "signals",
+    "bitcoin", "btc",
+    "ethereum", "eth",
+    "chainlink", "link",
     "trading",
     "crypto exchanges",
     "exchange",
@@ -21,7 +21,8 @@ keywords=[
     "kraken",
     "kucoin",
     "okx",
-    "bybit"
+    "bybit",
+    "bitstamp"
 ]
 classifiers=[
     "Development Status :: 5 - Production/Stable",

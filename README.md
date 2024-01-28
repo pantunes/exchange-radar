@@ -14,6 +14,7 @@ Exchange Radar currently supports the following top exchanges by trading volume:
 - KuCoin
 - OKX
 - Bybit
+- Bitstamp
 
 ### Build & Run
 Get started effortlessly:
