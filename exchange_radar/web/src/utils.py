@@ -16,6 +16,8 @@ def get_exchanges(coin: str) -> str:
         exchanges.append("<span class='okx'>OKX</span>")
     if coin in settings.BYBIT:
         exchanges.append("<span class='bybit'>Bybit</span>")
+    if coin in settings.BITSTAMP:
+        exchanges.append("<span class='bitstamp'>Bitstamp</span>")
 
     if len(exchanges) == 0:
         raise ValueError(f"No exchanges found for the coin {coin}")

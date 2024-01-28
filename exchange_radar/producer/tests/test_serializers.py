@@ -4,6 +4,7 @@ from decimal import Decimal
 from unittest.mock import MagicMock, patch
 
 from exchange_radar.producer.serializers.binance import BinanceTradeSerializer
+from exchange_radar.producer.serializers.bitstamp import BitstampTradeSerializer
 from exchange_radar.producer.serializers.bybit import BybitTradeSerializer
 from exchange_radar.producer.serializers.coinbase import CoinbaseTradeSerializer
 from exchange_radar.producer.serializers.kraken import KrakenTradeSerializer
@@ -272,5 +273,40 @@ def test_serializer_bybit(mock_redis):
         "message": "2024-01-23 13:29:24 | <span class='bybit'>Bybit   </span> |  2211.18000000 USDT |"
         "             0.00268000 ETH |        5.92596240 USDT",
         "exchange": "Bybit",
+        "is_seller": False,
+    }
+
+
+@patch("exchange_radar.producer.models.redis")
+def test_serializer_bitstamp(mock_redis):
+    mock_redis.hincrbyfloat.return_value = 3.7335
+    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[1.0, 100.0])
+
+    msg = (
+        '{"data": {"id": 317421548, "timestamp": "1706398070", "amount": 0.0116, "amount_str": "0.01160000", '
+        '"price": 2266.7, "price_str": "2266.7", "type": 0, "microtimestamp": "1706398070601000", '
+        '"buy_order_id": 1710338440986624, "sell_order_id": 1710338436296705}, "channel": "live_trades_ethusd", '
+        '"event": "trade"}'
+    )
+    msg = json.loads(msg)
+    msg["data"]["channel"] = msg["channel"]
+
+    payload = BitstampTradeSerializer(**msg["data"])
+
+    assert payload.model_dump() == {
+        "symbol": "ETHUSD",
+        "price": Decimal("2266.7"),
+        "quantity": Decimal("0.01160000"),
+        "trade_time": datetime.datetime(2024, 1, 27, 23, 27, 50),
+        "total": Decimal("26.293720000"),
+        "currency": "USD",
+        "trade_symbol": "ETH",
+        "volume": 3.7335,
+        "volume_trades": (1.0, 100.0),
+        "number_trades": (1, 100),
+        "trade_time_ts": 1706398070,
+        "message": "2024-01-27 23:27:50 | <span class='bitstamp'>Bitstamp</span> |  2266.70000000  USD |"
+        "             0.01160000 ETH |       26.29372000  USD",
+        "exchange": "Bitstamp",
         "is_seller": False,
     }
