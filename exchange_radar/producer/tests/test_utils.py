@@ -41,8 +41,8 @@ def test_get_ranking__error():
 @pytest.mark.parametrize(
     "coin, expected",
     [
-        ("BTC", "Binance, Coinbase, Kraken, Kucoin, OKX, Bybit, Bitstamp"),
-        ("ETH", "Binance, Coinbase, Kraken, Kucoin, OKX, Bybit, Bitstamp"),
+        ("BTC", "Binance, Coinbase, Kraken, Kucoin, OKX, Bybit, Bitstamp, MEXC"),
+        ("ETH", "Binance, Coinbase, Kraken, Kucoin, OKX, Bybit, Bitstamp, MEXC"),
         ("LTO", "Binance, Kucoin"),
     ],
 )

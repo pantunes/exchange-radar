@@ -22,7 +22,8 @@ keywords=[
     "kucoin",
     "okx",
     "bybit",
-    "bitstamp"
+    "bitstamp",
+    "mexc",
 ]
 classifiers=[
     "Development Status :: 5 - Production/Stable",
@@ -50,6 +51,7 @@ copra = "^1.2.9"
 python-kucoin = "^2.1.3"
 python-okx = "^0.2.6"
 pybit = "^5.6.2"
+pymexc = "^1.0.10"
 # /exchanges
 pika = "^1.3.2"
 requests = "^2.31.0"

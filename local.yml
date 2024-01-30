@@ -162,6 +162,23 @@ services:
       - ./exchange_radar/producer:/app/exchange_radar/producer
     command: /start
 
+  producer-mexc:
+    build:
+      context: .
+      dockerfile: compose/producer/mexc/Dockerfile
+    image: exchange_radar_producer_mexc
+    container_name: exchange-radar-producer-mexc
+    env_file:
+      - ./.envs/.local/.rabbitmq
+      - ./.envs/.local/.producer
+      - ./.envs/.local/.redis
+    depends_on:
+      - rabbitmq
+      - redis
+    volumes:
+      - ./exchange_radar/producer:/app/exchange_radar/producer
+    command: /start
+
   consumer:
     build:
       context: .
