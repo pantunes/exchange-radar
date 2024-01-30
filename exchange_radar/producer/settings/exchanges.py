@@ -11,6 +11,7 @@ EXCHANGES: dict[str:str] = {
     "kraken": "KrakenTradesTask",
     "okx": "OkxTradesTask",
     "bitstamp": "BitstampTradesTask",
+    "mexc": "MexcTradesTask",
 }
 
 EXCHANGES_LIST = list(EXCHANGES.keys())
@@ -22,3 +23,4 @@ COINBASE_COINS = env.list("COINBASE_COINS", delimiter=" ")
 KRAKEN_COINS = env.list("KRAKEN_COINS", delimiter=" ")
 OKX_COINS = env.list("OKX_COINS", delimiter=" ")
 BITSTAMP_COINS = env.list("BITSTAMP_COINS", delimiter=" ")
+MEXC_COINS = env.list("MEXC_COINS", delimiter=" ")

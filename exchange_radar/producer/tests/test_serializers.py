@@ -9,6 +9,7 @@ from exchange_radar.producer.serializers.bybit import BybitTradeSerializer
 from exchange_radar.producer.serializers.coinbase import CoinbaseTradeSerializer
 from exchange_radar.producer.serializers.kraken import KrakenTradeSerializer
 from exchange_radar.producer.serializers.kucoin import KucoinTradeSerializer
+from exchange_radar.producer.serializers.mexc import MexcTradeSerializer
 from exchange_radar.producer.serializers.okx import OkxTradeSerializer
 
 
@@ -308,5 +309,43 @@ def test_serializer_bitstamp(mock_redis):
         "message": "2024-01-27 23:27:50 | <span class='bitstamp'>Bitstamp</span> |  2266.70000000  USD |"
         "             0.01160000 ETH |       26.29372000  USD",
         "exchange": "Bitstamp",
+        "is_seller": False,
+    }
+
+
+@patch("exchange_radar.producer.models.redis")
+def test_serializer_mexc(mock_redis):
+    mock_redis.hincrbyfloat.return_value = 3.7335
+    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[1.0, 100.0])
+
+    msg = {
+        "c": "spot@public.deals.v3.api@BTCUSDT",
+        "d": {
+            "deals": [{"p": "43469.99", "v": "0.002153", "S": 1, "t": 1706615234824}],
+            "e": "spot@public.deals.v3.api",
+        },
+        "s": "BTCUSDT",
+        "t": 1706615234826,
+    }
+
+    _msg = msg["d"]["deals"][0]
+    _msg.update({"s": msg["s"]})
+    payload = MexcTradeSerializer(**_msg)
+
+    assert payload.model_dump() == {
+        "symbol": "BTCUSDT",
+        "price": Decimal("43469.99"),
+        "quantity": Decimal("0.002153"),
+        "trade_time": datetime.datetime(2024, 1, 30, 11, 47, 14),
+        "total": Decimal("93.59088847"),
+        "currency": "USDT",
+        "trade_symbol": "BTC",
+        "volume": 3.7335,
+        "volume_trades": (1.0, 100.0),
+        "number_trades": (1, 100),
+        "trade_time_ts": 1706615234,
+        "message": "2024-01-30 11:47:14 | <span class='mexc'>MEXC    </span> | 43469.99000000 USDT |"
+        "             0.00215300 BTC |       93.59088847 USDT",
+        "exchange": "MEXC",
         "is_seller": False,
     }

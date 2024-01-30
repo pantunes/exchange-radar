@@ -11,14 +11,14 @@ from exchange_radar.web.src.utils import get_exchanges
             "<span class='binance'>Binance</span> <span class='coinbase'>Coinbase</span> "
             "<span class='kraken'>Kraken</span> <span class='kucoin'>KuCoin</span> "
             "<span class='okx'>OKX</span> <span class='bybit'>Bybit</span> "
-            "<span class='bitstamp'>Bitstamp</span>",
+            "<span class='bitstamp'>Bitstamp</span> <span class='mexc'>MEXC</span>",
         ),
         (
             "ETH",
             "<span class='binance'>Binance</span> <span class='coinbase'>Coinbase</span> "
             "<span class='kraken'>Kraken</span> <span class='kucoin'>KuCoin</span> "
             "<span class='okx'>OKX</span> <span class='bybit'>Bybit</span> "
-            "<span class='bitstamp'>Bitstamp</span>",
+            "<span class='bitstamp'>Bitstamp</span> <span class='mexc'>MEXC</span>",
         ),
         ("LTO", "<span class='binance'>Binance</span> <span class='kucoin'>KuCoin</span>"),
     ],

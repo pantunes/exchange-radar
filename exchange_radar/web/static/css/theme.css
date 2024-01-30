@@ -20,6 +20,8 @@
     --bybit-text-color: #ffbf00;
     --bitstamp-background-color: #07342a;
     --bitstamp-text-color: #2ffb97;
+    --mexc-background-color: #2d70eb;
+    --mexc-text-color: white;
 }
 
 [data-theme="dark"] {
@@ -44,4 +46,6 @@
     --bybit-text-color: #997300;
     --bitstamp-background-color: #041c17;
     --bitstamp-text-color: #367a59;
+    --mexc-background-color: #3c5582;
+    --mexc-text-color: #b8b8b8;
 }
