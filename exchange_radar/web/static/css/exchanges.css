@@ -32,3 +32,8 @@
     background: var(--bitstamp-background-color);
     color: var(--bitstamp-text-color);
 }
+
+.mexc {
+    background: var(--mexc-background-color);
+    color: var(--mexc-text-color);
+}

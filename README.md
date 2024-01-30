@@ -7,7 +7,7 @@
 Welcome to Exchange Radar, your gateway to real-time trade data from major cryptocurrency exchanges.
 
 ### Supported Exchanges
-Exchange Radar currently supports the following top exchanges by trading volume:
+Exchange Radar currently supports the following top exchanges by reputation and trading volume:
 - Binance
 - Coinbase
 - Kraken
@@ -15,6 +15,7 @@ Exchange Radar currently supports the following top exchanges by trading volume:
 - OKX
 - Bybit
 - Bitstamp
+- MEXC
 
 ### Build & Run
 Get started effortlessly:

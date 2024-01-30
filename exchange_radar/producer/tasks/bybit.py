@@ -20,8 +20,8 @@ class BybitTradesTask(Task):
     async def process(self, symbol_or_symbols: str | tuple):
         def callback(message):
             try:
-                for message in message["data"]:
-                    data = BybitTradeSerializer(**message)
+                for msg in message["data"]:
+                    data = BybitTradeSerializer(**msg)
                     publish(data)
             except Exception as error1:
                 logger.error(f"ERROR(1): {error1}")

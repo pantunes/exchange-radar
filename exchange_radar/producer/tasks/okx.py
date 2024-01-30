@@ -38,8 +38,8 @@ class OkxTradesTask(Task):
                 self.num_events = 0
 
                 try:
-                    for message in json.loads(message)["data"]:
-                        data = OkxTradeSerializer(**message)
+                    for msg in json.loads(message)["data"]:
+                        data = OkxTradeSerializer(**msg)
                         publish(data)
                 except Exception as error1:
                     logger.error(f"ERROR(1): {error1}")

@@ -1,5 +1,5 @@
+import asyncio
 import logging
-import time
 
 from copra.websocket import Channel, Client
 
@@ -36,7 +36,7 @@ class CoinbaseTradesTask(Task):
             except Exception as error:
                 logger.error(f"GENERAL ERROR: {error}")
                 logger.error(f"Trying again in {ITER_SLEEP} seconds...")
-                time.sleep(ITER_SLEEP)
+                asyncio.sleep(ITER_SLEEP)
 
     def start(self, symbols: tuple[str, ...]):
         logger.info("Starting Task...")
