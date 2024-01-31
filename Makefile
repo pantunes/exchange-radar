@@ -35,3 +35,6 @@ reset-data:
 
 redis-cli:
 	@docker exec -it exchange-radar-redis redis-cli
+
+create-env-file:
+	@cat .envs/.local/.* > .env

@@ -16,6 +16,7 @@ Exchange Radar currently supports the following top exchanges by reputation and 
 - Bybit
 - Bitstamp
 - MEXC
+- HTX
 
 ### Build & Run
 Get started effortlessly:

@@ -19,10 +19,10 @@ class OkxTradeSerializer(BaseSerializer):
         return v.replace("-", "")
 
     @computed_field
-    def exchange(self) -> str:
-        return "OKX"
-
-    @computed_field
     @cached_property
     def is_seller(self) -> bool:
-        return True if self.side == "sell" else False
+        return self.side == "sell"
+
+    @computed_field
+    def exchange(self) -> str:
+        return "OKX"

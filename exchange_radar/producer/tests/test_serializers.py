@@ -7,6 +7,7 @@ from exchange_radar.producer.serializers.binance import BinanceTradeSerializer
 from exchange_radar.producer.serializers.bitstamp import BitstampTradeSerializer
 from exchange_radar.producer.serializers.bybit import BybitTradeSerializer
 from exchange_radar.producer.serializers.coinbase import CoinbaseTradeSerializer
+from exchange_radar.producer.serializers.htx import HtxTradeSerializer
 from exchange_radar.producer.serializers.kraken import KrakenTradeSerializer
 from exchange_radar.producer.serializers.kucoin import KucoinTradeSerializer
 from exchange_radar.producer.serializers.mexc import MexcTradeSerializer
@@ -348,4 +349,39 @@ def test_serializer_mexc(mock_redis):
         "             0.00215300 BTC |       93.59088847 USDT",
         "exchange": "MEXC",
         "is_seller": False,
+    }
+
+
+@patch("exchange_radar.producer.models.redis")
+def test_serializer_htx(mock_redis):
+    mock_redis.hincrbyfloat.return_value = 3.7335
+    mock_redis.pipeline().__enter__().execute = MagicMock(return_value=[1.0, 100.0])
+
+    msg = {
+        "id": 116629582655996198945167846,
+        "ts": 1706698561897,
+        "tradeId": 100267772152,
+        "amount": 16.72,
+        "price": 15.4841,
+        "direction": "buy",
+        "channel": "market.linkusdt.trade.detail",
+    }
+    payload = HtxTradeSerializer(**msg)
+
+    assert payload.model_dump() == {
+        "symbol": "LINKUSDT",
+        "price": Decimal("15.4841"),
+        "quantity": Decimal("16.72"),
+        "trade_time": datetime.datetime(2024, 1, 31, 10, 56, 1),
+        "total": Decimal("258.894152"),
+        "currency": "USDT",
+        "trade_symbol": "LINK",
+        "volume": 3.7335,
+        "volume_trades": (1.0, 100.0),
+        "number_trades": (1, 100),
+        "trade_time_ts": 1706698561,
+        "message": "2024-01-31 10:56:01 | <span class='htx'>HTX     </span> |    15.48410000 USDT |"
+        "           16.72000000 LINK |      258.89415200 USDT",
+        "is_seller": False,
+        "exchange": "HTX",
     }
