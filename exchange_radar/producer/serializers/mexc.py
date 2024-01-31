@@ -14,10 +14,10 @@ class MexcTradeSerializer(BaseSerializer):
     side: int = Field(alias="S", exclude=True)
 
     @computed_field
-    def exchange(self) -> str:
-        return "MEXC"
-
-    @computed_field
     @cached_property
     def is_seller(self) -> bool:
-        return True if self.side == 2 else False
+        return self.side == 2
+
+    @computed_field
+    def exchange(self) -> str:
+        return "MEXC"

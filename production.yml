@@ -162,6 +162,21 @@ services:
       - redis
     command: /start
 
+  producer-htx:
+    build:
+      context: .
+      dockerfile: compose/producer/htx/Dockerfile
+    image: exchange_radar_producer_htx
+    container_name: exchange-radar-producer-htx
+    env_file:
+      - ./.envs/.production/.rabbitmq
+      - ./.envs/.production/.producer
+      - ./.envs/.production/.redis
+    depends_on:
+      - rabbitmq
+      - redis
+    command: /start
+
   consumer:
     build:
       context: .

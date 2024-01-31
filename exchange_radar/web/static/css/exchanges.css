@@ -37,3 +37,8 @@
     background: var(--mexc-background-color);
     color: var(--mexc-text-color);
 }
+
+.htx {
+    background: var(--htx-background-color);
+    color: var(--htx-text-color);
+}

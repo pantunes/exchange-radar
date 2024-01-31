@@ -4,6 +4,7 @@ from exchange_radar.producer.settings.exchanges import (
     BITSTAMP_COINS,
     BYBIT_COINS,
     COINBASE_COINS,
+    HTX_COINS,
     KRAKEN_COINS,
     KUCOIN_COINS,
     MEXC_COINS,
@@ -55,6 +56,7 @@ def get_exchanges(coin: str) -> str:
         (BYBIT_COINS, "Bybit"),
         (BITSTAMP_COINS, "Bitstamp"),
         (MEXC_COINS, "MEXC"),
+        (HTX_COINS, "HTX"),
     ]
     coin_length = len(coin)
     exchanges_selected = []
