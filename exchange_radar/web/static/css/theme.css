@@ -22,6 +22,8 @@
     --bitstamp-text-color: #2ffb97;
     --mexc-background-color: #2d70eb;
     --mexc-text-color: white;
+    --htx-background-color: #122447;
+    --htx-text-color: #a2bef2;
 }
 
 [data-theme="dark"] {
@@ -48,4 +50,6 @@
     --bitstamp-text-color: #367a59;
     --mexc-background-color: #3c5582;
     --mexc-text-color: #b8b8b8;
+    --htx-background-color: #1c1f26;
+    --htx-text-color: #8390a8;
 }

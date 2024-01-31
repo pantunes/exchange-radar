@@ -32,6 +32,8 @@ class OkxTradesTask(Task):
         await asyncio.gather(self.process(tuple([{"channel": "trades-all", "instId": symbol} for symbol in symbols])))
 
     async def process(self, symbol_or_symbols: str | tuple):
+        url = "wss://ws.okx.com:8443/ws/v5/business"
+
         try:
 
             def callback(message):
@@ -46,7 +48,7 @@ class OkxTradesTask(Task):
 
             _symbols = list(symbol_or_symbols)
 
-            ws = WsPublicAsync(url="wss://ws.okx.com:8443/ws/v5/business")
+            ws = WsPublicAsync(url=url)
             await self._subscribe(ws=ws, callback=callback, symbols=_symbols)
 
             while True:
@@ -65,7 +67,7 @@ class OkxTradesTask(Task):
                         pass  # possibly nothing to unsubscribe
 
                     # re-subscribe
-                    ws = WsPublicAsync(url="wss://ws.okx.com:8443/ws/v5/business")
+                    ws = WsPublicAsync(url=url)
                     await self._subscribe(ws=ws, callback=callback, symbols=_symbols)
 
                     self.num_events = 0

@@ -19,10 +19,10 @@ class BitstampTradeSerializer(BaseSerializer):
         return "".join(v.split("_")[-1:]).upper()
 
     @computed_field
-    def exchange(self) -> str:
-        return "Bitstamp"
-
-    @computed_field
     @cached_property
     def is_seller(self) -> bool:
-        return True if self.type == 1 else False
+        return self.type == 1
+
+    @computed_field
+    def exchange(self) -> str:
+        return "Bitstamp"

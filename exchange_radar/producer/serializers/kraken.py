@@ -30,7 +30,7 @@ class KrakenTradeSerializer(BaseSerializer):
     @computed_field
     @cached_property
     def is_seller(self) -> bool:
-        return True if self.side == "s" else False
+        return self.side == "s"
 
     @computed_field
     def exchange(self) -> str:

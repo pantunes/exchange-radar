@@ -32,5 +32,6 @@ KUCOIN = env.list("KUCOIN")
 OKX = env.list("OKX")
 BITSTAMP = env.list("BITSTAMP")
 MEXC = env.list("MEXC")
+HTX = env.list("HTX")
 
-COINS = list(set(BINANCE + COINBASE + KRAKEN + KUCOIN + OKX + BITSTAMP + MEXC))
+COINS = list(set(BINANCE + COINBASE + KRAKEN + KUCOIN + OKX + BITSTAMP + MEXC + HTX))

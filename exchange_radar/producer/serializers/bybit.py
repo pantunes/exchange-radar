@@ -14,10 +14,10 @@ class BybitTradeSerializer(BaseSerializer):
     side: str = Field(alias="S", exclude=True)
 
     @computed_field
-    def exchange(self) -> str:
-        return "Bybit"
-
-    @computed_field
     @cached_property
     def is_seller(self) -> bool:
-        return True if self.side == "Sell" else False
+        return self.side == "Sell"
+
+    @computed_field
+    def exchange(self) -> str:
+        return "Bybit"
