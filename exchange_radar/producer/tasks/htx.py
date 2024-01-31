@@ -34,6 +34,9 @@ class HtxTradesTask(Task):
                                 msg["channel"] = response["ch"]
                                 data = HtxTradeSerializer(**msg)
                                 publish(data)
+                        except websockets.ConnectionClosed:
+                            # no close frame received or sent
+                            break
                         except Exception as error:
                             logger.error(f"ERROR: {error}")
             except Exception as error2:
