@@ -1,3 +1,4 @@
+import time
 from datetime import datetime, timedelta
 
 from redis_om import get_redis_connection
@@ -18,6 +19,7 @@ class RedisMixin:
             pipe.hsetnx(self._name, f"{self.trade_symbol}_PRICE", float(self.price))  # noqa
             pipe.hsetnx(self._name, f"{self.trade_symbol}_CURRENCY", self.currency)  # noqa
             pipe.hsetnx(self._name, f"{self.trade_symbol}_EXCHANGES", get_exchanges(coin=self.trade_symbol))  # noqa
+            pipe.set(f"LAST_TS_{self.exchange.upper()}", time.time())  # noqa
             pipe.execute()
 
     def volume(self) -> float:

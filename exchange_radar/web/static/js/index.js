@@ -81,3 +81,15 @@ function formatPage() {
         }
     });
 }
+
+function getStatus() {
+    $.get(http_status_url).done(function (response) {
+        for (const [key, value] of Object.entries(response["exchanges"])) {
+            let class_on_off = "2px solid #c76565";
+            if (value === true) {
+                class_on_off = "2px solid #367a59";
+            }
+            $(`#${key}`).css('border', class_on_off)
+        }
+    })
+}

@@ -1,4 +1,5 @@
 import logging
+import time
 from datetime import datetime, timedelta
 
 from pydantic import BaseModel, computed_field
@@ -215,3 +216,33 @@ class History(BaseModel):  # pragma: no cover
                 data.append(row)
 
         return data
+
+
+class Status(BaseModel):  # pragma: no cover
+    @computed_field
+    def exchanges(self) -> dict[str, bool]:
+        exchanges = (
+            "binance",
+            "coinbase",
+            "kraken",
+            "kucoin",
+            "okx",
+            "bybit",
+            "bitstamp",
+            "mexc",
+            "htx",
+        )
+
+        with redis.pipeline() as pipe:
+            for exchange in exchanges:
+                pipe.get(f"LAST_TS_{exchange.upper()}")
+            result = pipe.execute()
+
+        ret = {}
+        for i, exchange in enumerate(exchanges):
+            try:
+                ret[exchange] = time.time() < (float(result[i]) + 30.0)
+            except TypeError:
+                ret[exchange] = False
+
+        return ret
