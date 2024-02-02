@@ -38,8 +38,8 @@ class KuCoinTradesTask(Task):
                 try:
                     data = KucoinTradeSerializer(**res["data"])
                     publish(data)
-                except Exception as error1:
-                    logger.error(f"ERROR(1): {error1}")
+                except Exception as error:
+                    logger.error(f"ERROR: {error}")
 
             kucoin_manager = await self._subscribe(callback, symbol_or_symbols)
 
@@ -66,4 +66,4 @@ class KuCoinTradesTask(Task):
                     pass
 
         except Exception as error2:
-            logger.error(f"ERROR(2): {error2}")
+            logger.error(f"GENERAL ERROR: {error2}")

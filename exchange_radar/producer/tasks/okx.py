@@ -43,8 +43,8 @@ class OkxTradesTask(Task):
                     for msg in json.loads(message)["data"]:
                         data = OkxTradeSerializer(**msg)
                         publish(data)
-                except Exception as error1:
-                    logger.error(f"ERROR(1): {error1}")
+                except Exception as error:
+                    logger.error(f"ERROR: {error}")
 
             _symbols = list(symbol_or_symbols)
 
@@ -75,4 +75,4 @@ class OkxTradesTask(Task):
                     pass
 
         except Exception as error2:
-            logger.error(f"ERROR(2): {error2}")
+            logger.error(f"GENERAL ERROR: {error2}")

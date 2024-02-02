@@ -42,8 +42,8 @@ class KrakenTradesTask(Task):
                                 side=side,
                             )
                             publish(data)
-                    except Exception as error1:
-                        logger.error(f"ERROR(1): {error1}")
+                    except Exception as error:
+                        logger.error(f"ERROR: {error}")
 
         while True:
             try:
@@ -52,7 +52,7 @@ class KrakenTradesTask(Task):
                     await client.subscribe_trade(pair=list(symbol_or_symbols))
                     await recv_task
             except Exception as error2:
-                logger.error(f"ERROR(2): {error2}")
+                logger.error(f"GENERAL ERROR: {error2}")
             finally:
                 logger.error(f"Trying again in {ITER_SLEEP} seconds...")
                 await asyncio.sleep(ITER_SLEEP)

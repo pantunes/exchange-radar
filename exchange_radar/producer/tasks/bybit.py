@@ -23,8 +23,8 @@ class BybitTradesTask(Task):
                 for msg in message["data"]:
                     data = BybitTradeSerializer(**msg)
                     publish(data)
-            except Exception as error1:
-                logger.error(f"ERROR(1): {error1}")
+            except Exception as error:
+                logger.error(f"ERROR: {error}")
 
         ws = WebSocket(
             testnet=False,
