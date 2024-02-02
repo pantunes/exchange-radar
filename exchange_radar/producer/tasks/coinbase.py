@@ -26,15 +26,15 @@ class CoinbaseTradesTask(Task):
                         try:
                             data = CoinbaseTradeSerializer(**message)
                             publish(data)
-                        except Exception as _error:
-                            logger.error(f"ERROR: {_error}")
+                        except Exception as error:
+                            logger.error(f"ERROR: {error}")
 
         while True:
             try:
                 self.async_client = CustomClient(self.loop, Channel("matches", list(symbol_or_symbols)))
                 break
-            except Exception as error:
-                logger.error(f"GENERAL ERROR: {error}")
+            except Exception as error2:
+                logger.error(f"GENERAL ERROR: {error2}")
                 logger.error(f"Trying again in {ITER_SLEEP} seconds...")
                 asyncio.sleep(ITER_SLEEP)
 

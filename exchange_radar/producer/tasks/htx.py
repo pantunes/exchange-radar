@@ -34,13 +34,14 @@ class HtxTradesTask(Task):
                                 msg["channel"] = response["ch"]
                                 data = HtxTradeSerializer(**msg)
                                 publish(data)
-                        except websockets.ConnectionClosed:
+                        except websockets.ConnectionClosed as error:
+                            logger.error(f"ERROR(1): {error}")
                             # no close frame received or sent
                             break
                         except Exception as error:
-                            logger.error(f"ERROR: {error}")
-            except Exception as error2:
-                logger.error(f"GENERAL ERROR: {error2}")
+                            logger.error(f"ERROR(2): {error}")
+            except Exception as error:
+                logger.error(f"GENERAL ERROR: {error}")
             finally:
                 logger.error(f"Trying again in {ITER_SLEEP} seconds...")
                 await asyncio.sleep(ITER_SLEEP)

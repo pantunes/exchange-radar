@@ -3,6 +3,7 @@ import json
 import logging
 
 import websockets
+from pydantic import ValidationError
 
 from exchange_radar.producer.publisher import publish
 from exchange_radar.producer.serializers.bitstamp import BitstampTradeSerializer
@@ -29,10 +30,16 @@ class BitstampTradesTask(Task):
                             response["data"]["channel"] = response["channel"]
                             data = BitstampTradeSerializer(**response["data"])
                             publish(data)
+                        except ValidationError:
+                            pass
+                        except websockets.ConnectionClosed as error:
+                            logger.error(f"ERROR(1): {error}")
+                            # no close frame received or sent
+                            break
                         except Exception as error:
-                            logger.error(f"ERROR: {error}")
-            except Exception as error2:
-                logger.error(f"GENERAL ERROR: {error2}")
+                            logger.error(f"ERROR(2): {error}")
+            except Exception as error:
+                logger.error(f"GENERAL ERROR: {error}")
             finally:
                 logger.error(f"Trying again in {ITER_SLEEP} seconds...")
                 await asyncio.sleep(ITER_SLEEP)
