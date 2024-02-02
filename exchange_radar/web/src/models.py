@@ -239,12 +239,10 @@ class Status(BaseModel):  # pragma: no cover
             result = pipe.execute()
 
         ret = {}
-        i = 0
-        for exchange in exchanges:
+        for i, exchange in enumerate(exchanges):
             try:
                 ret[exchange] = time.time() < (float(result[i]) + 30.0)
             except TypeError:
                 ret[exchange] = False
-            i += 1
 
         return ret
