@@ -8,21 +8,21 @@ from exchange_radar.web.src.utils import get_exchanges
     [
         (
             "BTC",
-            "<span class='binance'>Binance</span> <span class='coinbase'>Coinbase</span> "
-            "<span class='kraken'>Kraken</span> <span class='kucoin'>KuCoin</span> "
-            "<span class='okx'>OKX</span> <span class='bybit'>Bybit</span> "
-            "<span class='bitstamp'>Bitstamp</span> <span class='mexc'>MEXC</span> "
-            "<span class='htx'>HTX</span>",
+            "<span id='binance' class='binance'>Binance</span> <span id='coinbase' class='coinbase'>Coinbase</span> "
+            "<span id='kraken' class='kraken'>Kraken</span> <span id='kucoin' class='kucoin'>KuCoin</span> "
+            "<span id='okx' class='okx'>OKX</span> <span id='bybit' class='bybit'>Bybit</span> "
+            "<span id='bitstamp' class='bitstamp'>Bitstamp</span> <span id='mexc' class='mexc'>MEXC</span> "
+            "<span id='htx' class='htx'>HTX</span>",
         ),
         (
             "ETH",
-            "<span class='binance'>Binance</span> <span class='coinbase'>Coinbase</span> "
-            "<span class='kraken'>Kraken</span> <span class='kucoin'>KuCoin</span> "
-            "<span class='okx'>OKX</span> <span class='bybit'>Bybit</span> "
-            "<span class='bitstamp'>Bitstamp</span> <span class='mexc'>MEXC</span> "
-            "<span class='htx'>HTX</span>",
+            "<span id='binance' class='binance'>Binance</span> <span id='coinbase' class='coinbase'>Coinbase</span> "
+            "<span id='kraken' class='kraken'>Kraken</span> <span id='kucoin' class='kucoin'>KuCoin</span> "
+            "<span id='okx' class='okx'>OKX</span> <span id='bybit' class='bybit'>Bybit</span> "
+            "<span id='bitstamp' class='bitstamp'>Bitstamp</span> <span id='mexc' class='mexc'>MEXC</span> "
+            "<span id='htx' class='htx'>HTX</span>",
         ),
-        ("LTO", "<span class='binance'>Binance</span> <span class='kucoin'>KuCoin</span>"),
+        ("LTO", "<span id='binance' class='binance'>Binance</span> <span id='kucoin' class='kucoin'>KuCoin</span>"),
     ],
 )
 def test_get_exchanges(coin, expected):
