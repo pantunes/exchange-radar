@@ -10,6 +10,7 @@ from exchange_radar.web.src.manager import (
 from exchange_radar.web.src.models import Feed
 from exchange_radar.web.src.models import History as HistoryModel
 from exchange_radar.web.src.models import Stats as StatsModel
+from exchange_radar.web.src.models import Status as StatusModel
 from exchange_radar.web.src.serializers.decorators import validate
 from exchange_radar.web.src.serializers.http import ParamsInputSerializer
 
@@ -67,6 +68,13 @@ class History(HTTPEndpoint):
         return JSONResponse(data.model_dump(), status_code=200)
 
 
+class Status(HTTPEndpoint):
+    @staticmethod
+    async def get(_):
+        data = StatusModel()
+        return JSONResponse(data.model_dump(), status_code=200)
+
+
 REST_ENDPOINTS = (
     FeedBase,
     FeedWhales,
@@ -74,4 +82,5 @@ REST_ENDPOINTS = (
     FeedOctopuses,
     Stats,
     History,
+    Status,
 )

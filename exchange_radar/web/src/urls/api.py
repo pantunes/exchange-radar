@@ -7,6 +7,7 @@ from exchange_radar.web.src.api.http import (
     FeedWhales,
     History,
     Stats,
+    Status,
 )
 from exchange_radar.web.src.api.websockets import (
     trades,
@@ -34,6 +35,7 @@ routes = [
             # others
             Route("/stats/{coin:str}", endpoint=Stats),
             Route("/history/{coin:str}", endpoint=History),
+            Route("/status", endpoint=Status),
         ],
     )
 ]
