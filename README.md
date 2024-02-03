@@ -49,7 +49,7 @@ Scale the consumer service horizontally with 2 instances:
 
 Example of the benchmark output can be seen [here](benchmarks/results.out).
 
-### Accessing data
+### UI
 Explore real-time trade information effortlessly:
 - Visit http://127.0.0.1:9000/BTC to access real-time BTC trades.
 - To track BTC whales' transactions, navigate to http://127.0.0.1:9000/BTC/whales.
