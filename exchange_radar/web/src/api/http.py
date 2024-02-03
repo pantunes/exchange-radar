@@ -36,6 +36,23 @@ class FeedBase(HTTPEndpoint):
 
     @validate(serializer=ParamsInputSerializer)
     async def get(self, _, data: ParamsInputSerializer):
+        """
+        tags:
+            - feed
+        summary: List of matched market orders.
+        parameters:
+            - name: coin
+              in: path
+              required: true
+              schema:
+                type: string
+        responses:
+            200:
+                description: List of matched market orders.
+            400:
+                description: Error in input validation.
+        """
+
         rows = Feed.select_rows(coin=data.coin, category=str(self))
         return JSONResponse({"r": rows}, status_code=200)
 
@@ -56,6 +73,23 @@ class Stats(HTTPEndpoint):
     @staticmethod
     @validate(serializer=ParamsInputSerializer)
     async def get(_, data: ParamsInputSerializer):
+        """
+        tags:
+            - stats
+        summary: Daily matched market orders metrics.
+        parameters:
+            - name: coin
+              in: path
+              required: true
+              schema:
+                type: string
+        responses:
+            200:
+                description: Daily matched market orders metrics.
+            400:
+                description: Error in input validation.
+        """
+
         data = StatsModel(trade_symbol=data.coin)
         return JSONResponse(data.model_dump(), status_code=200)
 
@@ -64,6 +98,23 @@ class History(HTTPEndpoint):
     @staticmethod
     @validate(serializer=ParamsInputSerializer)
     async def get(_, data: ParamsInputSerializer):
+        """
+        tags:
+            - history
+        summary: Daily matched market orders history data.
+        parameters:
+            - name: coin
+              in: path
+              required: true
+              schema:
+                type: string
+        responses:
+            200:
+                description: Daily matched market orders history data.
+            400:
+                description: Error in input validation.
+        """
+
         data = HistoryModel(trade_symbol=data.coin)
         return JSONResponse(data.model_dump(), status_code=200)
 
@@ -71,6 +122,15 @@ class History(HTTPEndpoint):
 class Status(HTTPEndpoint):
     @staticmethod
     async def get(_):
+        """
+        tags:
+            - status
+        summary: Exchanges connection status.
+        responses:
+            200:
+                description: Exchanges connection status.
+        """
+
         data = StatusModel()
         return JSONResponse(data.model_dump(), status_code=200)
 
