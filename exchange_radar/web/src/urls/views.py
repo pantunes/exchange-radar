@@ -9,7 +9,7 @@ from exchange_radar.web.src.views import (
     IndexWhales,
 )
 
-routes = [
+routes: list = [
     # Preferably should be served by a load-balancer and not this web-app
     Mount("/static", app=StaticFiles(directory="./exchange_radar/web/static"), name="static"),
     # main

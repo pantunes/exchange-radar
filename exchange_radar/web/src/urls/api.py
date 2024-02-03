@@ -16,7 +16,7 @@ from exchange_radar.web.src.api.websockets import (
     trades_whales,
 )
 
-routes = [
+routes: list = [
     Mount(
         "/api",
         routes=[
