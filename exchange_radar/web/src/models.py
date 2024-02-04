@@ -221,27 +221,15 @@ class History(BaseModel):  # pragma: no cover
 class Status(BaseModel):  # pragma: no cover
     @computed_field
     def exchanges(self) -> dict[str, bool]:
-        exchanges = (
-            "binance",
-            "coinbase",
-            "kraken",
-            "kucoin",
-            "okx",
-            "bybit",
-            "bitstamp",
-            "mexc",
-            "htx",
-        )
-
         with redis.pipeline() as pipe:
-            for exchange in exchanges:
+            for exchange in settings.EXCHANGES:
                 pipe.get(f"LAST_TS_{exchange.upper()}")
             result = pipe.execute()
 
         ret = {}
-        for i, exchange in enumerate(exchanges):
+        for i, exchange in enumerate(settings.EXCHANGES):
             try:
-                ret[exchange] = time.time() < (float(result[i]) + 30.0)
+                ret[exchange] = time.time() < (float(result[i]) + settings.EXCHANGES_STATUS_TTL)
             except TypeError:
                 ret[exchange] = False
 
