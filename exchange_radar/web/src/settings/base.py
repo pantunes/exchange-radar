@@ -35,3 +35,17 @@ MEXC = env.list("MEXC")
 HTX = env.list("HTX")
 
 COINS = list(set(BINANCE + COINBASE + KRAKEN + KUCOIN + OKX + BITSTAMP + MEXC + HTX))
+
+EXCHANGES = (
+    "binance",
+    "coinbase",
+    "kraken",
+    "kucoin",
+    "okx",
+    "bybit",
+    "bitstamp",
+    "mexc",
+    "htx",
+)
+
+EXCHANGES_STATUS_TTL = 30.0  # in seconds
