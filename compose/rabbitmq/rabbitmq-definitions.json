@@ -1,0 +1,129 @@
+{
+  "users": [
+    {
+      "name": "admin",
+      "password_hash": "BFrX4u6Bx88L/K+2oL1Gt8nh++5ppB+84Pwm5rCXnuIUAFkC",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    },
+    {
+      "name": "trades",
+      "password_hash": "uCa17hrkw2++r+EMe/wEMa3GmxOkreEgP66xWas6pnLCPE9H",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "consumer"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "admin",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "trades",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "root",
+      "vhost": "/",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "trades",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": true,
+      "arguments": {}
+    }
+  ],
+  "queues": [
+    {
+      "name": "trades",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "trades-whales",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "trades-dolphins",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "trades-octopuses",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "root",
+      "vhost": "/",
+      "destination": "trades",
+      "destination_type": "exchange",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "trades",
+      "vhost": "/",
+      "destination": "trades",
+      "destination_type": "queue",
+      "routing_key": "trades",
+      "arguments": {}
+    },
+    {
+      "source": "trades",
+      "vhost": "/",
+      "destination": "trades-whales",
+      "destination_type": "queue",
+      "routing_key": "trades.whales",
+      "arguments": {}
+    },
+    {
+      "source": "trades",
+      "vhost": "/",
+      "destination": "trades-dolphins",
+      "destination_type": "queue",
+      "routing_key": "trades.dolphins",
+      "arguments": {}
+    },
+    {
+      "source": "trades",
+      "vhost": "/",
+      "destination": "trades-octopuses",
+      "destination_type": "queue",
+      "routing_key": "trades.octopuses",
+      "arguments": {}
+    }
+  ]
+}
