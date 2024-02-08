@@ -64,8 +64,6 @@ class Callback:
 
 
 def setup_channel(channel: BlockingChannel, queue_name: str, callback: Callable):  # pragma: no cover
-    channel.queue_declare(queue=queue_name, durable=True)
-    channel.queue_bind(queue=queue_name, exchange=settings.RABBITMQ_EXCHANGE)
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue=queue_name, on_message_callback=callback)
 
