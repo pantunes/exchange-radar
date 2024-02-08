@@ -25,13 +25,16 @@ services:
     command: /start
 
   rabbitmq:
-    image: rabbitmq:3.11.15-alpine
+    image: rabbitmq:3.11.15-management-alpine
     container_name: exchange-radar-rabbitmq
     env_file:
       - ./.envs/.production/.rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
+    volumes:
+      - ./compose/rabbitmq/rabbitmq.conf:/etc/rabbitmq/conf.d/10-defaults.conf:ro
+      - ./compose/rabbitmq/rabbitmq-definitions.json:/etc/rabbitmq/definitions.json:ro
 
   redis:
     image: redis/redis-stack-server:latest

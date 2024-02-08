@@ -8,10 +8,11 @@ from pika.exceptions import (
     ConnectionClosedByBroker,
     StreamLostError,
 )
+from pika.exchange_type import ExchangeType
 
 from exchange_radar.producer.serializers.base import BaseSerializer
 from exchange_radar.producer.settings import base as settings
-from exchange_radar.producer.settings.queues import QUEUES
+from exchange_radar.producer.settings.routing_keys import ROUTING_KEYS
 from exchange_radar.producer.utils import get_ranking
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,9 @@ class ProducerConnection:
             return self.channel
 
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue=queue_name, durable=True)
+        self.channel.exchange_declare(
+            exchange=settings.RABBITMQ_EXCHANGE, exchange_type=ExchangeType.fanout, durable=True
+        )
 
         return self.channel
 
@@ -80,11 +83,11 @@ def publish(data: BaseSerializer) -> None:
     body = data.model_dump_json().encode()
 
     try:
-        with ProducerChannel(queue_name=settings.RABBITMQ_TRADES_QUEUE_NAME) as channel:
-            channel.basic_publish(routing_key=settings.RABBITMQ_TRADES_QUEUE_NAME, body=body, **params)
+        with ProducerChannel(queue_name=settings.RABBITMQ_TRADES_ROUTING_KEY) as channel:
+            channel.basic_publish(routing_key=settings.RABBITMQ_TRADES_ROUTING_KEY, body=body, **params)
 
         try:
-            queue_name = QUEUES[get_ranking(data)]
+            queue_name = ROUTING_KEYS[get_ranking(data)]
         except KeyError:
             logger.info("No specific extra Queue")
         else:
