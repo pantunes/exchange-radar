@@ -25,7 +25,7 @@ services:
     command: /start
 
   rabbitmq:
-    image: rabbitmq:3.11.15-management-alpine
+    image: rabbitmq:3.12.13-management-alpine
     container_name: exchange-radar-rabbitmq
     env_file:
       - ./.envs/.local/.rabbitmq

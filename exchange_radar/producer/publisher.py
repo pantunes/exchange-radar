@@ -8,7 +8,6 @@ from pika.exceptions import (
     ConnectionClosedByBroker,
     StreamLostError,
 )
-from pika.exchange_type import ExchangeType
 
 from exchange_radar.producer.serializers.base import BaseSerializer
 from exchange_radar.producer.settings import base as settings
@@ -44,26 +43,21 @@ class ProducerConnection:
 
         return self.connection
 
-    def get_channel(self, queue_name) -> BlockingChannel:
+    def get_channel(self) -> BlockingChannel:
         if self.channel and self.channel.is_open:
             logger.info("Reusing channel...")
             return self.channel
 
         self.channel = self.connection.channel()
-        self.channel.exchange_declare(
-            exchange=settings.RABBITMQ_EXCHANGE, exchange_type=ExchangeType.fanout, durable=True
-        )
-
         return self.channel
 
 
 class ProducerChannel:
-    def __init__(self, queue_name):
+    def __init__(self):
         self.connection = producer_connection.get_connection()
-        self.queue_name = queue_name
 
     def __enter__(self) -> BlockingChannel:
-        return producer_connection.get_channel(self.queue_name)
+        return producer_connection.get_channel()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
@@ -83,7 +77,7 @@ def publish(data: BaseSerializer) -> None:
     body = data.model_dump_json().encode()
 
     try:
-        with ProducerChannel(queue_name=settings.RABBITMQ_TRADES_ROUTING_KEY) as channel:
+        with ProducerChannel() as channel:
             channel.basic_publish(routing_key=settings.RABBITMQ_TRADES_ROUTING_KEY, body=body, **params)
 
         try:
@@ -91,7 +85,7 @@ def publish(data: BaseSerializer) -> None:
         except KeyError:
             logger.info("No specific extra Queue")
         else:
-            with ProducerChannel(queue_name=queue_name) as channel:
+            with ProducerChannel() as channel:
                 channel.basic_publish(routing_key=queue_name, body=body, **params)
     except (
         StreamLostError,
