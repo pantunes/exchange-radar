@@ -98,7 +98,7 @@
       "vhost": "/",
       "destination": "trades",
       "destination_type": "queue",
-      "routing_key": "trades",
+      "routing_key": "trades.all",
       "arguments": {}
     },
     {
