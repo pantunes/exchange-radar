@@ -14,6 +14,9 @@ ITER_SLEEP = 10.0
 
 
 class MexcTradesTask(Task):
+    async def task(self, symbols: tuple[str]):
+        await asyncio.gather(self.process(symbols))
+
     async def process(self, symbol_or_symbols: str | tuple):
         def callback(message):
             try:
@@ -25,7 +28,7 @@ class MexcTradesTask(Task):
                 logger.error(f"ERROR: {error}")
 
         ws = spot.WebSocket()
-        ws.deals_stream(callback, symbol_or_symbols)
+        ws._ws_subscribe("public.deals", callback, [{"symbol": symbol} for symbol in symbol_or_symbols])
 
         while True:
             await asyncio.sleep(ITER_SLEEP)
