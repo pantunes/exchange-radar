@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "exchange-radar"
-version = "1.4.0"
+version = "1.5.0"
 description = "Live trading information from various cryptocurrency exchanges."
 authors = ["Paulo Antunes <pjmlantunes@gmail.com>"]
 license = "GNU GPLv3"
