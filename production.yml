@@ -59,6 +59,7 @@ services:
       - rabbitmq
       - redis
     command: /start
+    restart: always
 
   producer-kucoin:
     build:
@@ -74,6 +75,7 @@ services:
       - rabbitmq
       - redis
     command: /start
+    restart: always
 
   producer-coinbase:
     build:
@@ -89,6 +91,7 @@ services:
       - rabbitmq
       - redis
     command: /start
+    restart: always
 
   producer-kraken:
     build:
@@ -104,6 +107,7 @@ services:
       - rabbitmq
       - redis
     command: /start
+    restart: always
 
   producer-okx:
     build:
@@ -119,6 +123,7 @@ services:
       - rabbitmq
       - redis
     command: /start
+    restart: always
 
   producer-bybit:
     build:
@@ -134,6 +139,7 @@ services:
       - rabbitmq
       - redis
     command: /start
+    restart: always
 
   producer-bitstamp:
     build:
@@ -149,6 +155,7 @@ services:
       - rabbitmq
       - redis
     command: /start
+    restart: always
 
   producer-mexc:
     build:
@@ -164,6 +171,7 @@ services:
       - rabbitmq
       - redis
     command: /start
+    restart: always
 
   producer-htx:
     build:
@@ -179,6 +187,7 @@ services:
       - rabbitmq
       - redis
     command: /start
+    restart: always
 
   consumer:
     build:
