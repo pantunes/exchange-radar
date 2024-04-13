@@ -1,5 +1,5 @@
 import time
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from redis_om import get_redis_connection
 
