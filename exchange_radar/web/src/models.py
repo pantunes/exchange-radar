@@ -114,7 +114,7 @@ class Stats(BaseModel):  # pragma: no cover
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._name = self.trade_time.date().strftime("%Y-%m-%d")
+        self._name = datetime.today().date().strftime("%Y-%m-%d")
 
     @computed_field
     def volume(self) -> float | None:
