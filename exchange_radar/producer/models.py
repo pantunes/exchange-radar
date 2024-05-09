@@ -1,5 +1,5 @@
 import time
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from redis_om import get_redis_connection
 
@@ -12,35 +12,46 @@ redis = get_redis_connection()
 class RedisMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._name = datetime.today().date().strftime("%Y-%m-%d")
+        # noinspection PyUnresolvedReferences
+        self._name = self.trade_time.date().strftime("%Y-%m-%d")
 
         with redis.pipeline() as pipe:
             pipe.expire(name=self._name, time=timedelta(days=REDIS_EXPIRATION), nx=True)
-            pipe.hsetnx(self._name, f"{self.trade_symbol}_PRICE", float(self.price))  # noqa
-            pipe.hsetnx(self._name, f"{self.trade_symbol}_CURRENCY", self.currency)  # noqa
-            pipe.hsetnx(self._name, f"{self.trade_symbol}_EXCHANGES", get_exchanges(coin=self.trade_symbol))  # noqa
-            pipe.set(f"LAST_TS_{self.exchange.upper()}", time.time())  # noqa
+            # noinspection PyUnresolvedReferences
+            pipe.hsetnx(self._name, f"{self.trade_symbol}_PRICE", float(self.price))
+            # noinspection PyUnresolvedReferences
+            pipe.hsetnx(self._name, f"{self.trade_symbol}_CURRENCY", self.currency)
+            # noinspection PyUnresolvedReferences
+            pipe.hsetnx(self._name, f"{self.trade_symbol}_EXCHANGES", get_exchanges(coin=self.trade_symbol))
+            # noinspection PyUnresolvedReferences
+            pipe.set(f"LAST_TS_{self.exchange.upper()}", time.time())
             pipe.execute()
 
     def volume(self) -> float:
-        return redis.hincrbyfloat(self._name, f"{self.trade_symbol}_VOLUME", float(self.quantity))  # noqa
+        # noinspection PyUnresolvedReferences
+        return redis.hincrbyfloat(self._name, f"{self.trade_symbol}_VOLUME", float(self.quantity))
 
     def volume_trades(self) -> tuple[float, float] | None:
         with redis.pipeline() as pipe:
-            if self.is_seller is False:  # noqa
+            # noinspection PyUnresolvedReferences
+            if self.is_seller is False:
+                # noinspection PyUnresolvedReferences
                 pipe.hincrbyfloat(
                     self._name,
-                    f"{self.trade_symbol}_VOLUME_BUY_ORDERS",  # noqa
-                    float(self.quantity),  # noqa
+                    f"{self.trade_symbol}_VOLUME_BUY_ORDERS",
+                    float(self.quantity),
                 )
-                pipe.hget(self._name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")  # noqa
+                # noinspection PyUnresolvedReferences
+                pipe.hget(self._name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")
             else:
-                pipe.hget(self._name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")  # noqa
+                # noinspection PyUnresolvedReferences
+                pipe.hget(self._name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")
 
+                # noinspection PyUnresolvedReferences
                 pipe.hincrbyfloat(
                     self._name,
-                    f"{self.trade_symbol}_VOLUME_SELL_ORDERS",  # noqa
-                    float(self.quantity),  # noqa
+                    f"{self.trade_symbol}_VOLUME_SELL_ORDERS",
+                    float(self.quantity),
                 )
             result = pipe.execute()
 
@@ -52,12 +63,17 @@ class RedisMixin:
 
     def number_trades(self) -> tuple[int, int] | None:
         with redis.pipeline() as pipe:
-            if self.is_seller is False:  # noqa
-                pipe.hincrby(self._name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS", 1)  # noqa
-                pipe.hget(self._name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")  # noqa
+            # noinspection PyUnresolvedReferences
+            if self.is_seller is False:
+                # noinspection PyUnresolvedReferences
+                pipe.hincrby(self._name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS", 1)
+                # noinspection PyUnresolvedReferences
+                pipe.hget(self._name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")
             else:
-                pipe.hget(self._name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS")  # noqa
-                pipe.hincrby(self._name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS", 1)  # noqa
+                # noinspection PyUnresolvedReferences
+                pipe.hget(self._name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS")
+                # noinspection PyUnresolvedReferences
+                pipe.hincrby(self._name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS", 1)
             result = pipe.execute()
 
         try:
