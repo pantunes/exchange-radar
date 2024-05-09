@@ -11,9 +11,11 @@ logger.setLevel(logging.INFO)
 class Singleton:
     @classmethod
     def get_instance(cls):
-        if cls._self is None:  # noqa
+        # noinspection PyUnresolvedReferences
+        if cls._self is None:
             cls._self = cls()
-        return cls._self  # noqa
+        # noinspection PyUnresolvedReferences
+        return cls._self
 
 
 class ConnectionTradesManager(Singleton):  # pragma: no cover
