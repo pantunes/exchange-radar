@@ -7,7 +7,7 @@
         <script>
             function get_history() {
                 $.get(http_history_url).done(function (response) {
-                    $("#messages").text(response.rows.join([separator = "\n"]));
+                    $("#messages").html(response.rows.join([separator = "\n"]));
                 })
             }
             $(document).ready(function() {

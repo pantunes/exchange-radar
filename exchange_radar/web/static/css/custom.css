@@ -30,6 +30,18 @@ a:hover {
   	color: var(--order-buy-text-color);
 }
 
+.bearish {
+	background-color: var(--order-sell-background-color);
+  	color: var(--order-sell-text-color);
+	opacity: 0.75;
+}
+
+.bullish {
+	background-color: var(--order-buy-background-color);
+  	color: var(--order-buy-text-color);
+	opacity: 0.75;
+}
+
 .right {
     width: 35rem;
 }
