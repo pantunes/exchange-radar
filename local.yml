@@ -1,12 +1,7 @@
-version: "3.8"
-
-
 volumes:
   redis_data: {}
 
-
 services:
-
   web:
     build:
       context: .
