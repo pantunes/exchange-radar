@@ -63,7 +63,7 @@ class BaseSerializer(RedisMixin, BaseModel):
         return (
             f"{self.trade_time} | "
             f"<span class='{self.exchange.lower()}'>{self.exchange.ljust(8, ' ')}</span> | "
-            f"{'{:.8f} {}'.format(self.price, self.currency.rjust(4)).rjust(14 + 5, ' ')} | "
-            f"{'{:.8f} {}'.format(self.quantity, self.trade_symbol).rjust(21 + 5, ' ')} | "
-            f"{'{:.8f} {}'.format(self.total, self.currency.rjust(4)).rjust(17 + 5, ' ')}"
+            f"{f'{self.price:.8f} {self.currency.rjust(4)}'.rjust(14 + 5, ' ')} | "
+            f"{f'{self.quantity:.8f} {self.trade_symbol}'.rjust(21 + 5, ' ')} | "
+            f"{f'{self.total:.8f} {self.currency.rjust(4)}'.rjust(17 + 5, ' ')}"
         )
