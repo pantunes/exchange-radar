@@ -8,15 +8,14 @@ from exchange_radar.web.src.errors import (
     http_validation_error,
     websocket_validation_error,
 )
+from exchange_radar.web.src.routes.api import routes as routes_endpoints
+from exchange_radar.web.src.routes.schema import routes as routes_schema
+from exchange_radar.web.src.routes.views import routes as routes_views
 from exchange_radar.web.src.settings import base as settings
 from exchange_radar.web.src.tasks.sync_cache import sync_cache
-from exchange_radar.web.src.urls.api import routes as routes_endpoints
-from exchange_radar.web.src.urls.schema import routes as routes_schema
-from exchange_radar.web.src.urls.views import routes as routes_views
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
 
 exception_handlers = {
     400: http_validation_error,
