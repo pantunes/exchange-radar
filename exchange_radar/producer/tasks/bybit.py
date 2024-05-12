@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import override
 
 from pybit.unified_trading import WebSocket
 
@@ -9,14 +10,15 @@ from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 
-
 ITER_SLEEP = 10.0
 
 
 class BybitTradesTask(Task):
+    @override
     async def task(self, symbols: tuple[str]):
         await asyncio.gather(self.process(symbols))
 
+    @override
     async def process(self, symbol_or_symbols: str | tuple):
         def callback(message):
             try:

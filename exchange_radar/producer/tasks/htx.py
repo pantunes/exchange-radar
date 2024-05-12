@@ -2,6 +2,7 @@ import asyncio
 import gzip
 import json
 import logging
+from typing import override
 
 import websockets
 
@@ -11,11 +12,11 @@ from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 
-
 ITER_SLEEP = 10.0
 
 
 class HtxTradesTask(Task):
+    @override
     async def process(self, symbol_or_symbols: str | tuple):
         uri = "wss://api.huobi.pro/ws"
         message = {"sub": f"market.{symbol_or_symbols.lower()}.trade.detail"}

@@ -10,7 +10,6 @@ from exchange_radar.web.src.types import ERdefaultdict
 
 logger = logging.getLogger(__name__)
 
-
 redis = get_redis_connection()
 
 cache_pks = ERdefaultdict(list)

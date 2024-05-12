@@ -2,7 +2,6 @@ from exchange_radar.web.src.settings.base import DEBUG
 
 routes: list = []
 
-
 if DEBUG:
     from starlette.routing import Route
 

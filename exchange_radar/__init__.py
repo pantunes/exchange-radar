@@ -5,7 +5,6 @@ with open("pyproject.toml", "rb") as f:
 
 toml = data["tool"]["poetry"]
 
-
 __title__ = toml["name"]
 __description__ = toml["description"]
 __authors__ = toml["authors"]

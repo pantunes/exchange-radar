@@ -2,7 +2,6 @@ from environs import Env
 
 env = Env()
 
-
 EXCHANGES: dict[str:str] = {
     "binance": "BinanceTradesTask",
     "bybit": "BybitTradesTask",

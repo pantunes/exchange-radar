@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+from typing import override
 
 import websockets
 from pydantic import ValidationError
@@ -11,11 +12,11 @@ from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 
-
 ITER_SLEEP = 10.0
 
 
 class BitstampTradesTask(Task):
+    @override
     async def process(self, symbol_or_symbols: str | tuple):
         uri = "wss://ws.bitstamp.net"
         message = {"event": "bts:subscribe", "data": {"channel": f"live_trades_{symbol_or_symbols.lower()}"}}

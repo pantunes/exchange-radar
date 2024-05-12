@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from collections.abc import Callable
+from typing import override
 
 from kucoin.asyncio import KucoinSocketManager
 from kucoin.client import Client
@@ -11,7 +12,6 @@ from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
-
 
 ITER_SLEEP = 10.0
 
@@ -26,9 +26,11 @@ class KuCoinTradesTask(Task):
         kucoin_manager = await KucoinSocketManager.create(self.loop, async_client, callback)
         return await kucoin_manager.subscribe(f"/market/match:{symbol_or_symbols}")
 
+    @override
     async def task(self, symbols: tuple[str]):
         await asyncio.gather(self.process(",".join(symbols)))
 
+    @override
     async def process(self, symbol_or_symbols: str | tuple):
         try:
 

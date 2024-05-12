@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 
 logging.getLogger("pika").propagate = False
 
-
 ITER_SLEEP = 4.0
 
 
