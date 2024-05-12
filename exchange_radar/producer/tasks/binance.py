@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import override
 
 from binance import AsyncClient, BinanceSocketManager, exceptions
 
@@ -9,11 +10,11 @@ from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 
-
 ITER_SLEEP = 10.0
 
 
 class BinanceTradesTask(Task):
+    @override
     async def process(self, symbol_or_symbols: str | tuple):
         while True:
             try:

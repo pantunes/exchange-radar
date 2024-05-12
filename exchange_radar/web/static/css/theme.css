@@ -1,7 +1,7 @@
 :root {
     --background-color: #e0e0e0;
-	--text-color: #121416d8;
-	--link-color: #543fd7;
+    --text-color: #121416d8;
+    --link-color: #543fd7;
     --order-buy-text-color: #fff;
     --order-buy-background-color: green;
     --order-sell-text-color: #fff;
@@ -28,8 +28,8 @@
 
 [data-theme="dark"] {
     --background-color: #212a2e;
-	--text-color: #b8b8b8;
-	--link-color: #828fff;
+    --text-color: #b8b8b8;
+    --link-color: #828fff;
     --order-buy-text-color: #b8b8b8;
     --order-buy-background-color: #3a5742;
     --order-sell-text-color: #b8b8b8;

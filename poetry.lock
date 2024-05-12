@@ -1021,6 +1021,20 @@ http2 = ["h2 (>=3,<5)"]
 socks = ["socksio (==1.*)"]
 
 [[package]]
+name = "huey"
+version = "2.5.0"
+description = "huey, a little task queue"
+optional = false
+python-versions = "*"
+files = [
+    {file = "huey-2.5.0.tar.gz", hash = "sha256:2ffb52fb5c46a1b0d53c79d59df3622312b27e2ab68d81a580985a8ea4ca3480"},
+]
+
+[package.extras]
+backends = ["redis (>=3.0.0)"]
+redis = ["redis (>=3.0.0)"]
+
+[[package]]
 name = "hyperframe"
 version = "6.0.1"
 description = "HTTP/2 framing layer for Python"
@@ -2072,6 +2086,31 @@ keyring = "*"
 pyOpenSSL = "*"
 requests = "*"
 Twisted = "*"
+
+[[package]]
+name = "python-telegram-bot"
+version = "21.1.1"
+description = "We have made you a wrapper you can't refuse"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "python-telegram-bot-21.1.1.tar.gz", hash = "sha256:5fd21710902270f5946c6a484918227b361b8119e1dadae6b3dd7fcee3b1a74e"},
+    {file = "python_telegram_bot-21.1.1-py3-none-any.whl", hash = "sha256:dded93d733585a37b382fd5e088faffc37c3ae6d2bd4052d105d9a40f8a0152a"},
+]
+
+[package.dependencies]
+httpx = ">=0.27,<1.0"
+
+[package.extras]
+all = ["APScheduler (>=3.10.4,<3.11.0)", "aiolimiter (>=1.1.0,<1.2.0)", "cachetools (>=5.3.3,<5.4.0)", "cryptography (>=39.0.1)", "httpx[http2]", "httpx[socks]", "pytz (>=2018.6)", "tornado (>=6.4,<7.0)"]
+callback-data = ["cachetools (>=5.3.3,<5.4.0)"]
+ext = ["APScheduler (>=3.10.4,<3.11.0)", "aiolimiter (>=1.1.0,<1.2.0)", "cachetools (>=5.3.3,<5.4.0)", "pytz (>=2018.6)", "tornado (>=6.4,<7.0)"]
+http2 = ["httpx[http2]"]
+job-queue = ["APScheduler (>=3.10.4,<3.11.0)", "pytz (>=2018.6)"]
+passport = ["cryptography (>=39.0.1)"]
+rate-limiter = ["aiolimiter (>=1.1.0,<1.2.0)"]
+socks = ["httpx[socks]"]
+webhooks = ["tornado (>=6.4,<7.0)"]
 
 [[package]]
 name = "python-ulid"
@@ -3162,4 +3201,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "3b3a06095d952d9731568588a209244ba211fe90b0bc2665f7127b3f5f35dbcf"
+content-hash = "eba5e1107a93691084e82a5f7d54b7ff2d37286a0ed30f2331ba0c0143f4d2e8"

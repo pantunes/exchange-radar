@@ -18,7 +18,6 @@ from exchange_radar.web.src.utils import get_exchanges
 
 templates = Jinja2Templates(directory="/app/exchange_radar/web/templates")
 
-
 manager_trades = ConnectionTradesManager.get_instance()
 manager_trades_dolphins = ConnectionTradesDolphinsManager.get_instance()
 manager_trades_octopuses = ConnectionTradesOctopusesManager.get_instance()

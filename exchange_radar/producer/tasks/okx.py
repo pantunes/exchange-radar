@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 from collections.abc import Callable
+from typing import override
 
 from okx.websocket.WsPublicAsync import WsPublicAsync
 
@@ -13,7 +14,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
 logging.getLogger("WsPublic").propagate = False
-
 
 ITER_SLEEP = 10.0
 
@@ -28,9 +28,11 @@ class OkxTradesTask(Task):
         await ws.start()
         await ws.subscribe(symbols, callback)
 
+    @override
     async def task(self, symbols: tuple[dict]):
         await asyncio.gather(self.process(tuple([{"channel": "trades-all", "instId": symbol} for symbol in symbols])))
 
+    @override
     async def process(self, symbol_or_symbols: str | tuple):
         url = "wss://ws.okx.com:8443/ws/v5/business"
 

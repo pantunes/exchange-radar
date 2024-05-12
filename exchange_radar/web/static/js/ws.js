@@ -18,14 +18,14 @@ function setupAndStartWS() {
         setNumberTrades(obj);
     }
 
-    ws.onclose = function(e) {
+    ws.onclose = function (e) {
         console.log("Socket is closed. Reconnect will be attempted in 1 second.", e.reason);
-        setTimeout(function() {
+        setTimeout(function () {
             setupAndStartWS()
         }, 1000);
     };
 
-    ws.onerror = function(err) {
+    ws.onerror = function (err) {
         console.error("Socket encountered error: ", err.message, "Closing socket");
         ws.close();
     };
