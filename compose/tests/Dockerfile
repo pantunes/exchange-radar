@@ -47,6 +47,6 @@ COPY --from=python-build-stage /usr/src/app/wheels /wheels
 
 RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* && rm -rf /wheels/
 
-WORKDIR $PYSETUP_PATH
-
 COPY . .
+
+WORKDIR $PYSETUP_PATH

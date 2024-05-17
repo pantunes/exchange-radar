@@ -23,7 +23,3 @@ def main(symbols: tuple, exchange: str):
     task.start(symbols=symbols)
 
     logger.info("Task is over!")
-
-
-if __name__ == "__main__":
-    main()
