@@ -42,6 +42,6 @@ RUN chmod +x /start
 
 WORKDIR $PYSETUP_PATH
 
-RUN poetry install --no-root
-
 COPY . .
+
+RUN poetry install --no-root
