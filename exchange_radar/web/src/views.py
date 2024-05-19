@@ -27,7 +27,6 @@ manager_trades_whales = ConnectionTradesWhalesManager.get_instance()
 class IndexBase(HTTPEndpoint):
     http_trades_url = settings.TRADES_HOST_URL
     http_stats_url = settings.TRADES_STATS_URL
-    websocket_protocol = settings.WEBSOCKET_PROTOCOL
     websocket_url = settings.TRADES_SOCKET_URL
     template_name = "index.j2"
 
@@ -37,7 +36,6 @@ class IndexBase(HTTPEndpoint):
             "coin": data.coin,
             "http_trades_url": self.http_trades_url.format(coin=data.coin),
             "http_stats_url": self.http_stats_url.format(coin=data.coin),
-            "websocket_protocol": self.websocket_protocol,
             "websocket_url": self.websocket_url.format(coin=data.coin),
             "exchanges": get_exchanges(coin=data.coin),
             "max_rows": settings.REDIS_MAX_ROWS,

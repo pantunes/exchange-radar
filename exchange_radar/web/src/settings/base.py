@@ -11,8 +11,6 @@ REDIS_DB = env.int("REDIS_DB", default=None)
 REDIS_MAX_ROWS = env.int("REDIS_MAX_ROWS")
 REDIS_EXPIRATION = env.int("REDIS_EXPIRATION")  # in days
 
-WEBSOCKET_PROTOCOL = env.str("WEBSOCKET_PROTOCOL")
-
 TRADES_SOCKET_URL = "/api/trades/{coin}"
 TRADES_WHALES_SOCKET_URL = "/api/trades/{coin}/whales"
 TRADES_DOLPHINS_SOCKET_URL = "/api/trades/{coin}/dolphins"
