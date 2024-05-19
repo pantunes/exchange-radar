@@ -166,8 +166,8 @@ class History(BaseModel):  # pragma: no cover
         )
 
         data = []
-        for name, dow in cached_days:
-            with redis.pipeline() as pipe:
+        with redis.pipeline() as pipe:
+            for name, dow in cached_days:
                 pipe.hget(name, f"{self.trade_symbol}_VOLUME")
                 pipe.hget(name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")
                 pipe.hget(name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")
@@ -177,45 +177,45 @@ class History(BaseModel):  # pragma: no cover
                 pipe.hget(name, f"{self.trade_symbol}_CURRENCY")
                 pipe.hget(name, f"{self.trade_symbol}_EXCHANGES")
                 result = pipe.execute()
-            try:
-                (
-                    volume,
-                    volume_buy_orders,
-                    volume_sell_orders,
-                    number_buy_orders,
-                    number_sell_orders,
-                    price_open,
-                    currency,
-                    exchanges,
-                ) = (
-                    float(result[0]),
-                    float(result[1]),
-                    float(result[2]),
-                    int(result[3]),
-                    int(result[4]),
-                    float(result[5]),
-                    result[6] or "-",
-                    result[7] or "-",
-                )
-            except TypeError:
-                break
-            else:
-                row = (
-                    f"{name} | "
-                    f"{dow} | "
-                    f"{self.trade_symbol.ljust(4)} | "
-                    f"{f'{volume:,.2f} {self.trade_symbol.rjust(4)}'.rjust(21 + 5, ' ')} | "
-                    f"<span class='{'bullish' if volume_buy_orders > volume_sell_orders else 'bearish'}'>"
-                    f"{f'{volume_buy_orders:,.2f} {self.trade_symbol.rjust(4)}'.rjust(21 + 5, ' ')} | "
-                    f"{f'{volume_sell_orders:,.2f} {self.trade_symbol.rjust(4)}'.rjust(21 + 5, ' ')} "
-                    f"| </span>"
-                    f"<span class='{'bullish' if number_buy_orders > number_sell_orders else 'bearish'}'>"
-                    f"{f'{number_buy_orders:,}'.rjust(14)} | "
-                    f"{f'{number_sell_orders:,}'.rjust(15)} | </span>"
-                    f"{f'{price_open:,.8f} {currency.rjust(4)}'.rjust(16 + 5, ' ')} | "
-                    f"{exchanges}"
-                )
-                data.append(row)
+                try:
+                    (
+                        volume,
+                        volume_buy_orders,
+                        volume_sell_orders,
+                        number_buy_orders,
+                        number_sell_orders,
+                        price_open,
+                        currency,
+                        exchanges,
+                    ) = (
+                        float(result[0]),
+                        float(result[1]),
+                        float(result[2]),
+                        int(result[3]),
+                        int(result[4]),
+                        float(result[5]),
+                        result[6] or "-",
+                        result[7] or "-",
+                    )
+                except TypeError:
+                    break
+                else:
+                    row = (
+                        f"{name} | "
+                        f"{dow} | "
+                        f"{self.trade_symbol.ljust(4)} | "
+                        f"{f'{volume:,.2f} {self.trade_symbol.rjust(4)}'.rjust(21 + 5, ' ')} | "
+                        f"<span class='{'bullish' if volume_buy_orders > volume_sell_orders else 'bearish'}'>"
+                        f"{f'{volume_buy_orders:,.2f} {self.trade_symbol.rjust(4)}'.rjust(21 + 5, ' ')} | "
+                        f"{f'{volume_sell_orders:,.2f} {self.trade_symbol.rjust(4)}'.rjust(21 + 5, ' ')} "
+                        f"| </span>"
+                        f"<span class='{'bullish' if number_buy_orders > number_sell_orders else 'bearish'}'>"
+                        f"{f'{number_buy_orders:,}'.rjust(14)} | "
+                        f"{f'{number_sell_orders:,}'.rjust(15)} | </span>"
+                        f"{f'{price_open:,.8f} {currency.rjust(4)}'.rjust(16 + 5, ' ')} | "
+                        f"{exchanges}"
+                    )
+                    data.append(row)
 
         return data
 
