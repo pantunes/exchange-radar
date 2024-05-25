@@ -12,3 +12,4 @@ class Ranking(BaseEnum):
     WHALE = "Whale"
     DOLPHIN = "Dolphin"
     OCTOPUS = "Octopus"
+    BREADCRUMBS = "Breadcrumbs"

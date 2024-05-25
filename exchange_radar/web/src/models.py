@@ -30,8 +30,9 @@ class Feed(JsonModel):  # pragma: no cover
         "volume": 77490.03932637,
         "volume_trades": [38839.13855542, 38650.71084956],
         "number_trades": [96918, 95907],
-        "message": "2024-01-10 22:37:02 | <span class='binance'>Binance </span> |  2549.83000000 USDT | ....."
+        "message": "2024-01-10 22:37:02 | <span class='binance'>Binance </span> |  2549.83000000 USDT | .....",
         "exchange": "Binance",
+        "ranking": "Whale"
     }
     Thin version:
     {
@@ -42,7 +43,8 @@ class Feed(JsonModel):  # pragma: no cover
         "volume": 77490.03932637,
         "volume_trades": [38839.13855542, 38650.71084956],
         "number_trades": [96918, 95907],
-        "message": "2024-01-10 22:37:02 | <span class='binance'>Binance </span> |  2549.83000000 USDT | ....."
+        "message": "2024-01-10 22:37:02 | <span class='binance'>Binance </span> |  2549.83000000 USDT | .....",
+        "ranking": "Whale"
     }
     """
 
@@ -56,6 +58,7 @@ class Feed(JsonModel):  # pragma: no cover
     volume_trades: list[float]
     number_trades: list[int]
     message: str
+    ranking: str | None  # TODO: REMOVE None after 26-05-2024
 
     @classmethod
     def is_coin_selected(cls, coin: str, category: str) -> bool:
@@ -87,6 +90,7 @@ class Feed(JsonModel):  # pragma: no cover
                 volume_trades=message["volume_trades"],
                 number_trades=message["number_trades"],
                 message=message["message"],
+                ranking=message["ranking"],
             ).save()
 
             cache_pks.__get__(coin=coin, category=category).append(obj.pk)
@@ -205,11 +209,11 @@ class History(BaseModel):  # pragma: no cover
                         f"{dow} | "
                         f"{self.trade_symbol.ljust(4)} | "
                         f"{f'{volume:,.2f} {self.trade_symbol.rjust(4)}'.rjust(21 + 5, ' ')} | "
-                        f"<span class='{'bullish' if volume_buy_orders > volume_sell_orders else 'bearish'}'>"
+                        f"<span class='{'order_buy' if volume_buy_orders > volume_sell_orders else 'order_sell'}'>"
                         f"{f'{volume_buy_orders:,.2f} {self.trade_symbol.rjust(4)}'.rjust(21 + 5, ' ')} | "
                         f"{f'{volume_sell_orders:,.2f} {self.trade_symbol.rjust(4)}'.rjust(21 + 5, ' ')} "
                         f"| </span>"
-                        f"<span class='{'bullish' if number_buy_orders > number_sell_orders else 'bearish'}'>"
+                        f"<span class='{'order_buy' if number_buy_orders > number_sell_orders else 'order_sell'}'>"
                         f"{f'{number_buy_orders:,}'.rjust(14)} | "
                         f"{f'{number_sell_orders:,}'.rjust(15)} | </span>"
                         f"{f'{price_open:,.8f} {currency.rjust(4)}'.rjust(16 + 5, ' ')} | "

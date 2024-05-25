@@ -12,7 +12,6 @@ from pika.exceptions import (
 from exchange_radar.producer.serializers.base import BaseSerializer
 from exchange_radar.producer.settings import base as settings
 from exchange_radar.producer.settings.routing_keys import ROUTING_KEYS
-from exchange_radar.producer.utils import get_ranking
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +80,7 @@ def publish(data: BaseSerializer) -> None:
             channel.basic_publish(routing_key=settings.RABBITMQ_TRADES_ROUTING_KEY, body=body, **params)
 
         try:
-            queue_name = ROUTING_KEYS[get_ranking(data)]
+            queue_name = ROUTING_KEYS[data.ranking]
         except KeyError:
             logger.info("No specific extra Queue")
         else:

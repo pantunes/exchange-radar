@@ -3,6 +3,7 @@ import json
 from decimal import Decimal
 from unittest.mock import MagicMock, patch
 
+from exchange_radar.producer.enums import Ranking
 from exchange_radar.producer.serializers.binance import BinanceTradeSerializer
 from exchange_radar.producer.serializers.bitstamp import BitstampTradeSerializer
 from exchange_radar.producer.serializers.bybit import BybitTradeSerializer
@@ -39,6 +40,7 @@ def test_serializer_binance(mock_redis):
         "symbol": "BNBBTC",
         "price": Decimal("0.001"),
         "quantity": Decimal("100"),
+        "ranking": Ranking.OCTOPUS,
         "trade_time": datetime.datetime(2022, 12, 31, 19, 43, 2),
         "trade_time_ts": 1672515782,
         "is_seller": True,
@@ -89,6 +91,7 @@ def test_serializer_kucoin(mock_redis):
         "symbol": "LTOBTC",
         "price": Decimal("0.000003518"),
         "quantity": Decimal("3.7335"),
+        "ranking": Ranking.BREADCRUMBS,
         "trade_time": datetime.datetime(2023, 5, 3, 10, 10, 39),
         "trade_time_ts": 1683108639,
         "total": Decimal("0.0000131344530"),
@@ -134,6 +137,7 @@ def test_serializer_coinbase(mock_redis):
         "symbol": "ETHUSD",
         "price": Decimal("1933.93"),
         "quantity": Decimal("0.00251665"),
+        "ranking": Ranking.BREADCRUMBS,
         "trade_time": datetime.datetime(2023, 7, 16, 12, 19, 57),
         "trade_time_ts": 1689509997,
         "total": Decimal("4.8670249345"),
@@ -184,6 +188,7 @@ def test_serializer_kraken(mock_redis):
         "symbol": "BTCUSD",
         "price": Decimal("29911.20000"),
         "quantity": Decimal("0.03409475"),
+        "ranking": Ranking.OCTOPUS,
         "trade_time": datetime.datetime(2023, 7, 23, 12, 23, 40),
         "trade_time_ts": 1690115020,
         "total": Decimal("1019.8148862000"),
@@ -222,6 +227,7 @@ def test_serializer_okx(mock_redis):
         "symbol": "BTCUSDT",
         "price": Decimal("42963.9"),
         "quantity": Decimal("0.00021505"),
+        "ranking": Ranking.BREADCRUMBS,
         "trade_time": datetime.datetime(2024, 1, 15, 20, 36, 21),
         "total": Decimal("9.239386695"),
         "currency": "USDT",
@@ -264,6 +270,7 @@ def test_serializer_bybit(mock_redis):
         "symbol": "ETHUSDT",
         "price": Decimal("2211.18"),
         "quantity": Decimal("0.00268"),
+        "ranking": Ranking.BREADCRUMBS,
         "trade_time": datetime.datetime(2024, 1, 23, 13, 29, 24),
         "total": Decimal("5.9259624"),
         "currency": "USDT",
@@ -299,6 +306,7 @@ def test_serializer_bitstamp(mock_redis):
         "symbol": "ETHUSD",
         "price": Decimal("2266.7"),
         "quantity": Decimal("0.01160000"),
+        "ranking": Ranking.BREADCRUMBS,
         "trade_time": datetime.datetime(2024, 1, 27, 23, 27, 50),
         "total": Decimal("26.293720000"),
         "currency": "USD",
@@ -337,6 +345,7 @@ def test_serializer_mexc(mock_redis):
         "symbol": "BTCUSDT",
         "price": Decimal("43469.99"),
         "quantity": Decimal("0.002153"),
+        "ranking": Ranking.BREADCRUMBS,
         "trade_time": datetime.datetime(2024, 1, 30, 11, 47, 14),
         "total": Decimal("93.59088847"),
         "currency": "USDT",
@@ -372,6 +381,7 @@ def test_serializer_htx(mock_redis):
         "symbol": "LINKUSDT",
         "price": Decimal("15.4841"),
         "quantity": Decimal("16.72"),
+        "ranking": Ranking.BREADCRUMBS,
         "trade_time": datetime.datetime(2024, 1, 31, 10, 56, 1),
         "total": Decimal("258.894152"),
         "currency": "USDT",

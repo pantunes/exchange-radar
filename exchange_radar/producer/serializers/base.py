@@ -4,8 +4,10 @@ from functools import cached_property
 
 from pydantic import BaseModel, computed_field, field_validator
 
+from exchange_radar.producer.enums import Ranking
 from exchange_radar.producer.models import RedisMixin
 from exchange_radar.producer.settings.base import CURRENCIES
+from exchange_radar.producer.utils import get_ranking
 
 
 class BaseSerializer(RedisMixin, BaseModel):
@@ -56,6 +58,11 @@ class BaseSerializer(RedisMixin, BaseModel):
     @cached_property
     def trade_time_ts(self) -> int:
         return int(self.trade_time.timestamp())
+
+    @computed_field
+    @cached_property
+    def ranking(self) -> Ranking:
+        return get_ranking(self.total, self.currency)
 
     @computed_field
     @cached_property
