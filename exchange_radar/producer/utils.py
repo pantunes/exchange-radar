@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from exchange_radar.producer.enums import Ranking
 from exchange_radar.producer.settings.exchanges import (
     BINANCE_COINS,
@@ -12,38 +14,38 @@ from exchange_radar.producer.settings.exchanges import (
 )
 
 
-def get_ranking(data) -> Ranking | None:
-    if data.currency in (
+def get_ranking(total: Decimal, currency: str) -> Ranking:
+    if currency in (
         "USDT",
         "USD",
     ):
-        if data.total > 100000.0:
+        if total > 100000.0:
             return Ranking.WHALE
-        if data.total > 10000.0:
+        if total > 10000.0:
             return Ranking.DOLPHIN
-        if data.total > 1000.0:
+        if total > 1000.0:
             return Ranking.OCTOPUS
-        return
+        return Ranking.BREADCRUMBS
 
-    if data.currency == "BTC":
-        if data.total > 4.0:
+    if currency == "BTC":
+        if total > 4.0:
             return Ranking.WHALE
-        if data.total > 0.4:
+        if total > 0.4:
             return Ranking.DOLPHIN
-        if data.total > 0.04:
+        if total > 0.04:
             return Ranking.OCTOPUS
-        return
+        return Ranking.BREADCRUMBS
 
-    if data.currency == "ETH":
-        if data.total > 60.0:
+    if currency == "ETH":
+        if total > 60.0:
             return Ranking.WHALE
-        if data.total > 6.0:
+        if total > 6.0:
             return Ranking.DOLPHIN
-        if data.total > 0.6:
+        if total > 0.6:
             return Ranking.OCTOPUS
-        return
+        return Ranking.BREADCRUMBS
 
-    raise ValueError(f"Currency not configured {data.currency}")
+    raise ValueError(f"Currency not configured: {currency}")
 
 
 def get_exchanges(coin: str) -> str:
