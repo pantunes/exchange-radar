@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import sys
 from typing import override
 
 from pymexc import spot
@@ -29,8 +30,13 @@ class MexcTradesTask(Task):
             except Exception as error:
                 logger.error(f"ERROR: {error}")
 
-        ws = spot.WebSocket()
-        ws._ws_subscribe("public.deals", callback, [{"symbol": symbol} for symbol in symbol_or_symbols])
+        try:
+            ws = spot.WebSocket()
+            ws._ws_subscribe("public.deals", callback, [{"symbol": symbol} for symbol in symbol_or_symbols])
 
-        while True:
-            await asyncio.sleep(ITER_SLEEP)
+            while True:
+                await asyncio.sleep(ITER_SLEEP)
+
+        except Exception as error2:
+            logger.error(f"EXIT ERROR: {error2}")
+            sys.exit(1)
