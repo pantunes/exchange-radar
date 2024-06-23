@@ -10,8 +10,6 @@ from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 
-ITER_SLEEP = 10.0
-
 
 class BinanceTradesTask(Task):
     @override
@@ -22,8 +20,8 @@ class BinanceTradesTask(Task):
                 break
             except exceptions.BinanceAPIException as error:
                 logger.error(f"ERROR: {error}")
-                logger.error(f"Trying again in {ITER_SLEEP} seconds...")
-                await asyncio.sleep(ITER_SLEEP)
+                logger.error(f"Trying again in {self.ITER_SLEEP} seconds...")
+                await asyncio.sleep(self.ITER_SLEEP)
 
         binance_manager = BinanceSocketManager(async_client)
 

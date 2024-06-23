@@ -9,8 +9,6 @@ from exchange_radar.producer.tasks.libs.kraken import WSKrakenClient, WSKrakenIn
 
 logger = logging.getLogger(__name__)
 
-ITER_SLEEP = 10.0
-
 
 class KrakenTradesTask(Task):
     @override
@@ -56,5 +54,5 @@ class KrakenTradesTask(Task):
             except Exception as error2:
                 logger.error(f"GENERAL ERROR: {error2}")
             finally:
-                logger.error(f"Trying again in {ITER_SLEEP} seconds...")
-                await asyncio.sleep(ITER_SLEEP)
+                logger.error(f"Trying again in {self.ITER_SLEEP} seconds...")
+                await asyncio.sleep(self.ITER_SLEEP)

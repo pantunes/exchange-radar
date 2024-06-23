@@ -6,6 +6,8 @@ logger.setLevel(logging.INFO)
 
 
 class Task:
+    ITER_SLEEP = 10.0
+
     def __init__(self):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
