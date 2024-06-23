@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import sys
 from typing import override
 
 from pybit.unified_trading import WebSocket
@@ -28,12 +29,12 @@ class BybitTradesTask(Task):
             except Exception as error:
                 logger.error(f"ERROR: {error}")
 
-        ws = WebSocket(
-            testnet=False,
-            channel_type="spot",
-        )
+        try:
+            ws = WebSocket(testnet=False, channel_type="spot")
+            ws.trade_stream(symbol=symbol_or_symbols, callback=callback)
 
-        ws.trade_stream(symbol=symbol_or_symbols, callback=callback)
-
-        while True:
-            await asyncio.sleep(ITER_SLEEP)
+            while True:
+                await asyncio.sleep(ITER_SLEEP)
+        except Exception as error2:
+            logger.error(f"EXIT ERROR: {error2}")
+            sys.exit(1)
