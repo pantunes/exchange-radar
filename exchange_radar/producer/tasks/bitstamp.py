@@ -12,8 +12,6 @@ from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 
-ITER_SLEEP = 10.0
-
 
 class BitstampTradesTask(Task):
     @override
@@ -42,5 +40,5 @@ class BitstampTradesTask(Task):
             except Exception as error:
                 logger.error(f"GENERAL ERROR: {error}")
             finally:
-                logger.error(f"Trying again in {ITER_SLEEP} seconds...")
-                await asyncio.sleep(ITER_SLEEP)
+                logger.error(f"Trying again in {self.ITER_SLEEP} seconds...")
+                await asyncio.sleep(self.ITER_SLEEP)

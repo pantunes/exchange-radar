@@ -11,8 +11,6 @@ from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 
-ITER_SLEEP = 10.0
-
 
 class BybitTradesTask(Task):
     @override
@@ -34,7 +32,7 @@ class BybitTradesTask(Task):
             ws.trade_stream(symbol=symbol_or_symbols, callback=callback)
 
             while True:
-                await asyncio.sleep(ITER_SLEEP)
+                await asyncio.sleep(self.ITER_SLEEP)
         except Exception as error2:
             logger.error(f"EXIT ERROR: {error2}")
             sys.exit(1)

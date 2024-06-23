@@ -10,8 +10,6 @@ from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 
-ITER_SLEEP = 10.0
-
 
 class CoinbaseTradesTask(Task):
     @override
@@ -35,4 +33,4 @@ class CoinbaseTradesTask(Task):
         CustomClient(self.loop, Channel("matches", list(symbol_or_symbols)))
 
         while True:
-            await asyncio.sleep(ITER_SLEEP)
+            await asyncio.sleep(self.ITER_SLEEP)

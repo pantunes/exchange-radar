@@ -11,8 +11,6 @@ from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 
-ITER_SLEEP = 10.0
-
 
 class MexcTradesTask(Task):
     @override
@@ -35,7 +33,7 @@ class MexcTradesTask(Task):
             ws._ws_subscribe("public.deals", callback, [{"symbol": symbol} for symbol in symbol_or_symbols])
 
             while True:
-                await asyncio.sleep(ITER_SLEEP)
+                await asyncio.sleep(self.ITER_SLEEP)
 
         except Exception as error2:
             logger.error(f"EXIT ERROR: {error2}")

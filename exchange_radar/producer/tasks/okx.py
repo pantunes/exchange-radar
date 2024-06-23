@@ -15,8 +15,6 @@ logger.setLevel(logging.ERROR)
 
 logging.getLogger("WsPublic").propagate = False
 
-ITER_SLEEP = 10.0
-
 
 class OkxTradesTask(Task):
     def __init__(self):
@@ -57,8 +55,8 @@ class OkxTradesTask(Task):
                 self.num_events += 1
 
                 if self.num_events <= 2:
-                    logger.info(f"Trying again in {ITER_SLEEP} seconds...")
-                    await asyncio.sleep(ITER_SLEEP)
+                    logger.info(f"Trying again in {self.ITER_SLEEP} seconds...")
+                    await asyncio.sleep(self.ITER_SLEEP)
                     continue
 
                 try:
