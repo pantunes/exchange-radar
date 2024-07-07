@@ -41,6 +41,21 @@ services:
     volumes:
       - redis_data:/data
 
+  scheduler:
+    build:
+      context: .
+      dockerfile: compose/scheduler/local/Dockerfile
+    image: exchange_radar_scheduler
+    container_name: exchange-radar-scheduler
+    env_file:
+      - ./.envs/.local/.redis
+      - ./.envs/.local/.scheduler
+    depends_on:
+      - redis
+    volumes:
+      - ./exchange_radar/scheduler:/app/exchange_radar/scheduler
+    command: /start
+
   producer-binance:
     build:
       context: .
