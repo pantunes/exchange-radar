@@ -1,6 +1,6 @@
 ARG PYTHON_VERSION=3.12.3-slim-bullseye
 
-FROM python:${PYTHON_VERSION} as python
+FROM python:${PYTHON_VERSION} AS python
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -16,7 +16,7 @@ ENV PYTHONUNBUFFERED=1 \
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 
-FROM python as python-build-stage
+FROM python AS python-build-stage
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
     curl \
@@ -31,7 +31,7 @@ COPY ./poetry.lock ./pyproject.toml ./
 RUN poetry install --only main --no-root
 
 
-FROM python as python-run-stage
+FROM python AS python-run-stage
 
 COPY --from=python-build-stage $POETRY_HOME $POETRY_HOME
 COPY --from=python-build-stage $PYSETUP_PATH $PYSETUP_PATH

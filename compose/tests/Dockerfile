@@ -1,6 +1,6 @@
 ARG PYTHON_VERSION=3.12.3-slim-bullseye
 
-FROM python:${PYTHON_VERSION} as python
+FROM python:${PYTHON_VERSION} AS python
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -16,7 +16,7 @@ ENV PYTHONUNBUFFERED=1 \
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 
-FROM python as python-build-stage
+FROM python AS python-build-stage
 
 ARG BUILD_ENVIRONMENT=tests
 
@@ -36,7 +36,7 @@ RUN poetry export --with dev,tests --without-hashes -f requirements.txt -o ${BUI
 RUN pip wheel --wheel-dir /usr/src/app/wheels -r ${BUILD_ENVIRONMENT}.txt
 
 
-FROM python as python-run-stage
+FROM python AS python-run-stage
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
     curl \
