@@ -30,7 +30,11 @@ class CoinbaseTradesTask(Task):
                         except Exception as error:
                             logger.error(f"ERROR: {error}")
 
-        CustomClient(self.loop, Channel("matches", list(symbol_or_symbols)))
+        CustomClient(
+            self.loop,
+            channels=Channel("matches", list(symbol_or_symbols)),
+            feed_url="wss://ws-feed.exchange.coinbase.com:443",
+        )
 
         while True:
             await asyncio.sleep(self.ITER_SLEEP)
