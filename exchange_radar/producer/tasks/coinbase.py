@@ -18,6 +18,8 @@ class CoinbaseTradesTask(Task):
 
     @override
     async def process(self, symbol_or_symbols: str | tuple):
+        url = "wss://ws-feed.exchange.coinbase.com:443"
+
         class CustomClient(Client):
             def on_message(self, message):
                 match message:
@@ -33,7 +35,7 @@ class CoinbaseTradesTask(Task):
         CustomClient(
             self.loop,
             channels=Channel("matches", list(symbol_or_symbols)),
-            feed_url="wss://ws-feed.exchange.coinbase.com:443",
+            feed_url=url,
         )
 
         while True:

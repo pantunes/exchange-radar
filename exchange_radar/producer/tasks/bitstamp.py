@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 class BitstampTradesTask(Task):
     @override
     async def process(self, symbol_or_symbols: str | tuple):
-        uri = "wss://ws.bitstamp.net"
+        url = "wss://ws.bitstamp.net"
         message = {"event": "bts:subscribe", "data": {"channel": f"live_trades_{symbol_or_symbols.lower()}"}}
 
         while True:
             try:
-                async with websockets.connect(uri) as ws:
+                async with websockets.connect(url) as ws:
                     await ws.send(json.dumps(message))
                     while True:
                         try:

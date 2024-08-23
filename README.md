@@ -23,15 +23,15 @@ Get started effortlessly:
 
 #### Locally
 
-    $ docker-compose -f local.yml up --build -d
+    $ docker compose -f local.yml up --build -d
 
 #### Production
 
-    $ docker-compose -f production.yml up --build -d
+    $ docker compose -f production.yml up --build -d
 
 Scale the consumer service horizontally with 2 instances:
 
-    $ docker-compose -f production.yml up --build --scale consumer=2
+    $ docker compose -f production.yml up --build --scale consumer=2
 
 ### Run Test Cases & Code Coverage
 
