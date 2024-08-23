@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 class HtxTradesTask(Task):
     @override
     async def process(self, symbol_or_symbols: str | tuple):
-        uri = "wss://api.huobi.pro/ws"
+        url = "wss://api.huobi.pro/ws"
         message = {"sub": f"market.{symbol_or_symbols.lower()}.trade.detail"}
 
         while True:
             try:
-                async with websockets.connect(uri) as ws:
+                async with websockets.connect(url) as ws:
                     await ws.send(json.dumps(message))
                     while True:
                         try:
