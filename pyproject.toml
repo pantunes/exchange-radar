@@ -60,7 +60,6 @@ urllib3 = "^1.26.16"
 redis-om = "^0.2.1"
 types-requests = "2.31.0.0"
 python-telegram-bot = "^21.1.1"
-huey = "^2.5.0"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"

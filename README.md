@@ -23,15 +23,22 @@ Get started effortlessly:
 
 #### Locally
 
+    # Start all services (all crypto-exchange producers, consumer and web services)
     $ docker compose -f local.yml up --build -d
+
+    # Start crypto-exchange OKX producer, consumer and web services
+    $ docker compose -f local.yml up --build consumer producer-okx
 
 #### Production
 
+    # Start all services
     $ docker compose -f production.yml up --build -d
 
-Scale the consumer service horizontally with 2 instances:
-
+    # Scale the consumer service horizontally with 2 instances
     $ docker compose -f production.yml up --build --scale consumer=2
+
+### OAS 3
+OpenAPI Specification: http://127.0.0.1:9000/api/schema.yaml
 
 ### Run Test Cases & Code Coverage
 
