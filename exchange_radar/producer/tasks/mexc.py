@@ -27,13 +27,19 @@ class MexcTradesTask(Task):
                     publish(data)
             except Exception as error:
                 logger.error(f"ERROR: {error}")
+                if "socket is already closed" in str(error):
+                    logger.info("Restarting...")
+                    _start()
 
-        try:
+        async def _start():
             ws = spot.WebSocket()
             ws._ws_subscribe("public.deals", callback, [{"symbol": symbol} for symbol in symbol_or_symbols])
 
             while True:
                 await asyncio.sleep(self.ITER_SLEEP)
+
+        try:
+            await _start()
 
         except Exception as error2:
             logger.error(f"EXIT ERROR: {error2}")
