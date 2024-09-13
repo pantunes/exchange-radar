@@ -27,8 +27,9 @@ class MexcTradesTask(Task):
                     publish(data)
             except Exception as error:
                 logger.error(f"ERROR: {error}")
-                if "socket is already closed" in str(error):
-                    logger.info("Restarting...")
+                _error = str(error)
+                if "socket is already closed" in _error or "sslv3 alert bad record mac" in _error:
+                    logger.error("Restarting...")
                     _start()
 
         async def _start():
