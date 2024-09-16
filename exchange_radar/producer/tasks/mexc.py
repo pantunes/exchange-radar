@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import sys
+import threading
 from typing import override
 
 from pymexc import spot
@@ -29,8 +30,8 @@ class MexcTradesTask(Task):
                 logger.error(f"ERROR: {error}")
                 _error = str(error)
                 if "socket is already closed" in _error or "sslv3 alert bad record mac" in _error:
-                    logger.error("Restarting...")
-                    _start()
+                    logger.error("Restarting from callback...")
+                    asyncio.run(_start())
 
         async def _start():
             ws = spot.WebSocket()
@@ -43,5 +44,13 @@ class MexcTradesTask(Task):
             await _start()
 
         except Exception as error2:
-            logger.error(f"EXIT ERROR: {error2}")
+            logger.error(f"EXIT ERROR(1): {error2}")
             sys.exit(1)
+
+
+def thread_exception_handler(args):
+    logger.error(f"EXIT ERROR(2): {args.exc_value}")
+    sys.exit(1)
+
+
+threading.excepthook = thread_exception_handler

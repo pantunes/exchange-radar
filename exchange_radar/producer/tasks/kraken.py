@@ -45,14 +45,23 @@ class KrakenTradesTask(Task):
                     except Exception as error:
                         logger.error(f"ERROR: {error}")
 
+        async def _start():
+            async with WSKrakenClient(open_auth_socket=False) as client:
+                recv_task = asyncio.create_task(recv_msgs(client.websocket))
+                await client.subscribe_trade(pair=list(symbol_or_symbols))
+                await recv_task
+
         while True:
             try:
-                async with WSKrakenClient(open_auth_socket=False) as client:
-                    recv_task = asyncio.create_task(recv_msgs(client.websocket))
-                    await client.subscribe_trade(pair=list(symbol_or_symbols))
-                    await recv_task
+                await _start()
+
             except Exception as error2:
                 logger.error(f"GENERAL ERROR: {error2}")
+                _error = str(error2)
+                if "please reconnect" in _error:
+                    logger.error("Restarting...")
+                    await _start()
+
             finally:
                 logger.error(f"Trying again in {self.ITER_SLEEP} seconds...")
                 await asyncio.sleep(self.ITER_SLEEP)
