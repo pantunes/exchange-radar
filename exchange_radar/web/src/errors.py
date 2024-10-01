@@ -5,8 +5,9 @@ from starlette.websockets import WebSocket
 
 from exchange_radar import __version__
 from exchange_radar.web.src.api.http import REST_ENDPOINTS
+from exchange_radar.web.src.settings import base as settings
 
-templates = Jinja2Templates(directory="/app/exchange_radar/web/templates")
+templates = Jinja2Templates(directory=settings.TEMPLATES_DIR)
 
 
 async def http_validation_error(request, exc):
