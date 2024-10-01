@@ -11,6 +11,8 @@ REDIS_DB = env.int("REDIS_DB", default=None)
 REDIS_MAX_ROWS = env.int("REDIS_MAX_ROWS")
 REDIS_EXPIRATION = env.int("REDIS_EXPIRATION")  # in days
 
+TEMPLATES_DIR = "/app/exchange_radar/web/templates"
+
 TRADES_SOCKET_URL = "/api/trades/{coin}"
 TRADES_WHALES_SOCKET_URL = "/api/trades/{coin}/whales"
 TRADES_DOLPHINS_SOCKET_URL = "/api/trades/{coin}/dolphins"

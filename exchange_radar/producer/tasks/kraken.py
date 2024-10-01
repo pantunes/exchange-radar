@@ -60,7 +60,7 @@ class KrakenTradesTask(Task):
                 _error = str(error2)
                 if "please reconnect" in _error:
                     logger.error("Restarting...")
-                    await _start()
+                    continue
 
             finally:
                 logger.error(f"Trying again in {self.ITER_SLEEP} seconds...")
