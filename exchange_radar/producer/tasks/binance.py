@@ -23,13 +23,17 @@ class BinanceTradesTask(Task):
                 logger.error(f"Trying again in {self.ITER_SLEEP} seconds...")
                 await asyncio.sleep(self.ITER_SLEEP)
 
-        binance_manager = BinanceSocketManager(async_client)
+        while True:
+            binance_manager = BinanceSocketManager(async_client)
 
-        async with binance_manager.trade_socket(symbol_or_symbols) as ts:
-            while True:
-                res = await ts.recv()
-                try:
-                    data = BinanceTradeSerializer(**res)
-                    publish(data)
-                except Exception as error:
-                    logger.error(f"GENERAL ERROR: {error}")
+            async with binance_manager.trade_socket(symbol_or_symbols) as ts:
+                while True:
+                    res = await ts.recv()
+                    try:
+                        data = BinanceTradeSerializer(**res)
+                        publish(data)
+                    except Exception as error:
+                        logger.error(f"GENERAL ERROR: {error}")
+                        logger.error(f"Trying again in {self.ITER_SLEEP} seconds...")
+                        await asyncio.sleep(self.ITER_SLEEP)
+                        break
