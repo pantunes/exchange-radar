@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from pydantic import BaseModel, computed_field
 from redis_om import Field, JsonModel, Migrator, get_redis_connection
 
+from exchange_radar.web.src.enums import Ranking
 from exchange_radar.web.src.settings import base as settings
 from exchange_radar.web.src.types import ERdefaultdict
 
@@ -58,7 +59,7 @@ class Feed(JsonModel):  # pragma: no cover
     volume_trades: list[float]
     number_trades: list[int]
     message: str
-    ranking: str | None  # TODO: REMOVE None after 26-05-2024
+    ranking: Ranking
 
     @classmethod
     def is_coin_selected(cls, coin: str, category: str) -> bool:
