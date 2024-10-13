@@ -11,7 +11,7 @@ class WSKrakenOutMsg:
 
 
 class WSKrakenInMsg:
-    def __init__(self, payload: str) -> None:
+    def __init__(self, payload: str | bytes) -> None:
         self.payload = json.loads(payload)
 
     def __repr__(self) -> str:

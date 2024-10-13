@@ -16,14 +16,14 @@ class BaseSerializer(RedisMixin, BaseModel):
     def trade_time_normalization(cls, v) -> str:
         return v.replace(tzinfo=None)
 
-    @computed_field
+    @computed_field  # type: ignore
     @cached_property
     def total(self) -> Decimal:
         with localcontext() as ctx:
             ctx.prec = 14
             return self.price * self.quantity
 
-    @computed_field
+    @computed_field  # type: ignore
     @cached_property
     def currency(self) -> str:
         for c in CURRENCIES:
@@ -32,7 +32,7 @@ class BaseSerializer(RedisMixin, BaseModel):
 
         raise ValueError("Undefined currency")
 
-    @computed_field
+    @computed_field  # type: ignore
     @cached_property
     def trade_symbol(self) -> str:
         return self.symbol.replace(self.currency, "")
@@ -46,7 +46,7 @@ class BaseSerializer(RedisMixin, BaseModel):
         return super().volume_trades()
 
     @computed_field
-    def number_trades(self) -> tuple[int, int]:
+    def number_trades(self) -> tuple[int, int] | None:
         return super().number_trades()
 
     @field_validator("trade_time", mode="after", check_fields=False)  # noqa
@@ -54,17 +54,17 @@ class BaseSerializer(RedisMixin, BaseModel):
     def trade_time_after(cls, v) -> datetime:
         return v.replace(microsecond=0)
 
-    @computed_field
+    @computed_field  # type: ignore
     @cached_property
     def trade_time_ts(self) -> int:
         return int(self.trade_time.timestamp())
 
-    @computed_field
+    @computed_field  # type: ignore
     @cached_property
     def ranking(self) -> Ranking:
         return get_ranking(self.total, self.currency)
 
-    @computed_field
+    @computed_field  # type: ignore
     @cached_property
     def message(self) -> str:
         return (
