@@ -1,14 +1,16 @@
 from datetime import datetime
+from decimal import Decimal
+from typing import Annotated
 
-from pydantic import Field, computed_field, condecimal
+from pydantic import Field, computed_field
 
 from exchange_radar.producer.serializers.base import BaseSerializer
 
 
 class BinanceTradeSerializer(BaseSerializer):
     symbol: str = Field(alias="s")
-    price: condecimal(ge=0, decimal_places=8) = Field(alias="p")
-    quantity: condecimal(ge=0, decimal_places=8) = Field(alias="q")
+    price: Annotated[Decimal, Field(ge=0, decimal_places=8, alias="p")]
+    quantity: Annotated[Decimal, Field(ge=0, decimal_places=8, alias="q")]
     trade_time: datetime = Field(alias="T")
     is_seller: bool = Field(alias="m")
 

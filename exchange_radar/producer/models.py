@@ -28,30 +28,24 @@ class RedisMixin:
             pipe.execute()
 
     def volume(self) -> float:
-        # noinspection PyUnresolvedReferences
-        return redis.hincrbyfloat(self._name, f"{self.trade_symbol}_VOLUME", float(self.quantity))
+        return redis.hincrbyfloat(self._name, f"{self.trade_symbol}_VOLUME", float(self.quantity))  # type: ignore
 
     def volume_trades(self) -> tuple[float, float] | None:
         with redis.pipeline() as pipe:
-            # noinspection PyUnresolvedReferences
-            if self.is_seller is False:
-                # noinspection PyUnresolvedReferences
+            if self.is_seller is False:  # type: ignore
                 pipe.hincrbyfloat(
                     self._name,
-                    f"{self.trade_symbol}_VOLUME_BUY_ORDERS",
-                    float(self.quantity),
+                    f"{self.trade_symbol}_VOLUME_BUY_ORDERS",  # type: ignore
+                    float(self.quantity),  # type: ignore
                 )
-                # noinspection PyUnresolvedReferences
-                pipe.hget(self._name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")
+                pipe.hget(self._name, f"{self.trade_symbol}_VOLUME_SELL_ORDERS")  # type: ignore
             else:
-                # noinspection PyUnresolvedReferences
-                pipe.hget(self._name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")
+                pipe.hget(self._name, f"{self.trade_symbol}_VOLUME_BUY_ORDERS")  # type: ignore
 
-                # noinspection PyUnresolvedReferences
                 pipe.hincrbyfloat(
                     self._name,
-                    f"{self.trade_symbol}_VOLUME_SELL_ORDERS",
-                    float(self.quantity),
+                    f"{self.trade_symbol}_VOLUME_SELL_ORDERS",  # type: ignore
+                    float(self.quantity),  # type: ignore
                 )
             result = pipe.execute()
 
@@ -63,17 +57,12 @@ class RedisMixin:
 
     def number_trades(self) -> tuple[int, int] | None:
         with redis.pipeline() as pipe:
-            # noinspection PyUnresolvedReferences
-            if self.is_seller is False:
-                # noinspection PyUnresolvedReferences
-                pipe.hincrby(self._name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS", 1)
-                # noinspection PyUnresolvedReferences
-                pipe.hget(self._name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")
+            if self.is_seller is False:  # type: ignore
+                pipe.hincrby(self._name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS", 1)  # type: ignore
+                pipe.hget(self._name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS")  # type: ignore
             else:
-                # noinspection PyUnresolvedReferences
-                pipe.hget(self._name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS")
-                # noinspection PyUnresolvedReferences
-                pipe.hincrby(self._name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS", 1)
+                pipe.hget(self._name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS")  # type: ignore
+                pipe.hincrby(self._name, f"{self.trade_symbol}_NUMBER_SELL_ORDERS", 1)  # type: ignore
             result = pipe.execute()
 
         try:
