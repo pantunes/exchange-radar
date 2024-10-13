@@ -5,15 +5,13 @@ from datetime import datetime, timedelta
 from pydantic import BaseModel, computed_field
 from redis_om import Field, JsonModel, Migrator, get_redis_connection
 
+from exchange_radar.web.src.cache import FeedCache
 from exchange_radar.web.src.enums import Ranking
 from exchange_radar.web.src.settings import base as settings
-from exchange_radar.web.src.types import ERdefaultdict
 
 logger = logging.getLogger(__name__)
 
 redis = get_redis_connection()
-
-cache_pks = ERdefaultdict(list)
 
 
 class Feed(JsonModel):  # pragma: no cover
@@ -61,6 +59,9 @@ class Feed(JsonModel):  # pragma: no cover
     message: str
     ranking: Ranking
 
+    class Config:
+        use_enum_values = True
+
     @classmethod
     def is_coin_selected(cls, coin: str, category: str) -> bool:
         return coin in ("LTO",) or category in (
@@ -79,35 +80,29 @@ class Feed(JsonModel):  # pragma: no cover
 
     @classmethod
     def save_or_not(cls, coin: str, category: str, message: dict) -> bool:
-        if cls.is_coin_selected(coin, category):
-            obj = cls(
-                type=category,
-                price=message["price"],
-                trade_time_ts=message["trade_time_ts"],
-                is_seller=message["is_seller"],
-                currency=message["currency"],
-                trade_symbol=message["trade_symbol"],
-                volume=message["volume"],
-                volume_trades=message["volume_trades"],
-                number_trades=message["number_trades"],
-                message=message["message"],
-                ranking=message["ranking"],
-            ).save()
+        if not cls.is_coin_selected(coin, category):
+            return False
 
-            cache_pks.__get__(coin=coin, category=category).append(obj.pk)
-            logger.info(f"CACHE_PKS: {cache_pks}")
+        obj = cls(
+            type=category,
+            price=message["price"],
+            trade_time_ts=message["trade_time_ts"],
+            is_seller=message["is_seller"],
+            currency=message["currency"],
+            trade_symbol=message["trade_symbol"],
+            volume=message["volume"],
+            volume_trades=message["volume_trades"],
+            number_trades=message["number_trades"],
+            message=message["message"],
+            ranking=message["ranking"],
+        ).save()
 
-            count = len(cache_pks.__get__(coin=coin, category=category))
-            logger.info(f"COUNT: {count}")
+        obj2del_pk = FeedCache.delete_and_get_pk(obj, coin=coin, category=category)
+        if obj2del_pk:
+            is_deleted = cls.delete(obj2del_pk)
+            logger.info(f"DELETE {obj2del_pk} RETURN {is_deleted}")
 
-            if count > settings.REDIS_MAX_ROWS:
-                obj2del_pk = cache_pks.__get__(coin=coin, category=category).pop(0)
-                is_deleted = cls.delete(obj2del_pk)
-                logger.info(f"DELETE {obj2del_pk} RETURN {is_deleted}")
-
-            return True
-
-        return False
+        return True
 
 
 Migrator().run()
