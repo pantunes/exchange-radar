@@ -1,0 +1,44 @@
+{% extends "base.j2" %}
+{% block title %}Alerts - {{ coin }}{% endblock %}
+{% block javascript_default %}
+    <script>
+        const http_alerts_url = "{{ http_alerts_url }}";
+    </script>
+    <script>
+        function get_alerts() {
+            $.get(http_alerts_url).done(function (response) {
+                $("#messages").html(response.rows.join([separator = "\n"]));
+            })
+        }
+
+        $(document).ready(function () {
+            get_alerts();
+            setInterval(get_alerts, 2000);
+        });
+    </script>
+{% endblock %}
+
+<body>
+{% block body %}
+    <div class="padded-boxes">
+        <section>
+            <div class="padded">
+                <!-- box 1 content -->
+                <pre>
+----------------------------------------------------------------------------------------------------------------------------------------
+    <b>DATETIME UTC    | COIN |         PRICE         | ALERT</b>
+----------------------------------------------------------------------------------------------------------------------------------------
+<span id="messages"></span>
+
+
+* Showing up to {{ num_months }} months of data
+
+
+{% include 'snippets/bottom.j2' %}
+
+</pre>
+            </div>
+        </section>
+    </div>
+    </body>
+{% endblock %}

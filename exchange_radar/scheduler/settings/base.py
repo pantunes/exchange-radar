@@ -15,3 +15,5 @@ MEXC = env.list("MEXC")
 HTX = env.list("HTX")
 
 COINS = list(set(BINANCE + COINBASE + KRAKEN + KUCOIN + OKX + BITSTAMP + MEXC + HTX))
+
+REDIS_EXPIRATION = env.int("REDIS_EXPIRATION")  # in days

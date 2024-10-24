@@ -73,3 +73,16 @@ class History(HTTPEndpoint):
             "version": __version__,
         }
         return templates.TemplateResponse(request, "history.j2", context=context)
+
+
+class Alerts(HTTPEndpoint):
+    @staticmethod
+    @validate(serializer=ParamsInputSerializer)
+    async def get(request, data: ParamsInputSerializer):
+        context = {
+            "coin": data.coin,
+            "http_alerts_url": settings.TRADES_ALERTS_URL.format(coin=data.coin),
+            "num_months": int(settings.REDIS_EXPIRATION / 30),
+            "version": __version__,
+        }
+        return templates.TemplateResponse(request, "alerts.j2", context=context)

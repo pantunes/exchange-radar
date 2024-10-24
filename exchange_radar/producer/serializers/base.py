@@ -10,7 +10,7 @@ from exchange_radar.producer.settings.base import CURRENCIES
 from exchange_radar.producer.utils import get_ranking
 
 
-class BaseSerializer(RedisMixin, BaseModel):
+class FeedSerializer(RedisMixin, BaseModel):
     @field_validator("trade_time", check_fields=False)  # noqa
     @classmethod
     def trade_time_normalization(cls, v) -> str:

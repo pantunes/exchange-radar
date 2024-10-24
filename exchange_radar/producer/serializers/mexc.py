@@ -5,10 +5,10 @@ from typing import Annotated
 
 from pydantic import Field, computed_field
 
-from exchange_radar.producer.serializers.base import BaseSerializer
+from exchange_radar.producer.serializers.base import FeedSerializer
 
 
-class MexcTradeSerializer(BaseSerializer):
+class MexcTradeSerializer(FeedSerializer):
     symbol: str = Field(alias="s")
     price: Annotated[Decimal, Field(ge=0, decimal_places=8, alias="p")]
     quantity: Annotated[Decimal, Field(ge=0, decimal_places=8, alias="v")]
