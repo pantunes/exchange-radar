@@ -7,13 +7,8 @@ from exchange_radar.web.src.manager import (
     ConnectionTradesOctopusesManager,
     ConnectionTradesWhalesManager,
 )
-from exchange_radar.web.src.models import (
-    Alerts as AlertsModel,
-    Feed as FeedModel,
-    History as HistoryModel,
-    Stats as StatsModel,
-    Status as StatusModel,
-)
+from exchange_radar.web.src.models import Alerts as AlertsModel, Feed as FeedModel, History as HistoryModel, \
+    Stats as StatsModel, Status as StatusModel
 from exchange_radar.web.src.serializers.decorators import validate
 from exchange_radar.web.src.serializers.http import ParamsInputSerializer
 
