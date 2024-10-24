@@ -12,10 +12,17 @@ logger = logging.getLogger(__name__)
 
 alerts_cache = defaultdict(dict)
 
-INCREASE_IN_PERCENTAGE = 4.0
+TASK_LOCK = "MARKET-SENTIMENT-LOCK"
 
 
-def _get_message(coin: str, currency: str, *, indicator: dict[str, int | float]) -> str | None:
+def _get_message(
+    coin: str,
+    currency: str,
+    increase_in_percentage: float,
+    frequency_in_minutes: int,
+    *,
+    indicator: dict[str, int | float],
+) -> str | None:
     key, value = next(iter(indicator.items()))
 
     alerts_cache_coin = alerts_cache[coin]
@@ -27,16 +34,29 @@ def _get_message(coin: str, currency: str, *, indicator: dict[str, int | float])
     ratio = ((value / alerts_cache_coin[key]) - 1) * 100
     ratio_abs = abs(ratio)
 
-    if ratio_abs < INCREASE_IN_PERCENTAGE:
-        logger.info(f"No new {key.upper()} Alerts for {coin}. Ratio is {ratio}.")
+    if ratio_abs < increase_in_percentage:
+        logger.info(
+            f"No new {key.upper()} alerts for coin:{coin}; frequency_in_minutes:{frequency_in_minutes} ratio: {ratio}."
+        )
         return None
 
     verb = "increased" if ratio > 0 else "decreased"
-    return f"The {key.upper()} {verb} {ratio_abs:.2f}%"
+    return f"The {key.upper()} {verb} {ratio_abs:.2f}% in the last {frequency_in_minutes} minute(s)"
 
 
 @huey.periodic_task(crontab(minute="*/1"))
-def bullish_or_bearish():
+@huey.lock_task(TASK_LOCK)
+def bullish_or_bearish__1_min():
+    task(increase_in_percentage=1.0, frequency_in_minutes=1)
+
+
+@huey.periodic_task(crontab(minute="*/10"))
+@huey.lock_task(TASK_LOCK)
+def bullish_or_bearish__10_min():
+    task(increase_in_percentage=4.0, frequency_in_minutes=10)
+
+
+def task(*, increase_in_percentage: float, frequency_in_minutes: int):
     name = datetime.today().date().strftime("%Y-%m-%d")
 
     with redis.pipeline() as pipe:
@@ -46,8 +66,8 @@ def bullish_or_bearish():
             pipe.hget(name, f"{coin}_VOLUME_SELL_ORDERS")
             pipe.hget(name, f"{coin}_NUMBER_BUY_ORDERS")
             pipe.hget(name, f"{coin}_NUMBER_SELL_ORDERS")
-            pipe.hget(name, f"{coin}_CURRENCY")
-            pipe.hget("PRICE", coin)
+            pipe.hget("COINS", f"{coin}_PRICE")
+            pipe.hget("COINS", f"{coin}_CURRENCY")
             result = pipe.execute()
             try:
                 (
@@ -56,16 +76,16 @@ def bullish_or_bearish():
                     volume_sell_orders,
                     number_buy_orders,
                     number_sell_orders,
-                    currency,
                     price,
+                    currency,
                 ) = (
                     float(result[0]),
                     float(result[1]),
                     float(result[2]),
                     int(result[3]),
                     int(result[4]),
-                    result[5],
-                    float(result[6]),
+                    float(result[5]),
+                    result[6],
                 )
             except TypeError as error:
                 logger.error(f"Error when parsing {coin} dataset: {error}")
@@ -79,7 +99,9 @@ def bullish_or_bearish():
                         {"volume": volume},
                         {"price": price},
                     ):
-                        message = _get_message(coin, currency, indicator=indicator)
+                        message = _get_message(
+                            coin, currency, increase_in_percentage, frequency_in_minutes, indicator=indicator
+                        )
                         if message:
                             logger.info(message)
                             messages.append(message)

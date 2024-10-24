@@ -119,7 +119,7 @@ class Alerts(JsonModel):  # pragma: no cover
             "rows": [
                 f"{datetime.fromtimestamp(item.time_ts)} | "
                 f"{trade_symbol.ljust(4)} | "
-                f"{f'{item.price:,.2f} {item.currency.rjust(4)}'.rjust(21, ' ')} | "
+                f"{f'{item.price:,.8f} {item.currency.rjust(4)}'.rjust(16 + 5, ' ')} | "
                 f"{item.message}"
                 for item in query
             ]
@@ -246,7 +246,7 @@ class Status(BaseModel):  # pragma: no cover
     def exchanges(self) -> dict[str, bool]:
         with redis.pipeline() as pipe:
             for exchange in settings.EXCHANGES:
-                pipe.hget("PING", exchange.upper())
+                pipe.hget("EXCHANGES", exchange.upper())
             result = pipe.execute()
 
         ret = {}
