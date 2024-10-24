@@ -246,7 +246,7 @@ class Status(BaseModel):  # pragma: no cover
     def exchanges(self) -> dict[str, bool]:
         with redis.pipeline() as pipe:
             for exchange in settings.EXCHANGES:
-                pipe.hget("PING", exchange.upper())
+                pipe.hget("EXCHANGES", exchange.upper())
             result = pipe.execute()
 
         ret = {}

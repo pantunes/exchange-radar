@@ -24,9 +24,11 @@ class RedisMixin:
             # noinspection PyUnresolvedReferences
             pipe.hsetnx(self._name, f"{self.trade_symbol}_EXCHANGES", get_exchanges(coin=self.trade_symbol))
             # noinspection PyUnresolvedReferences
-            pipe.hset("PING", self.exchange.upper(), time.time())
+            pipe.hset("EXCHANGES", self.exchange.upper(), time.time())
             # noinspection PyUnresolvedReferences
-            pipe.hset("PRICE", self.trade_symbol, float(self.price))
+            pipe.hset("COINS", f"{self.trade_symbol}_PRICE", float(self.price))
+            # noinspection PyUnresolvedReferences
+            pipe.hset("COINS", f"{self.trade_symbol}_CURRENCY", self.currency)
             pipe.execute()
 
     def volume(self) -> float:

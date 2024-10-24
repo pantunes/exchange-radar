@@ -46,8 +46,8 @@ def bullish_or_bearish():
             pipe.hget(name, f"{coin}_VOLUME_SELL_ORDERS")
             pipe.hget(name, f"{coin}_NUMBER_BUY_ORDERS")
             pipe.hget(name, f"{coin}_NUMBER_SELL_ORDERS")
-            pipe.hget(name, f"{coin}_CURRENCY")
-            pipe.hget("PRICE", coin)
+            pipe.hget("COINS", f"{coin}_PRICE")
+            pipe.hget("COINS", f"{coin}_CURRENCY")
             result = pipe.execute()
             try:
                 (
@@ -56,16 +56,16 @@ def bullish_or_bearish():
                     volume_sell_orders,
                     number_buy_orders,
                     number_sell_orders,
-                    currency,
                     price,
+                    currency,
                 ) = (
                     float(result[0]),
                     float(result[1]),
                     float(result[2]),
                     int(result[3]),
                     int(result[4]),
-                    result[5],
-                    float(result[6]),
+                    float(result[5]),
+                    result[6],
                 )
             except TypeError as error:
                 logger.error(f"Error when parsing {coin} dataset: {error}")
