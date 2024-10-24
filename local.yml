@@ -231,6 +231,7 @@ services:
     image: exchange_radar_tests
     container_name: exchange-radar-tests
     env_file:
+      - ./.envs/.local/.redis
       - ./.envs/.local/.rabbitmq
       - ./.envs/.local/.consumer
       - ./.envs/.local/.producer
