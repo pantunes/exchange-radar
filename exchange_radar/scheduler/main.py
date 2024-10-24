@@ -15,7 +15,10 @@ huey = RedisHuey("scheduler", host="redis")
 
 # Register periodic Tasks
 # noinspection PyUnresolvedReferences
-from exchange_radar.scheduler.alerts.market_sentiment import bullish_or_bearish  # noqa
+from exchange_radar.scheduler.alerts.market_sentiment import (  # noqa
+    bullish_or_bearish__1_min,
+    bullish_or_bearish__10_min,
+)
 
 
 @click.command()
