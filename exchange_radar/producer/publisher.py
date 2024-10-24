@@ -9,7 +9,7 @@ from pika.exceptions import (
     StreamLostError,
 )
 
-from exchange_radar.producer.serializers.base import BaseSerializer
+from exchange_radar.producer.serializers.base import FeedSerializer
 from exchange_radar.producer.settings import base as settings
 from exchange_radar.producer.settings.routing_keys import ROUTING_KEYS
 
@@ -70,7 +70,7 @@ params = {
 }
 
 
-def publish(data: BaseSerializer) -> None:
+def publish(data: FeedSerializer) -> None:
     logger.info(f"PRODUCER - start: {data.trade_time} {data.symbol}")
 
     body = data.model_dump_json().encode()

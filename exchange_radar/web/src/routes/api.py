@@ -1,6 +1,7 @@
 from starlette.routing import Mount, Route, WebSocketRoute
 
 from exchange_radar.web.src.api.http import (
+    Alerts,
     FeedBase,
     FeedDolphins,
     FeedOctopuses,
@@ -35,6 +36,7 @@ routes: list = [
             # others
             Route("/stats/{coin:str}", endpoint=Stats),
             Route("/history/{coin:str}", endpoint=History),
+            Route("/alerts/{coin:str}", endpoint=Alerts),
             Route("/status", endpoint=Status),
         ],
     )

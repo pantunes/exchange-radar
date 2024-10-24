@@ -9,6 +9,6 @@ with patch("redis.connection.ConnectionPool.get_connection"):
 
 @pytest.fixture
 def client():
-    with patch("exchange_radar.web.src.api.http.Feed.select_rows", return_value=[]):
+    with patch("exchange_radar.web.src.api.http.FeedModel.select_rows", return_value=[]):
         with TestClient(app) as client:
             yield client
