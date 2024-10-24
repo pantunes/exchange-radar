@@ -7,7 +7,8 @@ from exchange_radar.web.src.manager import (
     ConnectionTradesOctopusesManager,
     ConnectionTradesWhalesManager,
 )
-from exchange_radar.web.src.models import Feed
+from exchange_radar.web.src.models import Alerts as AlertsModel
+from exchange_radar.web.src.models import Feed as FeedModel
 from exchange_radar.web.src.models import History as HistoryModel
 from exchange_radar.web.src.models import Stats as StatsModel
 from exchange_radar.web.src.models import Status as StatusModel
@@ -31,7 +32,7 @@ class FeedBase(HTTPEndpoint):
         coin = request.path_params["coin"]
         message = await request.json()
         await self.manager.broadcast(message, coin)
-        is_saved = Feed.save_or_not(coin=coin, category=str(self), message=message)
+        is_saved = FeedModel.save_or_not(coin=coin, category=str(self), message=message)
         return JSONResponse({"r": is_saved}, status_code=201 if is_saved else 200)
 
     @validate(serializer=ParamsInputSerializer)
@@ -53,7 +54,7 @@ class FeedBase(HTTPEndpoint):
                 description: Error in input validation.
         """
 
-        rows = Feed.select_rows(coin=data.coin, category=str(self))
+        rows = FeedModel.select_rows(coin=data.coin, category=str(self))
         return JSONResponse({"r": rows}, status_code=200)
 
 
@@ -119,6 +120,30 @@ class History(HTTPEndpoint):
         return JSONResponse(data.model_dump(), status_code=200)
 
 
+class Alerts(HTTPEndpoint):
+    @staticmethod
+    @validate(serializer=ParamsInputSerializer)
+    async def get(_, data: ParamsInputSerializer):
+        """
+        tags:
+            - alerts
+        summary: 1 minute interval alerts.
+        parameters:
+            - name: coin
+              in: path
+              required: true
+              schema:
+                type: string
+        responses:
+            200:
+                description: List of alerts.
+            400:
+                description: Error in input validation.
+        """
+        data = AlertsModel.rows(trade_symbol=data.coin)
+        return JSONResponse(data, status_code=200)
+
+
 class Status(HTTPEndpoint):
     @staticmethod
     async def get(_):
@@ -136,6 +161,7 @@ class Status(HTTPEndpoint):
 
 
 REST_ENDPOINTS = (
+    Alerts,
     FeedBase,
     FeedWhales,
     FeedDolphins,

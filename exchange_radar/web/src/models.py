@@ -105,6 +105,27 @@ class Feed(JsonModel):  # pragma: no cover
         return True
 
 
+class Alerts(JsonModel):  # pragma: no cover
+    time_ts: int = Field(index=True, sortable=True)
+    trade_symbol: str = Field(index=True)
+    price: float
+    currency: str
+    message: str
+
+    @classmethod
+    def rows(cls, trade_symbol: str) -> dict[str, list[str]]:
+        query = cls.find(cls.trade_symbol == trade_symbol).sort_by("-time_ts")
+        return {
+            "rows": [
+                f"{datetime.fromtimestamp(item.time_ts)} | "
+                f"{trade_symbol.ljust(4)} | "
+                f"{f'{item.price:,.2f} {item.currency.rjust(4)}'.rjust(21, ' ')} | "
+                f"{item.message}"
+                for item in query
+            ]
+        }
+
+
 Migrator().run()
 
 
@@ -225,7 +246,7 @@ class Status(BaseModel):  # pragma: no cover
     def exchanges(self) -> dict[str, bool]:
         with redis.pipeline() as pipe:
             for exchange in settings.EXCHANGES:
-                pipe.get(f"LAST_TS_{exchange.upper()}")
+                pipe.hget("PING", exchange.upper())
             result = pipe.execute()
 
         ret = {}

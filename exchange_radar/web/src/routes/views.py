@@ -2,6 +2,7 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from exchange_radar.web.src.views import (
+    Alerts,
     History,
     IndexBase,
     IndexDolphins,
@@ -23,4 +24,6 @@ routes: list = [
     Route("/{coin:str}/octopuses", endpoint=IndexOctopuses),
     # history
     Route("/history/{coin:str}", endpoint=History),
+    # alerts
+    Route("/alerts/{coin:str}", endpoint=Alerts),
 ]

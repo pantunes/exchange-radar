@@ -5,10 +5,10 @@ from typing import Annotated
 
 from pydantic import Field, computed_field, field_validator
 
-from exchange_radar.producer.serializers.base import BaseSerializer
+from exchange_radar.producer.serializers.base import FeedSerializer
 
 
-class KrakenTradeSerializer(BaseSerializer):
+class KrakenTradeSerializer(FeedSerializer):
     symbol: str
     price: Annotated[Decimal, Field(ge=0, decimal_places=12)]
     quantity: Annotated[Decimal, Field(ge=0, decimal_places=9)]

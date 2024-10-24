@@ -5,10 +5,10 @@ from typing import Annotated
 
 from pydantic import Field, computed_field, field_validator
 
-from exchange_radar.producer.serializers.base import BaseSerializer
+from exchange_radar.producer.serializers.base import FeedSerializer
 
 
-class CoinbaseTradeSerializer(BaseSerializer):
+class CoinbaseTradeSerializer(FeedSerializer):
     symbol: str = Field(alias="product_id")
     price: Annotated[Decimal, Field(ge=0, decimal_places=8)]
     quantity: Annotated[Decimal, Field(ge=0, decimal_places=8, alias="size")]

@@ -33,6 +33,7 @@ class BybitTradesTask(Task):
 
             while True:
                 await asyncio.sleep(self.ITER_SLEEP)
+
         except Exception as error2:
             logger.error(f"EXIT ERROR: {error2}")
             sys.exit(1)

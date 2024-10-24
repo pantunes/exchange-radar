@@ -25,6 +25,7 @@ TRADES_OCTOPUSES_HOST_URL = "/api/feed/{coin}/octopuses"
 
 TRADES_STATS_URL = "/api/stats/{coin}"
 TRADES_HISTORY_URL = "/api/history/{coin}"
+TRADES_ALERTS_URL = "/api/alerts/{coin}"
 
 BINANCE = env.list("BINANCE")
 BYBIT = env.list("BYBIT")
