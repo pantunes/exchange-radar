@@ -21,7 +21,7 @@ def _get_message(coin: str, currency: str, *, indicator: dict[str, int | float])
     alerts_cache_coin = alerts_cache[coin]
 
     if alerts_cache_coin["currency"] != currency:
-        logger.info(f"Mismatch in Currency: {alerts_cache_coin["currency"]} != {currency} for {coin}.")
+        logger.info(f"Mismatch in Currency: {alerts_cache_coin['currency']} != {currency} for {coin}.")
         return None
 
     ratio = ((value / alerts_cache_coin[key]) - 1) * 100
