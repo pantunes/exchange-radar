@@ -106,6 +106,7 @@ class Feed(JsonModel):  # pragma: no cover
 
 
 class Alerts(JsonModel):  # pragma: no cover
+    name: str
     time_ts: int = Field(index=True, sortable=True)
     trade_symbol: str = Field(index=True)
     price: float
@@ -120,6 +121,7 @@ class Alerts(JsonModel):  # pragma: no cover
                 f"{datetime.fromtimestamp(item.time_ts)} | "
                 f"{trade_symbol.ljust(4)} | "
                 f"{f'{item.price:,.8f} {item.currency.rjust(4)}'.rjust(16 + 5, ' ')} | "
+                f"{item.name.ljust(21)} | "
                 f"{item.message}"
                 for item in query
             ]
