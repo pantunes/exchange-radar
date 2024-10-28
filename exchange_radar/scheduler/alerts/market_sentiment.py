@@ -63,7 +63,8 @@ def _get_message(
 
     if ratio_abs < increase_in_percentage:
         logger.info(
-            f"No new {indicator_key.upper()} alerts for coin:{coin}; frequency_in_minutes:{frequency_in_minutes} ratio: {ratio}."
+            f"No new {indicator_key.upper()} alerts for coin:{coin}; "
+            f"frequency_in_minutes:{frequency_in_minutes} ratio: {ratio}."
         )
         return None
 
