@@ -11,7 +11,8 @@ from exchange_radar.web.src.models import Alerts
 
 logger = logging.getLogger(__name__)
 
-alerts_cache = defaultdict(lambda: defaultdict(dict))
+alerts_cache: defaultdict[str, defaultdict[str, dict]] = defaultdict(lambda: defaultdict(dict))
+
 
 TASK_LOCK = "MARKET-SENTIMENT-LOCK"
 
