@@ -20,25 +20,23 @@ TASK_LOCK = "MARKET-SENTIMENT-LOCK"
 class TaskConfig(ABC):
     @property
     @abstractmethod
-    def increase_in_percentage(self) -> float:
-        pass
+    def price_percentage_change(self) -> float: ...
 
     @property
     @abstractmethod
-    def frequency_in_minutes(self) -> int:
-        pass
+    def frequency_in_minutes(self) -> int: ...
 
     def __str__(self) -> str:
         return self.__class__.__name__
 
 
-class EachSecondTaskConfig(TaskConfig):
-    increase_in_percentage = 2.0
+class EachMinuteTaskConfig(TaskConfig):
+    price_percentage_change = 1.0
     frequency_in_minutes = 1
 
 
-class Each10SecondsTaskConfig(TaskConfig):
-    increase_in_percentage = 4.0
+class Each10MinutesTaskConfig(TaskConfig):
+    price_percentage_change = 2.0
     frequency_in_minutes = 10
 
 
@@ -46,7 +44,7 @@ def _get_message(
     key: str,
     coin: str,
     currency: str,
-    increase_in_percentage: float,
+    price_percentage_change: float,
     frequency_in_minutes: int,
     *,
     indicator: dict[str, int | float],
@@ -62,7 +60,7 @@ def _get_message(
     ratio = ((indicator_value / alerts_cache_coin[indicator_key]) - 1) * 100
     ratio_abs = abs(ratio)
 
-    if ratio_abs < increase_in_percentage:
+    if ratio_abs < price_percentage_change:
         logger.info(
             f"No new {indicator_key.upper()} alerts for coin:{coin}; "
             f"frequency_in_minutes:{frequency_in_minutes} ratio: {ratio}."
@@ -76,13 +74,13 @@ def _get_message(
 @huey.periodic_task(crontab(minute="*/1"))
 @huey.lock_task(TASK_LOCK)
 def bullish_or_bearish__1_min():
-    task(config=EachSecondTaskConfig())
+    task(config=EachMinuteTaskConfig())
 
 
 @huey.periodic_task(crontab(minute="*/10"))
 @huey.lock_task(TASK_LOCK)
 def bullish_or_bearish__10_min():
-    task(config=Each10SecondsTaskConfig())
+    task(config=Each10MinutesTaskConfig())
 
 
 def task(*, config: TaskConfig):
@@ -126,15 +124,12 @@ def task(*, config: TaskConfig):
 
                     messages = []
 
-                    for indicator in (
-                        {"volume": volume},
-                        {"price": price},
-                    ):
+                    for indicator in ({"price": price},):
                         message = _get_message(
                             key,
                             coin,
                             currency,
-                            config.increase_in_percentage,
+                            config.price_percentage_change,
                             config.frequency_in_minutes,
                             indicator=indicator,
                         )
