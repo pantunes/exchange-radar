@@ -20,6 +20,10 @@ TASK_LOCK = "MARKET-SENTIMENT-LOCK"
 class TaskConfig(ABC):
     @property
     @abstractmethod
+    def name(self) -> str: ...
+
+    @property
+    @abstractmethod
     def price_percentage_change(self) -> float: ...
 
     @property
@@ -31,11 +35,13 @@ class TaskConfig(ABC):
 
 
 class EachMinuteTaskConfig(TaskConfig):
+    name = "price-change-1-min"
     price_percentage_change = 1.0
     frequency_in_minutes = 1
 
 
 class Each10MinutesTaskConfig(TaskConfig):
+    name = "price-change-10-mins"
     price_percentage_change = 2.0
     frequency_in_minutes = 10
 
@@ -115,7 +121,7 @@ def task(*, config: TaskConfig):
                     result[6],
                 )
             except TypeError as error:
-                logger.error(f"Error when parsing {coin} dataset: {error}")
+                logger.error(f"Error when parsing {coin}: {error}")
                 break
             else:
                 key = f"{name} {config}"
@@ -141,13 +147,13 @@ def task(*, config: TaskConfig):
 
                     for message in messages:
                         Alerts(
-                            name=f"bullish-or-bearish-{config.frequency_in_minutes}",
+                            name=config.name,
                             time_ts=time_ts,
                             trade_symbol=coin,
                             price=price,
                             currency=currency,
                             message=message,
-                        ).save().expire(60 * 60 * 24 * REDIS_EXPIRATION)
+                        ).save().expire(num_seconds=60 * 60 * 24 * REDIS_EXPIRATION)
 
                 else:
                     logger.info("Initializing Alerts...")
