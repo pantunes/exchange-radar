@@ -44,7 +44,7 @@ def test_get_ranking__error():
     [
         ("BTC", "Binance, Coinbase, Kraken, Kucoin, OKX, Bybit, Bitstamp, MEXC, HTX"),
         ("ETH", "Binance, Coinbase, Kraken, Kucoin, OKX, Bybit, Bitstamp, MEXC, HTX"),
-        ("LTO", "Binance, Kucoin"),
+        ("LTO", "Kucoin"),
     ],
 )
 def test_get_exchanges(coin, expected):

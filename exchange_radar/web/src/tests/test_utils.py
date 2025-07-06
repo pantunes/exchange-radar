@@ -22,7 +22,7 @@ from exchange_radar.web.src.utils import get_exchanges
             "<span id='bitstamp' class='bitstamp'>Bitstamp</span> <span id='mexc' class='mexc'>MEXC</span> "
             "<span id='htx' class='htx'>HTX</span>",
         ),
-        ("LTO", "<span id='binance' class='binance'>Binance</span> <span id='kucoin' class='kucoin'>KuCoin</span>"),
+        ("LTO", "<span id='kucoin' class='kucoin'>KuCoin</span>"),
     ],
 )
 def test_get_exchanges(coin, expected):
