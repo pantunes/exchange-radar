@@ -5,6 +5,7 @@ import threading
 from typing import override
 
 from pymexc import spot
+from pymexc.proto import ProtoTyping
 
 from exchange_radar.producer.publisher import publish
 from exchange_radar.producer.serializers.mexc import MexcTradeSerializer
@@ -20,11 +21,17 @@ class MexcTradesTask(Task):
 
     @override
     async def process(self, symbol_or_symbols: str | tuple):
-        def callback(message):
+        def callback(message: ProtoTyping.PublicDealsV3Api):
             try:
-                for msg in message["d"]["deals"]:
-                    msg.update({"s": message["s"]})
-                    data = MexcTradeSerializer(**msg)
+                for deal in message.publicAggreDeals.deals:
+                    trade_dict = {
+                        "s": message.symbol,
+                        "p": deal.price,
+                        "v": deal.quantity,
+                        "t": deal.time,
+                        "S": deal.tradeType,
+                    }
+                    data = MexcTradeSerializer(**trade_dict)
                     publish(data)
             except Exception as error:
                 logger.error(f"ERROR: {error}")
@@ -34,8 +41,8 @@ class MexcTradesTask(Task):
                     asyncio.run(_start())
 
         async def _start():
-            ws = spot.WebSocket()
-            ws._ws_subscribe("public.deals", callback, [{"symbol": symbol} for symbol in symbol_or_symbols])
+            ws = spot.WebSocket(proto=True)
+            ws.deals_stream(callback, list(symbol_or_symbols), interval="10ms")
 
             while True:
                 await asyncio.sleep(self.ITER_SLEEP)
