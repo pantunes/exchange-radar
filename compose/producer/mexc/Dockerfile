@@ -33,6 +33,10 @@ RUN poetry install --only main --no-root
 
 FROM python AS python-run-stage
 
+# Install Tk (and clean up apt cache)
+RUN apt-get update && apt-get install --no-install-recommends -y tk \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=python-build-stage $POETRY_HOME $POETRY_HOME
 COPY --from=python-build-stage $PYSETUP_PATH $PYSETUP_PATH
 
