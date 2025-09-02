@@ -22,7 +22,8 @@ ARG BUILD_ENVIRONMENT=tests
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
     curl \
-    build-essential
+    build-essential \
+    git
 
 ENV POETRY_VERSION=1.7.1
 RUN curl -sSL https://install.python-poetry.org | python
