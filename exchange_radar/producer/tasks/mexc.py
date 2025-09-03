@@ -13,6 +13,8 @@ from exchange_radar.producer.tasks.base import Task
 
 logger = logging.getLogger(__name__)
 
+logging.getLogger("pymexc.base_websocket").setLevel(logging.ERROR)
+
 
 class MexcTradesTask(Task):
     @override
