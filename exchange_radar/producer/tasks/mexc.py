@@ -40,7 +40,7 @@ class MexcTradesTask(Task):
                 _error = str(error)
                 if "socket is already closed" in _error or "sslv3 alert bad record mac" in _error:
                     logger.error("Restarting from callback...")
-                    asyncio.run(_start())
+                    asyncio.run_coroutine_threadsafe(_start(), self.loop)
 
         async def _start():
             ws = spot.WebSocket(proto=True)
