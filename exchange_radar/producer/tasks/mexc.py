@@ -1,7 +1,5 @@
 import asyncio
 import logging
-import sys
-import threading
 from typing import override
 
 from pymexc import spot
@@ -53,11 +51,3 @@ class MexcTradesTask(Task):
 
         while True:
             await asyncio.sleep(self.ITER_SLEEP)
-
-
-def thread_exception_handler(args):
-    logger.error(f"EXIT ERROR(2): {args.exc_value}")
-    sys.exit(1)
-
-
-threading.excepthook = thread_exception_handler
