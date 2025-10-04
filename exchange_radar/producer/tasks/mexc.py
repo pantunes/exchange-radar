@@ -5,7 +5,6 @@ import threading
 from typing import override
 
 from pymexc import spot
-from pymexc.proto import ProtoTyping
 
 from exchange_radar.producer.publisher import publish
 from exchange_radar.producer.serializers.mexc import MexcTradeSerializer
@@ -22,9 +21,22 @@ class MexcTradesTask(Task):
         await asyncio.gather(self.process(symbols))
 
     @override
-    async def process(self, symbol_or_symbols: str | tuple):
-        def callback(message: ProtoTyping.PublicDealsV3Api):
+    async def process(self, symbol_or_symbols):
+        while True:
             try:
+                await self._start(symbol_or_symbols)
+            except Exception as e:
+                logger.error(f"WebSocket crashed: {e}, restarting in 5s...")
+                await asyncio.sleep(5)
+
+    async def _start(self, symbols):
+        ws = spot.WebSocket(proto=True)
+
+        def callback(message):
+            try:
+                if not hasattr(message, "publicAggreDeals"):
+                    logger.warning(f"Malformed message: {message!r}")
+                    return
                 for deal in message.publicAggreDeals.deals:
                     trade_dict = {
                         "s": message.symbol,
@@ -33,28 +45,14 @@ class MexcTradesTask(Task):
                         "t": deal.time,
                         "S": deal.tradeType,
                     }
-                    data = MexcTradeSerializer(**trade_dict)
-                    publish(data)
-            except Exception as error:
-                logger.error(f"ERROR: {error}")
-                _error = str(error)
-                if "socket is already closed" in _error or "sslv3 alert bad record mac" in _error:
-                    logger.error("Restarting from callback...")
-                    asyncio.run_coroutine_threadsafe(_start(), self.loop)
+                    publish(MexcTradeSerializer(**trade_dict))
+            except Exception as e:
+                logger.error(f"Callback error: {e}")
 
-        async def _start():
-            ws = spot.WebSocket(proto=True)
-            ws.deals_stream(callback, list(symbol_or_symbols), interval="10ms")
+        ws.deals_stream(callback, list(symbols), interval="10ms")
 
-            while True:
-                await asyncio.sleep(self.ITER_SLEEP)
-
-        try:
-            await _start()
-
-        except Exception as error2:
-            logger.error(f"EXIT ERROR(1): {error2}")
-            sys.exit(1)
+        while True:
+            await asyncio.sleep(self.ITER_SLEEP)
 
 
 def thread_exception_handler(args):
