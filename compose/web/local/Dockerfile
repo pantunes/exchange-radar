@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     curl \
     build-essential
 
-ENV POETRY_VERSION=1.7.1
+ENV POETRY_VERSION=2.1.4
 RUN curl -sSL https://install.python-poetry.org | python
 
 WORKDIR $PYSETUP_PATH
