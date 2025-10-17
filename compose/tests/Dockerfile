@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 ENV POETRY_VERSION=2.1.4
 RUN curl -sSL https://install.python-poetry.org | python
+RUN poetry self add poetry-plugin-export  # Install export plugin (required in Poetry >=2.0)
 
 WORKDIR $PYSETUP_PATH
 
