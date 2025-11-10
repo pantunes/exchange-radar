@@ -64,7 +64,7 @@ class Feed(JsonModel):  # pragma: no cover
 
     @classmethod
     def is_coin_selected(cls, coin: str, category: str) -> bool:
-        return coin in ("LTO",) or category in (
+        return coin in ("EQTY",) or category in (
             "FeedWhales",
             "FeedDolphins",
         )
