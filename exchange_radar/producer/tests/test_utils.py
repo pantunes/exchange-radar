@@ -32,11 +32,11 @@ def test_get_ranking(currency, total, expected):
 
 def test_get_ranking__error():
     data = Mock()
-    data.currency = "LTO"
+    data.currency = "EQTY"
     data.total = Decimal("123000")
     with pytest.raises(ValueError) as exc_info:
         get_ranking(total=data.total, currency=data.currency)
-    assert str(exc_info.value) == "Currency not configured: LTO"
+    assert str(exc_info.value) == "Currency not configured: EQTY"
 
 
 @pytest.mark.parametrize(
@@ -44,7 +44,7 @@ def test_get_ranking__error():
     [
         ("BTC", "Binance, Coinbase, Kraken, Kucoin, OKX, Bybit, Bitstamp, MEXC, HTX"),
         ("ETH", "Binance, Coinbase, Kraken, Kucoin, OKX, Bybit, Bitstamp, MEXC, HTX"),
-        ("LTO", "Kucoin"),
+        ("EQTY", "Kucoin"),
     ],
 )
 def test_get_exchanges(coin, expected):
