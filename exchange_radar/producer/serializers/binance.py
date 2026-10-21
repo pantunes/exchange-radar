@@ -8,6 +8,7 @@ from exchange_radar.producer.serializers.base import FeedSerializer
 
 
 class BinanceTradeSerializer(FeedSerializer):
+    trade_id: int | None = Field(default=None, alias="t", ge=0, exclude=True)
     symbol: str = Field(alias="s")
     price: Annotated[Decimal, Field(ge=0, decimal_places=8, alias="p")]
     quantity: Annotated[Decimal, Field(ge=0, decimal_places=8, alias="q")]

@@ -1,4 +1,3 @@
-import json
 import logging
 from collections.abc import Callable
 from time import sleep
@@ -13,9 +12,10 @@ from pika.exceptions import (
     ConnectionClosedByBroker,
     StreamLostError,
 )
-from pika.spec import Basic
 
+from exchange_radar.consumer.delivery import Callback
 from exchange_radar.consumer.settings import base as settings
+from exchange_radar.feed import MAX_FEED_BATCH_SIZE
 
 logger = logging.getLogger(__name__)
 
@@ -24,46 +24,8 @@ logging.getLogger("pika").propagate = False
 ITER_SLEEP = 4.0
 
 
-class Callback:
-    def __init__(self, url: str):
-        self.url = url
-
-    def callback(
-        self,
-        channel: BlockingChannel,
-        method: Basic.Deliver,
-        properties: pika.BasicProperties,
-        body: bytes,
-    ):
-        logger.info("CONSUMER - start")
-
-        data = json.loads(body)
-
-        logger.info(f"CONSUMER - data: {data}")
-
-        url = self.url.format(coin=data["trade_symbol"])
-        try:
-            response = requests.post(
-                url=url,
-                json=data,
-                timeout=(settings.POST_CONNECT_TIMEOUT, settings.POST_READ_TIMEOUT),
-            )
-            response.raise_for_status()
-        except (
-            requests.exceptions.HTTPError,  # 4xx, 5xx errors
-            requests.exceptions.Timeout,
-            requests.exceptions.TooManyRedirects,
-            requests.exceptions.RequestException,
-        ) as error:
-            logger.error(f"POST {url} Error: {error}")
-
-        channel.basic_ack(delivery_tag=method.delivery_tag)
-
-        logger.info("CONSUMER - end")
-
-
-def setup_channel(channel: BlockingChannel, queue_name: str, callback: Callable):  # pragma: no cover
-    channel.basic_qos(prefetch_count=1)
+def setup_channel(channel: BlockingChannel, queue_name: str, callback: Callable):
+    channel.basic_qos(prefetch_count=MAX_FEED_BATCH_SIZE)
     channel.basic_consume(queue=queue_name, on_message_callback=callback)
 
 
@@ -80,9 +42,10 @@ def main():  # pragma: no cover
         blocked_connection_timeout=settings.RABBITMQ_BLOCKED_CONNECTION_TIMEOUT,
     )
 
-    channel = None
-
     while True:
+        channel = None
+        connection = None
+        session = requests.Session()
         try:
             connection = pika.BlockingConnection(parameters)
             channel = connection.channel()
@@ -105,7 +68,7 @@ def main():  # pragma: no cover
                 setup_channel(
                     channel,
                     queue_name,
-                    Callback(url=url).callback,
+                    Callback(url=url, session=session).callback,
                 )
             channel.start_consuming()
         except KeyboardInterrupt:
@@ -124,4 +87,10 @@ def main():  # pragma: no cover
         except Exception as error:
             logger.error(f"GENERAL ERROR: {error}")
         finally:
+            session.close()
+            if connection is not None and connection.is_open:
+                try:
+                    connection.close()
+                except pika.exceptions.AMQPError as error:
+                    logger.warning("Error closing consumer connection: %s", error)
             sleep(ITER_SLEEP)

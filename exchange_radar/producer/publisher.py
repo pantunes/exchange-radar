@@ -39,6 +39,7 @@ class ProducerConnection:
         )
 
         self.connection = pika.BlockingConnection(parameters)
+        self.channel = None
 
         return self.connection
 
@@ -69,7 +70,7 @@ params = {
 }
 
 
-def publish(data: FeedSerializer) -> None:
+def publish(data: FeedSerializer, *, raise_on_error: bool = False) -> None:
     logger.info(f"PRODUCER - start: {data.trade_time} {data.symbol}")
 
     body = data.model_dump_json().encode()
@@ -91,9 +92,15 @@ def publish(data: FeedSerializer) -> None:
         ChannelWrongStateError,
     ) as error:
         logger.error(f"ERROR: {error}")
+        if raise_on_error:
+            raise
     except AMQPConnectionError:
         logger.error("ERROR: General AMQP Connection Error")
+        if raise_on_error:
+            raise
     except Exception as error:
         logger.error(f"GENERAL ERROR: {error}")
+        if raise_on_error:
+            raise
     else:
         logger.info(f"PRODUCER - end: {data.trade_time} {data.symbol}")
