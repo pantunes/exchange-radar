@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.12.3-slim-bullseye
+ARG PYTHON_VERSION=3.12.15-slim-bookworm
 
 FROM python:${PYTHON_VERSION} AS python
 

@@ -1,6 +1,8 @@
 from starlette.endpoints import HTTPEndpoint
+from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
 
+from exchange_radar.feed import MAX_FEED_BATCH_SIZE
 from exchange_radar.web.src.manager import (
     ConnectionTradesDolphinsManager,
     ConnectionTradesManager,
@@ -30,9 +32,26 @@ class FeedBase(HTTPEndpoint):
     async def post(self, request):
         """internal endpoint"""
         coin = request.path_params["coin"]
-        message = await request.json()
-        await self.manager.broadcast(message, coin)
-        is_saved = FeedModel.save_or_not(coin=coin, category=str(self), message=message)
+        payload = await request.json()
+        if isinstance(payload, list):
+            if not 1 <= len(payload) <= MAX_FEED_BATCH_SIZE or any(
+                not isinstance(message, dict)
+                or not isinstance(message.get("trade_symbol"), str)
+                or not message["trade_symbol"]
+                or (coin != "_batch" and message["trade_symbol"] != coin)
+                for message in payload
+            ):
+                raise HTTPException(400, "Invalid trade batch")
+            saved = []
+            for message in payload:
+                symbol = message["trade_symbol"]
+                await self.manager.broadcast(message, symbol)
+                saved.append(FeedModel.save_or_not(coin=symbol, category=str(self), message=message))
+            return JSONResponse({"r": saved, "accepted": len(saved)}, status_code=201 if any(saved) else 200)
+        if coin == "_batch" or not isinstance(payload, dict):
+            raise HTTPException(400, "Expected a trade batch")
+        await self.manager.broadcast(payload, coin)
+        is_saved = FeedModel.save_or_not(coin=coin, category=str(self), message=payload)
         return JSONResponse({"r": is_saved}, status_code=201 if is_saved else 200)
 
     @validate(serializer=ParamsInputSerializer)

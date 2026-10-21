@@ -10,10 +10,15 @@ redis = get_redis_connection()
 
 
 class RedisMixin:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, _defer_stats=False, **kwargs):
         super().__init__(*args, **kwargs)
         # noinspection PyUnresolvedReferences
         self._name = self.trade_time.date().strftime("%Y-%m-%d")
+        self._defer_stats = _defer_stats
+        self._stats_snapshot = None
+        self._duplicate = False
+        if _defer_stats:
+            return
 
         with redis.pipeline() as pipe:
             pipe.expire(name=self._name, time=timedelta(days=REDIS_EXPIRATION), nx=True)
@@ -32,9 +37,17 @@ class RedisMixin:
             pipe.execute()
 
     def volume(self) -> float:
+        if self._defer_stats:
+            if self._stats_snapshot is None:
+                raise RuntimeError("Trade statistics have not been persisted")
+            return self._stats_snapshot["volume"]
         return redis.hincrbyfloat(self._name, f"{self.trade_symbol}_VOLUME", float(self.quantity))  # type: ignore
 
     def volume_trades(self) -> tuple[float, float] | None:
+        if self._defer_stats:
+            if self._stats_snapshot is None:
+                raise RuntimeError("Trade statistics have not been persisted")
+            return self._stats_snapshot["volume_trades"]
         with redis.pipeline() as pipe:
             if self.is_seller is False:  # type: ignore
                 pipe.hincrbyfloat(
@@ -60,6 +73,10 @@ class RedisMixin:
         return result
 
     def number_trades(self) -> tuple[int, int] | None:
+        if self._defer_stats:
+            if self._stats_snapshot is None:
+                raise RuntimeError("Trade statistics have not been persisted")
+            return self._stats_snapshot["number_trades"]
         with redis.pipeline() as pipe:
             if self.is_seller is False:  # type: ignore
                 pipe.hincrby(self._name, f"{self.trade_symbol}_NUMBER_BUY_ORDERS", 1)  # type: ignore
