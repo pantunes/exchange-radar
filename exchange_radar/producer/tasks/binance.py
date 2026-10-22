@@ -1,52 +1,82 @@
 import asyncio
+import json
 import logging
-from concurrent.futures import ThreadPoolExecutor
 from time import monotonic
-from typing import override
 
-from binance import AsyncClient, BinanceSocketManager, exceptions
+import websockets
 
 from exchange_radar.producer.batching import TradeBatch, TradeStatsStore
-from exchange_radar.producer.tasks.base import Task
+from exchange_radar.producer.tasks.buffered import BufferedTradesTask
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-class BinanceTradesTask(Task):
-    MAX_RETRY_DELAY = 60.0
-    SOCKET_QUEUE_SIZE = 5000
-    BATCH_SIZE = 50
-    BATCH_WAIT = 0.02
-    MAX_PENDING_TRADES = 5000
+class WireBatch:
+    """Build models and publish on the same worker, retaining retry progress."""
+
+    def __init__(self, payloads):
+        self.payloads = payloads
+        self.batch = None
+
+    def process(self, store):
+        if self.batch is None:
+            self.batch = TradeBatch([json.loads(payload) for payload in self.payloads])
+            self.payloads = None
+        self.batch.process(store)
+
+
+class BinanceTradesTask(BufferedTradesTask):
+    EXCHANGE = "Binance"
+    URL = "wss://stream.binance.com:9443/ws/{symbol}@trade"
+    MAX_PENDING_TRADES = 50_000
+    MAX_PENDING_BYTES = 16 * 1024 * 1024
+    MAX_MESSAGE_BYTES = 64 * 1024
+    BURST_BATCH_SIZE = 200
 
     def __init__(self):
         super().__init__()
-        self._pending = asyncio.Queue(maxsize=self.MAX_PENDING_TRADES)
-        self._received = 0
-        # Pika's blocking connection remains confined to a single worker thread.
-        self._publisher_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="binance-publisher")
+        self._pending_bytes = 0
+        self._pending_count = 0
+        self._peak_bytes = 0
 
-    @override
-    async def task(self, symbols: tuple[str, ...]):
-        try:
-            async with asyncio.TaskGroup() as group:
-                group.create_task(self._publish_batches())
-                for symbol in symbols:
-                    group.create_task(self.process(symbol))
-        finally:
-            self._publisher_executor.shutdown(wait=True, cancel_futures=True)
+    def streams(self, symbols):
+        return symbols
+
+    def enqueue_payload(self, payload):
+        # Retain wire bytes, not thousands of parsed dictionaries/models. Credits
+        # include the in-flight batch and are released only after publishing.
+        if (
+            self._pending_count >= self.MAX_PENDING_TRADES
+            or self._pending_bytes + len(payload) > self.MAX_PENDING_BYTES
+        ):
+            raise BufferError(
+                "Binance burst inbox exhausted "
+                f"(pending={self._pending_count}, bytes={self._pending_bytes}); "
+                "reconnecting (unbuffered trades may be lost)"
+            )
+        self._pending.put_nowait((asyncio.get_running_loop().time(), payload))
+        self._pending_count += 1
+        self._pending_bytes += len(payload)
+        self._received += 1
+        self._peak_queue = max(self._peak_queue, self._pending_count)
+        self._peak_bytes = max(self._peak_bytes, self._pending_bytes)
 
     async def _publish_batches(self):
         loop = asyncio.get_running_loop()
         store = TradeStatsStore()
-        processed = 0
+        processed = reported = last_received = 0
         last_report = loop.time()
         while True:
             items = [await self._pending.get()]
             try:
+                # Avoid adding latency to quiet streams; amortize Redis and
+                # executor round trips more aggressively when already behind.
+                limit = (
+                    self.BURST_BATCH_SIZE if self._pending.qsize() + 1 >= self.BURST_BATCH_SIZE else self.BATCH_SIZE
+                )
                 deadline = loop.time() + self.BATCH_WAIT
-                while len(items) < self.BATCH_SIZE:
+                while len(items) < limit:
                     try:
                         items.append(self._pending.get_nowait())
                     except asyncio.QueueEmpty:
@@ -54,13 +84,12 @@ class BinanceTradesTask(Task):
                         if remaining <= 0:
                             break
                         try:
-                            items.append(await asyncio.wait_for(self._pending.get(), remaining))
+                            async with asyncio.timeout(remaining):
+                                items.append(await self._pending.get())
                         except TimeoutError:
                             break
 
-                batch = await loop.run_in_executor(
-                    self._publisher_executor, TradeBatch, [message for _, message in items]
-                )
+                batch = WireBatch([payload for _, payload in items])
                 retry_delay = 1.0
                 while True:
                     try:
@@ -72,52 +101,77 @@ class BinanceTradesTask(Task):
                         retry_delay = min(retry_delay * 2, 10.0)
 
                 processed += len(items)
-                if loop.time() - last_report >= 60:
+                elapsed = loop.time() - last_report
+                if elapsed >= self.REPORT_INTERVAL:
                     logger.info(
-                        "Binance throughput: received=%s processed=%s queued=%s oldest_batch_age=%.3fs",
+                        "Binance throughput: received=%s processed=%s queued=%s oldest_batch_age=%.3fs "
+                        "received_per_s=%.1f processed_per_s=%.1f peak_queue=%s loop_lag_max=%.3fs "
+                        "pending_bytes=%s peak_pending_bytes=%s",
                         self._received,
                         processed,
                         self._pending.qsize(),
                         loop.time() - items[0][0],
+                        (self._received - last_received) / elapsed,
+                        (processed - reported) / elapsed,
+                        self._peak_queue,
+                        self._loop_lag,
+                        self._pending_bytes - sum(len(payload) for _, payload in items),
+                        self._peak_bytes,
                     )
-                    last_report = loop.time()
+                    last_report, reported, last_received = loop.time(), processed, self._received
+                    self._peak_queue = self._pending_count - len(items)
+                    self._peak_bytes = self._pending_bytes - sum(len(payload) for _, payload in items)
+                    self._loop_lag = 0.0
             finally:
-                for _ in items:
+                for _, payload in items:
+                    self._pending_count -= 1
+                    self._pending_bytes -= len(payload)
                     self._pending.task_done()
 
-    @override
-    async def process(self, symbol_or_symbols: str | tuple):
+    async def _read_stream(self, ws):
+        while True:
+            payload = await ws.recv(decode=False)
+            try:
+                message = json.loads(payload)
+            except (ValueError, UnicodeDecodeError):
+                logger.warning("Invalid Binance JSON frame")
+                continue
+            if not isinstance(message, dict):
+                logger.warning("Invalid Binance frame: expected an object")
+            elif message.get("e") in ("error", "serverShutdown") or "code" in message:
+                raise ConnectionError(f"Binance control message: {message}")
+            elif message.get("e") == "trade":
+                self.enqueue_payload(payload)
+            else:
+                logger.warning("Unexpected Binance event: %s", message.get("e"))
+
+    async def process(self, symbol_or_symbols):
         retry_delay = self.ITER_SLEEP
         while True:
-            async_client = None
             connected_at = None
             try:
-                async_client = await AsyncClient.create()
-                # The SDK must absorb a network burst before our reader gets a turn.
-                binance_manager = BinanceSocketManager(async_client, max_queue_size=self.SOCKET_QUEUE_SIZE)
-                async with binance_manager.trade_socket(symbol_or_symbols) as ts:
+                # The transport's bounded frame queue applies flow control,
+                # unlike the SDK's extra queue which fails at 5000 messages.
+                async with websockets.connect(
+                    self.URL.format(symbol=symbol_or_symbols.lower()),
+                    ping_interval=20,
+                    ping_timeout=60,
+                    close_timeout=5,
+                    max_size=self.MAX_MESSAGE_BYTES,
+                    max_queue=32,
+                ) as ws:
                     connected_at = monotonic()
-                    while True:
-                        message = await ts.recv()
-                        if message.get("e") == "error":
-                            raise exceptions.BinanceWebsocketClosed(message.get("m", "Binance websocket error"))
-                        await self._pending.put((asyncio.get_running_loop().time(), message))
-                        self._received += 1
+                    logger.info("Binance stream connected: %s", symbol_or_symbols)
+                    await self._read_stream(ws)
             except Exception as error:
                 if connected_at is not None and monotonic() - connected_at >= self.MAX_RETRY_DELAY:
                     retry_delay = self.ITER_SLEEP
                 logger.warning(
-                    "Binance stream %s failed: %s. Reconnecting in %s seconds...",
+                    "Binance stream %s failed: %s: %s. Reconnecting in %s seconds...",
                     symbol_or_symbols,
+                    type(error).__name__,
                     error,
                     retry_delay,
                 )
-            finally:
-                if async_client is not None:
-                    try:
-                        await async_client.close_connection()
-                    except Exception:
-                        logger.exception("Failed to close Binance client for %s", symbol_or_symbols)
-
             await asyncio.sleep(retry_delay)
             retry_delay = min(retry_delay * 2, self.MAX_RETRY_DELAY)

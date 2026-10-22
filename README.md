@@ -39,29 +39,38 @@ Get started effortlessly:
 
 ### Binance ingestion
 
-Each Binance socket has a 5,000-message library buffer to absorb network bursts.
-The default 100-message buffer can overflow before the application reader gets a
-turn, even when processing is keeping up. Socket readers then put trades into a
-bounded 5,000-trade shared processing queue. A single worker
-updates Redis statistics in batches of up to 50 trades, flushing partial batches
-after 20 ms. Every trade keeps its own cumulative statistics and existing alert
-routing. Other exchange producers continue using their existing processing path.
+Binance uses one public trade WebSocket per symbol, with automatic protocol
+ping/pong handling. Readers retain raw JSON bytes in a shared burst inbox instead
+of blocking behind the SDK's additional 5,000-message queues. The inbox accepts
+up to 50,000 trades or 16 MiB of payloads, whichever comes first, including the
+batch being published. Queue objects and parsed models add memory beyond this
+payload budget; it is not a limit on the process's total memory. Individual
+WebSocket messages are limited to 64 KiB.
+
+A single worker builds models, updates Redis statistics and publishes each trade
+over AMQP. It uses batches of 50 normally and 200 when at least 200 trades are
+already waiting. Partial batches flush after at most 20 ms of collection time.
+Every trade keeps its own cumulative statistics and existing alert routing.
 
 A batch uses one atomic Redis script call instead of four network round trips per
 trade. The worker retains a failed batch for retry before processing later trades;
 trade IDs prevent repeated statistics updates, and the latest batch response is
 cached for one hour to recover a lost Redis reply. Socket errors retain the capped
-60-second reconnect backoff. Buffered trades remain in memory: process restarts or
-long outages can still lose trades, and interrupted RabbitMQ publications can
-produce duplicate deliveries.
+60-second reconnect backoff. A full inbox logs an explicit warning and reconnects
+the affected stream while retaining previously accepted trades. Sustained
+overload can still lose trades once these finite limits are reached. Buffered
+trades remain in memory: process restarts or long outages can also lose trades,
+and interrupted RabbitMQ publications can produce duplicate deliveries.
 
 A throughput log appears once per minute while trades are being processed, with
-received/processed counts, pending queue depth, and the age of the completed batch.
+received/processed counts and rates, queue depth, payload bytes, peak backlog,
+event-loop delay, and the age of the completed batch.
 A queue that keeps growing indicates the producer is still falling behind. Adding
 consumers helps only when the downstream RabbitMQ queues are backing up.
 
-The socket burst regression tests use the actual Binance library against a local
-WebSocket server; no Binance API access is needed.
+The socket burst regression tests use real WebSocket connections against a local
+server, including 40,000 simultaneous trades with publishing stalled and protocol
+heartbeats still active; no Binance API access is needed.
 
 The Redis integration tests are opt-in. Set `TEST_REDIS_URL` to a reachable test
 Redis instance when running pytest. Tests use unique key prefixes and remove only
