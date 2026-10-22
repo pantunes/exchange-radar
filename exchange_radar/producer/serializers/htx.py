@@ -10,8 +10,8 @@ from exchange_radar.producer.serializers.base import FeedSerializer
 
 class HtxTradeSerializer(FeedSerializer):
     symbol: str = Field(alias="channel")
-    price: Annotated[Decimal, Field(ge=0, decimal_places=8)]
-    quantity: Annotated[Decimal, Field(ge=0, decimal_places=8, alias="amount")]
+    price: Annotated[Decimal, Field(ge=0)]
+    quantity: Annotated[Decimal, Field(ge=0, alias="amount")]
     trade_time: datetime = Field(alias="ts")
     direction: str = Field(exclude=True)
 

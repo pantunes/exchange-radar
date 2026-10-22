@@ -1,78 +1,56 @@
 import asyncio
 import json
 import logging
-from collections.abc import Callable
-from typing import override
+from decimal import Decimal
 
-from okx.websocket.WsPublicAsync import WsPublicAsync
-
-from exchange_radar.producer.publisher import publish
 from exchange_radar.producer.serializers.okx import OkxTradeSerializer
-from exchange_radar.producer.tasks.base import Task
+from exchange_radar.producer.tasks.buffered import BufferedTradesTask
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
-
-logging.getLogger("WsPublic").propagate = False
 
 
-class OkxTradesTask(Task):
-    def __init__(self):
-        super().__init__()
-        self.num_events = 0
+class OkxTradesTask(BufferedTradesTask):
+    EXCHANGE = "OKX"
+    SERIALIZER = OkxTradeSerializer
+    URL = "wss://ws.okx.com:8443/ws/v5/business"
+    IDLE_PING_INTERVAL = 20.0
+    PONG_TIMEOUT = 20.0
 
-    @staticmethod
-    async def _subscribe(ws, callback: Callable, symbols: list):
-        await ws.start()
-        await ws.subscribe(symbols, callback)
+    def subscriptions(self, symbols):
+        if isinstance(symbols, str):
+            symbols = (symbols,)
+        args = [{"channel": "trades-all", "instId": symbol} for symbol in symbols]
+        return [{"op": "subscribe", "args": args}]
 
-    @override
-    async def task(self, symbols: tuple[dict]):
-        await asyncio.gather(self.process(tuple([{"channel": "trades-all", "instId": symbol} for symbol in symbols])))
-
-    @override
-    async def process(self, symbol_or_symbols: str | tuple):
-        url = "wss://ws.okx.com:8443/ws/v5/business"
-
-        try:
-
-            def callback(message):
-                self.num_events = 0
-
-                try:
-                    for msg in json.loads(message)["data"]:
-                        data = OkxTradeSerializer(**msg)
-                        publish(data)
-                except Exception as error:
-                    logger.error(f"ERROR: {error}")
-
-            _symbols = list(symbol_or_symbols)
-
-            ws = WsPublicAsync(url=url)
-            await self._subscribe(ws=ws, callback=callback, symbols=_symbols)
-
-            while True:
-                self.num_events += 1
-
-                if self.num_events <= 2:
-                    logger.info(f"Trying again in {self.ITER_SLEEP} seconds...")
-                    await asyncio.sleep(self.ITER_SLEEP)
-                    continue
-
-                try:
-                    try:
-                        logger.error("Unsubscribing...")
-                        await ws.unsubscribe(_symbols, callback)
-                    except Exception:
-                        pass  # possibly nothing to unsubscribe
-
-                    # re-subscribe
-                    ws = WsPublicAsync(url=url)
-                    await self._subscribe(ws=ws, callback=callback, symbols=_symbols)
-
-                    self.num_events = 0
-                except Exception:
-                    pass
-
-        except Exception as error2:
-            logger.error(f"GENERAL ERROR: {error2}")
+    async def _read_stream(self, ws):
+        loop = asyncio.get_running_loop()
+        pong_deadline = None
+        while True:
+            timeout = self.IDLE_PING_INTERVAL if pong_deadline is None else pong_deadline - loop.time()
+            if timeout <= 0:
+                raise TimeoutError("OKX pong not received")
+            try:
+                payload = await self.receive(ws, timeout)
+            except TimeoutError:
+                if pong_deadline is not None:
+                    raise TimeoutError("OKX pong not received") from None
+                await self.send(ws, "ping")
+                pong_deadline = loop.time() + self.PONG_TIMEOUT
+                continue
+            if payload in ("pong", b"pong"):
+                pong_deadline = None
+                continue
+            try:
+                response = json.loads(payload, parse_float=Decimal)
+                if not isinstance(response, dict):
+                    raise ValueError("expected a JSON object")
+            except (ValueError, UnicodeDecodeError) as error:
+                logger.warning("Invalid OKX frame: %s", error)
+                continue
+            if response.get("event") == "error":
+                raise RuntimeError(f"OKX request failed: {response}")
+            if response.get("event") == "notice":
+                raise ConnectionError(f"OKX service notice: {response}")
+            if response.get("arg", {}).get("channel") == "trades-all" and "data" in response:
+                self.enqueue(response["data"])
+                await asyncio.sleep(0)

@@ -50,7 +50,7 @@ class TradeStatsStore:
                     "quantity": str(float(trade.quantity)),
                     "price": str(float(trade.price)),
                     "seller": trade.is_seller,
-                    "id": str(trade.trade_id) if trade.trade_id is not None else False,
+                    "id": str(trade.trade_id) if getattr(trade, "trade_id", None) is not None else False,
                 }
             )
 
@@ -71,18 +71,18 @@ class TradeStatsStore:
 
 
 class TradeBatch:
-    def __init__(self, messages):
+    def __init__(self, messages, serializer=BinanceTradeSerializer):
         self.trades = []
         self.next_trade = 0
         self.token = uuid.uuid4().hex
         for message in messages:
             try:
-                trade = BinanceTradeSerializer(_defer_stats=True, **message)
+                trade = serializer(_defer_stats=True, **message)
                 # Validate computed metadata before any statistics are written.
                 trade.currency, trade.trade_symbol, trade.ranking, trade.message
                 self.trades.append(trade)
-            except (ValueError, TypeError):
-                logger.exception("Invalid Binance trade: symbol=%s id=%s", message.get("s"), message.get("t"))
+            except (ValueError, TypeError, KeyError, IndexError):
+                logger.exception("Invalid %s trade: %s", serializer.__name__, message)
 
     def process(self, store):
         store.apply(self.trades, self.token)
