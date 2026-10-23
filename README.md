@@ -37,6 +37,43 @@ Get started effortlessly:
     # Scale the consumer service horizontally with 2 instances
     $ docker compose -f production.yml up --build --scale consumer=2
 
+### Production recovery
+
+Every production service uses `restart: unless-stopped`, including both replicas
+of the consumer. Running containers recover after Docker or the VM restarts.
+Services stopped manually stay stopped until explicitly started again. A restart
+policy does not prevent the brief interruption caused by a Docker update.
+
+After pulling this configuration, an existing installation can adopt the policy
+without rebuilding images, replacing containers, or restarting services:
+
+```bash
+docker-compose -f production.yml ps -a -q |
+  xargs -r docker update --restart unless-stopped
+```
+
+This command includes stopped containers. Updating the policy does not start a
+stopped service. To recover the existing stack while preserving its containers,
+volumes and consumer replica count, use:
+
+```bash
+docker-compose -f production.yml start
+```
+
+For a VM using Docker from Snap, schedule updates in a maintenance window and
+verify website availability afterwards. The following administrator command
+sets the **system-wide Snap** update window to 02:00–03:00 in the VM's timezone:
+
+```bash
+sudo snap set system refresh.timer='02:00-03:00'
+snap refresh --time
+```
+
+The Radar VM uses UTC, so this is 03:00–04:00 in Amsterdam during winter and
+04:00–05:00 during summer. This setting retains automatic updates and does not
+start an update immediately. The existing website uptime monitor provides outage
+alerts; no additional monitor is installed by this change.
+
 ### Binance ingestion
 
 Binance uses one public trade WebSocket per symbol, with automatic protocol
