@@ -8,6 +8,7 @@ services:
       dockerfile: compose/web/production/Dockerfile
     image: exchange_radar_web
     container_name: exchange-radar-web
+    restart: unless-stopped
     env_file:
       - ./.envs/.production/.web
       - ./.envs/.production/.redis
@@ -22,6 +23,7 @@ services:
   rabbitmq:
     image: rabbitmq:3.12.13-management-alpine
     container_name: exchange-radar-rabbitmq
+    restart: unless-stopped
     env_file:
       - ./.envs/.production/.rabbitmq
     ports:
@@ -34,7 +36,7 @@ services:
   redis:
     image: redis/redis-stack-server:latest
     container_name: exchange-radar-redis
-    restart: always
+    restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
@@ -46,6 +48,7 @@ services:
       dockerfile: compose/scheduler/production/Dockerfile
     image: exchange_radar_scheduler
     container_name: exchange-radar-scheduler
+    restart: unless-stopped
     env_file:
       - ./.envs/.production/.redis
       - ./.envs/.production/.scheduler
@@ -67,7 +70,7 @@ services:
       - rabbitmq
       - redis
     command: /start
-    restart: always
+    restart: unless-stopped
 
   producer-kucoin:
     build:
@@ -83,7 +86,7 @@ services:
       - rabbitmq
       - redis
     command: /start
-    restart: always
+    restart: unless-stopped
 
   producer-coinbase:
     build:
@@ -99,7 +102,7 @@ services:
       - rabbitmq
       - redis
     command: /start
-    restart: always
+    restart: unless-stopped
 
   producer-kraken:
     build:
@@ -115,7 +118,7 @@ services:
       - rabbitmq
       - redis
     command: /start
-    restart: always
+    restart: unless-stopped
 
   producer-okx:
     build:
@@ -131,7 +134,7 @@ services:
       - rabbitmq
       - redis
     command: /start
-    restart: always
+    restart: unless-stopped
 
   producer-bybit:
     build:
@@ -147,7 +150,7 @@ services:
       - rabbitmq
       - redis
     command: /start
-    restart: always
+    restart: unless-stopped
 
   producer-bitstamp:
     build:
@@ -163,7 +166,7 @@ services:
       - rabbitmq
       - redis
     command: /start
-    restart: always
+    restart: unless-stopped
 
   producer-mexc:
     build:
@@ -179,7 +182,7 @@ services:
       - rabbitmq
       - redis
     command: /start
-    restart: always
+    restart: unless-stopped
 
   producer-htx:
     build:
@@ -195,13 +198,14 @@ services:
       - rabbitmq
       - redis
     command: /start
-    restart: always
+    restart: unless-stopped
 
   consumer:
     build:
       context: .
       dockerfile: compose/consumer/Dockerfile
     image: exchange_radar_consumer
+    restart: unless-stopped
     env_file:
       - ./.envs/.production/.rabbitmq
       - ./.envs/.production/.consumer
