@@ -74,6 +74,31 @@ The Radar VM uses UTC, so this is 03:00–04:00 in Amsterdam during winter and
 start an update immediately. The existing website uptime monitor provides outage
 alerts; no additional monitor is installed by this change.
 
+### Price alerts
+
+The scheduler generates alerts for price changes of at least 1% between its
+one-minute checks or 2% between its ten-minute checks. The alerts page polls the
+web API every two seconds; it does not generate alerts itself.
+
+Scheduler exchange lists are configured separately in `.envs/.production/.scheduler`.
+The current alert list is BTC, ETH, LINK and PEPE. Remove EQTY, FTM and S from all
+exchange lists in that file before recreating the scheduler. This production
+configuration is not tracked by Git, so pulling code alone does not update it.
+
+Missing or invalid coin statistics skip only that coin. Its previous comparison
+is discarded, so the next valid check starts a new interval rather than reporting
+a change accumulated during the data gap. Other coins continue to be evaluated.
+
+### Retired pairs
+
+EQTY and S are no longer collected or shown in the UI. Production environment
+files are not tracked by Git. Remove `SUSDT` and `SBTC` from Binance's list and
+`S-USDT` from the KuCoin and OKX lists in `.envs/.production/.producer`; remove
+`S` from the exchange lists in `.web` and `.scheduler` as well. Recreate the
+affected producers and rebuild/recreate the web service to apply these changes.
+Clear the retired coin's Redis records only after its subscriptions have stopped,
+so new trades cannot recreate the data.
+
 ### Binance ingestion
 
 Binance uses one public trade WebSocket per symbol, with automatic protocol

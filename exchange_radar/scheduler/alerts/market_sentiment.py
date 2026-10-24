@@ -2,6 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from datetime import datetime
+from math import isfinite
 
 from huey import crontab
 
@@ -91,6 +92,7 @@ def bullish_or_bearish__10_min():
 
 def task(*, config: TaskConfig):
     name = datetime.today().date().strftime("%Y-%m-%d")
+    key = f"{name} {config}"
 
     with redis.pipeline() as pipe:
         for coin in COINS:
@@ -120,12 +122,14 @@ def task(*, config: TaskConfig):
                     float(result[5]),
                     result[6],
                 )
-            except TypeError as error:
-                logger.error(f"Error when parsing {coin}: {error}")
-                break
+                if not currency or not isfinite(price) or price <= 0:
+                    raise ValueError("price must be positive and finite, and currency must be present")
+            except (TypeError, ValueError) as error:
+                # A gap invalidates this coin's comparison interval, not the other coins' alerts.
+                alerts_cache.get(key, {}).pop(coin, None)
+                logger.warning("Skipping alerts for %s: missing or invalid statistics (%s)", coin, error)
+                continue
             else:
-                key = f"{name} {config}"
-
                 if key in alerts_cache and coin in alerts_cache[key]:
 
                     messages = []

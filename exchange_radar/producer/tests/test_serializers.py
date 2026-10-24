@@ -69,7 +69,7 @@ def test_serializer_kucoin(mock_redis):
 
     msg = {
         "type": "message",
-        "topic": "/market/match:EQTY-BTC",
+        "topic": "/market/match:LINK-BTC",
         "subject": "trade.l3match",
         "data": {
             "makerOrderId": "645232761893ff000144c526",
@@ -77,7 +77,7 @@ def test_serializer_kucoin(mock_redis):
             "sequence": "3207633495398401",
             "side": "sell",
             "size": "3.7335",
-            "symbol": "EQTY-BTC",
+            "symbol": "LINK-BTC",
             "takerOrderId": "6452331f702d43000133d018",
             "time": "1683108639912000000",
             "tradeId": "3207633495398401",
@@ -88,20 +88,20 @@ def test_serializer_kucoin(mock_redis):
     payload = KucoinTradeSerializer(**msg["data"])
 
     assert payload.model_dump() == {
-        "symbol": "EQTYBTC",
+        "symbol": "LINKBTC",
         "price": Decimal("0.000003518"),
         "quantity": Decimal("3.7335"),
         "trade_time": datetime.datetime(2023, 5, 3, 10, 10, 39),
         "total": Decimal("0.0000131344530"),
         "currency": "BTC",
-        "trade_symbol": "EQTY",
+        "trade_symbol": "LINK",
         "volume": 3.7335,
         "volume_trades": (1.0, 100.0),
         "number_trades": (1, 100),
         "trade_time_ts": 1683108639,
         "ranking": Ranking.BREADCRUMBS,
         "message": "2023-05-03 10:10:39 | <span class='kucoin'>KuCoin  </span> |     0.00000352  BTC |"
-        "            3.73350000 EQTY |        0.00001313  BTC",
+        "            3.73350000 LINK |        0.00001313  BTC",
         "is_seller": True,
         "exchange": "KuCoin",
     }

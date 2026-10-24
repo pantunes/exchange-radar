@@ -19,6 +19,7 @@
         </script>
         <script>
             $(document).ready(function() {
+                setupTradeFeed();
                 setupAndStartWS();
                 retrieveData();
                 formatPage();
@@ -36,7 +37,7 @@
             <section>
                 <div class="padded">
                     <!-- box 1 content -->
-<pre>
+<pre id="trade-feed" aria-label="Live trades, newest first">
 ------------------------------------------------------------------------------------------------------------
      <b>DATETIME UTC    | EXCHANGE |        PRICE        |          QUANTITY          |          TOTAL</b>
 ------------------------------------------------------------------------------------------------------------
@@ -88,18 +89,6 @@
 <a href="/LINK/dolphins">LINK dolphin trades</a> 💾
 <a href="/LINK/whales">LINK whale trades</a> 💾
 
-<b>Spot Sonic:</b>
-
-<a href="/S">S all trades</a> | <a href="/history/S">history</a> | <a href="/alerts/S">alerts</a>
-{%- if coin == "S" %}
-  <i><b>Daily Volume:</b> <span id="S_volume">-</span> S @ <span id="S_volume_in_currency">-</span></i>
-  <i><b>Daily Trades Volume:</b> Buys <span id="S_volume_trades_buy_orders">-</span> S; Sells <span id="S_volume_trades_sell_orders">-</span> S</i>
-  <i><b>Daily Number Trades:</b> Buys <span id="S_number_trades_buy_orders">-</span>; Sells <span id="S_number_trades_sell_orders">-</span></i>
-{%- endif %}
-<a href="/S/octopuses">S octopus trades</a>
-<a href="/S/dolphins">S dolphin trades</a> 💾
-<a href="/S/whales">S whale trades</a> 💾
-
 <b>Spot Pepe:</b>
 
 <a href="/PEPE">PEPE all trades</a> | <a href="/history/PEPE">history</a> | <a href="/alerts/PEPE">alerts</a>
@@ -111,19 +100,6 @@
 <a href="/PEPE/octopuses">PEPE octopus trades</a>
 <a href="/PEPE/dolphins">PEPE dolphin trades</a> 💾
 <a href="/PEPE/whales">PEPE whale trades</a> 💾
-
-<b>Spot Equity:</b>
-
-<a href="/EQTY">EQTY all trades</a> 💾 | <a href="/history/EQTY">history</a> | <a href="/alerts/EQTY">alerts</a>
-{%- if coin == "EQTY" %}
-  <i><b>Daily Volume:</b> <span id="EQTY_volume">-</span> EQTY @ <span id="EQTY_volume_in_currency">-</span></i>
-  <i><b>Daily Trades Volume:</b> Buys <span id="EQTY_volume_trades_buy_orders">-</span> EQTY; Sells <span id="EQTY_volume_trades_sell_orders">-</span> EQTY</i>
-  <i><b>Daily Number Trades:</b> Buys <span id="EQTY_number_trades_buy_orders">-</span>; Sells <span id="EQTY_number_trades_sell_orders">-</span></i>
-{%- endif %}
-<a href="/EQTY/octopuses">EQTY octopus trades</a> 💾
-<a href="/EQTY/dolphins">EQTY dolphin trades</a> 💾
-<a href="/EQTY/whales">EQTY whale trades</a> 💾
-
 
 <span class="order_buy">&nbsp;&nbsp;</span> Matched Buy Order <span class="order_sell">&nbsp;&nbsp;</span> Matched Sell Order
 

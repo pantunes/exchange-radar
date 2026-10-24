@@ -33,3 +33,20 @@ a:hover {
 .right {
     width: 35rem;
 }
+
+#trade-feed {
+    height: 70vh;
+    min-height: 12rem;
+    overflow: hidden;
+    overflow-anchor: none;
+    line-height: 1.3;
+}
+
+#trade-feed #messages,
+#trade-feed #messages > span {
+    display: block;
+}
+
+#trade-feed #messages > span {
+    width: max-content;
+}

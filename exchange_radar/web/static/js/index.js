@@ -1,14 +1,40 @@
-function addRow(obj) {
-    const elem = createElement(obj)
+let tradeRowLimit = null;
 
-    const selector = '#messages';
-
-    $(`${selector}`).prepend(elem);
-
-    const length = $(selector).find('span').length;
-    if (length > max_rows * 2) {
-        $(`${selector} > span:last`).remove();
+function trimTradeRows() {
+    const messages = document.getElementById('messages');
+    const limit = tradeRowLimit === null ? max_rows : tradeRowLimit;
+    while (messages.children.length > limit) {
+        messages.lastElementChild.remove();
     }
+}
+
+function fitTradeFeed() {
+    const feed = document.getElementById('trade-feed');
+    const messages = document.getElementById('messages');
+    if (!feed || !messages) {
+        return;
+    }
+
+    const style = getComputedStyle(feed);
+    const headerHeight = messages.getBoundingClientRect().top - feed.getBoundingClientRect().top - feed.clientTop;
+    const availableHeight = feed.clientHeight - headerHeight - parseFloat(style.paddingBottom);
+    const rowsThatFit = Math.floor(availableHeight / parseFloat(style.lineHeight));
+    tradeRowLimit = Math.max(0, Math.min(max_rows, rowsThatFit));
+    trimTradeRows();
+}
+
+function setupTradeFeed() {
+    fitTradeFeed();
+    const feed = document.getElementById('trade-feed');
+    if (feed) {
+        new ResizeObserver(fitTradeFeed).observe(feed);
+    }
+}
+
+function addRow(obj) {
+    const messages = document.getElementById('messages');
+    messages.prepend(createElement(obj));
+    trimTradeRows();
 }
 
 function retrieveData() {
@@ -33,7 +59,7 @@ function createElement(obj) {
         span.className = "order_sell";
     }
 
-    span.innerHTML = ` ${obj.message} \n`;
+    span.innerHTML = ` ${obj.message} `;
     return span
 }
 
