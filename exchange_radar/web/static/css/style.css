@@ -28,6 +28,24 @@
     white-space: pre-wrap;
 }
 
+/* live stats never wrap: values sit in fixed, right-aligned slots */
+.padded-boxes > .right .stats {
+    white-space: pre;
+}
+
+.stats .stat-value,
+.stats .stat-unit {
+    display: inline-block;
+}
+
+.stats .stat-value {
+    text-align: right;
+}
+
+.stats .stat-unit {
+    min-width: 6ch;
+}
+
 /* padded content */
 .padded-boxes .padded {
     padding: .25rem 1.25rem;

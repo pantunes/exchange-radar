@@ -1,4 +1,5 @@
 <!doctype html>
+{% from 'snippets/stats.j2' import daily_stats -%}
 <html lang="en">
 
     <head>
@@ -58,9 +59,7 @@
 
 <a href="/BTC">BTC all trades</a> | <a href="/history/BTC">history</a> | <a href="/alerts/BTC">alerts</a>
 {%- if coin == "BTC" %}
-  <i><b>Daily Volume:</b> <span id="BTC_volume">-</span> BTC @ <span id="BTC_volume_in_currency">-</span></i>
-  <i><b>Daily Trades Volume:</b> Buys <span id="BTC_volume_trades_buy_orders">-</span> BTC; Sells <span id="BTC_volume_trades_sell_orders">-</span> BTC</i>
-  <i><b>Daily Number Trades:</b> Buys <span id="BTC_number_trades_buy_orders">-</span>; Sells <span id="BTC_number_trades_sell_orders">-</span></i>
+{{ daily_stats("BTC", 18) }}
 {%- endif %}
 <a href="/BTC/octopuses">BTC octopus trades</a>
 <a href="/BTC/dolphins">BTC dolphin trades</a> 💾
@@ -70,9 +69,7 @@
 
 <a href="/ETH">ETH all trades</a> | <a href="/history/ETH">history</a> | <a href="/alerts/ETH">alerts</a>
 {%- if coin == "ETH" %}
-  <i><b>Daily Volume:</b> <span id="ETH_volume">-</span> ETH @ <span id="ETH_volume_in_currency">-</span></i>
-  <i><b>Daily Trades Volume:</b> Buys <span id="ETH_volume_trades_buy_orders">-</span> ETH; Sells <span id="ETH_volume_trades_sell_orders">-</span> ETH</i>
-  <i><b>Daily Number Trades:</b> Buys <span id="ETH_number_trades_buy_orders">-</span>; Sells <span id="ETH_number_trades_sell_orders">-</span></i>
+{{ daily_stats("ETH", 18) }}
 {%- endif %}
 <a href="/ETH/octopuses">ETH octopus trades</a>
 <a href="/ETH/dolphins">ETH dolphin trades</a> 💾
@@ -82,9 +79,7 @@
 
 <a href="/LINK">LINK all trades</a> | <a href="/history/LINK">history</a> | <a href="/alerts/LINK">alerts</a>
 {%- if coin == "LINK" %}
-  <i><b>Daily Volume:</b> <span id="LINK_volume">-</span> LINK @ <span id="LINK_volume_in_currency">-</span></i>
-  <i><b>Daily Trades Volume:</b> Buys <span id="LINK_volume_trades_buy_orders">-</span> LINK; Sells <span id="LINK_volume_trades_sell_orders">-</span> LINK</i>
-  <i><b>Daily Number Trades:</b> Buys <span id="LINK_number_trades_buy_orders">-</span>; Sells <span id="LINK_number_trades_sell_orders">-</span></i>
+{{ daily_stats("LINK", 20) }}
 {%- endif %}
 <a href="/LINK/octopuses">LINK octopus trades</a>
 <a href="/LINK/dolphins">LINK dolphin trades</a> 💾
@@ -94,9 +89,7 @@
 
 <a href="/PEPE">PEPE all trades</a> | <a href="/history/PEPE">history</a> | <a href="/alerts/PEPE">alerts</a>
 {%- if coin == "PEPE" %}
-  <i><b>Daily Volume:</b> <span id="PEPE_volume">-</span> PEPE @ <span id="PEPE_volume_in_currency">-</span></i>
-  <i><b>Daily Trades Volume:</b> Buys <span id="PEPE_volume_trades_buy_orders">-</span> PEPE; Sells <span id="PEPE_volume_trades_sell_orders">-</span> PEPE</i>
-  <i><b>Daily Number Trades:</b> Buys <span id="PEPE_number_trades_buy_orders">-</span>; Sells <span id="PEPE_number_trades_sell_orders">-</span></i>
+{{ daily_stats("PEPE", 26) }}
 {%- endif %}
 <a href="/PEPE/octopuses">PEPE octopus trades</a>
 <a href="/PEPE/dolphins">PEPE dolphin trades</a> 💾

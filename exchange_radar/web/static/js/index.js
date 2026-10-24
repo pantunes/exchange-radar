@@ -65,7 +65,7 @@ function createElement(obj) {
 
 function setVolume(obj) {
     const volume = obj.volume.toLocaleString('en-US', {
-        minimumFractionDigits: 4,
+        minimumFractionDigits: 8,
         maximumFractionDigits: 8
     });
     $(`#${obj.trade_symbol}_volume`).text(volume);
@@ -75,19 +75,20 @@ function setVolume(obj) {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
-        $(`#${obj.trade_symbol}_volume_in_currency`).text(`${volume_in_currency} ${obj.currency}`);
+        $(`#${obj.trade_symbol}_volume_in_currency`).text(volume_in_currency);
+        $(`#${obj.trade_symbol}_currency`).text(obj.currency);
     }
 }
 
 function setVolumeTrades(obj) {
     const volume_trades_buys = obj.volume_trades[0].toLocaleString('en-US', {
-        minimumFractionDigits: 4,
+        minimumFractionDigits: 8,
         maximumFractionDigits: 8
     });
     $(`#${obj.trade_symbol}_volume_trades_buy_orders`).text(volume_trades_buys);
 
     const volume_trades_sells = obj.volume_trades[1].toLocaleString('en-US', {
-        minimumFractionDigits: 4,
+        minimumFractionDigits: 8,
         maximumFractionDigits: 8
     });
     $(`#${obj.trade_symbol}_volume_trades_sell_orders`).text(volume_trades_sells);

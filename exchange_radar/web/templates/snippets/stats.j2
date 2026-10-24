@@ -1,0 +1,14 @@
+{#- Daily statistics for the selected coin. Units sit in a label column before
+    each value and every value has a reserved, right-aligned slot, so updates
+    never change the block's line breaks; width is the volume slot in ch. -#}
+{% macro daily_stats(symbol, width) -%}
+<i class="stats"><b>  Daily Volume:</b>
+    {{ "%-6s"|format(symbol) }}<span class="stat-value" style="min-width: {{ width }}ch" id="{{ symbol }}_volume">-</span>
+    <span class="stat-unit" id="{{ symbol }}_currency"></span><span class="stat-value" style="min-width: {{ width }}ch" id="{{ symbol }}_volume_in_currency">-</span>
+<b>  Daily Trades Volume ({{ symbol }}):</b>
+    Buys  <span class="stat-value" style="min-width: {{ width }}ch" id="{{ symbol }}_volume_trades_buy_orders">-</span>
+    Sells <span class="stat-value" style="min-width: {{ width }}ch" id="{{ symbol }}_volume_trades_sell_orders">-</span>
+<b>  Daily Number Trades:</b>
+    Buys  <span class="stat-value" style="min-width: 10ch" id="{{ symbol }}_number_trades_buy_orders">-</span>
+    Sells <span class="stat-value" style="min-width: 10ch" id="{{ symbol }}_number_trades_sell_orders">-</span></i>
+{%- endmacro %}
