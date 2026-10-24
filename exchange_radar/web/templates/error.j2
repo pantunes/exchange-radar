@@ -3,8 +3,9 @@
 {% block javascript_default %}{% endblock %}
     <body>
 {% block body %}
+{% with live = false %}{% include "snippets/top.j2" %}{% endwith %}
         <div class="padded-boxes">
-            <section>
+            <section data-title="error">
                 <div class="padded">
                     <!-- box 1 content -->
 <pre>

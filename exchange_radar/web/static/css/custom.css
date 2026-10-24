@@ -1,17 +1,59 @@
-body {
+html {
     background: var(--background-color);
-    font-family: monospace, courier, "courier new";
+}
+
+body {
+    margin: 0;
+    background: var(--background-color);
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 13px;
+    font-variant-ligatures: none;
     color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+}
+
+pre {
+    font-family: inherit;
+}
+
+::selection {
+    background: var(--selection-color);
 }
 
 a {
     color: var(--link-color);
+    text-decoration: none;
 }
 
 a:hover {
     text-decoration: underline;
-    filter: brightness(80%);
+    text-underline-offset: 3px;
+}
+
+a:focus-visible,
+.switch .input:focus-visible + .slider {
+    outline: 1px dashed var(--link-color);
+    outline-offset: 2px;
+}
+
+a.active {
+    color: var(--text-color);
+    font-weight: bold;
+    background: var(--selection-color);
+    border-radius: 2px;
+}
+
+b {
+    color: var(--text-color);
+}
+
+i {
+    font-style: normal;
+    color: var(--muted-color);
+}
+
+i b {
+    font-weight: normal;
 }
 
 #title {
@@ -20,24 +62,87 @@ a:hover {
     font-weight: bold;
 }
 
+/* top bar */
+.topbar {
+    display: flex;
+    align-items: baseline;
+    gap: .75rem;
+    padding: 1rem 1.25rem .9rem;
+    color: var(--muted-color);
+}
+
+.topbar .brand {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.topbar .brand::before {
+    content: "> ";
+    color: var(--muted-color);
+}
+
+.topbar .path {
+    color: var(--text-color);
+}
+
+.cursor {
+    display: inline-block;
+    width: .6em;
+    height: 1.2em;
+    margin-left: .15em;
+    vertical-align: -.25em;
+    background: var(--accent-color);
+    animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+#ws-status {
+    margin-left: auto;
+}
+
+#ws-status::before {
+    content: "○ offline";
+    color: var(--down-color);
+}
+
+#ws-status.live::before {
+    content: "● live";
+    color: var(--up-color);
+}
+
+/* panel labels */
+section[data-title]::before {
+    content: "── " attr(data-title) " ";
+    display: block;
+    padding: .7rem 1.25rem 0;
+    color: var(--muted-color);
+    font-size: 11px;
+    letter-spacing: .04em;
+}
+
+/* trades */
 .order_sell {
     background-color: var(--order-sell-background-color);
     color: var(--order-sell-text-color);
+    box-shadow: inset 2px 0 0 var(--down-color);
 }
 
 .order_buy {
     background-color: var(--order-buy-background-color);
     color: var(--order-buy-text-color);
-}
-
-.right {
-    width: 35rem;
+    box-shadow: inset 2px 0 0 var(--up-color);
 }
 
 #trade-feed {
     height: 70vh;
     min-height: 12rem;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     overflow-anchor: none;
     line-height: 1.3;
 }
@@ -49,4 +154,46 @@ a:hover {
 
 #trade-feed #messages > span {
     width: max-content;
+}
+
+#trade-feed #messages > span:first-child {
+    animation: flash .8s ease-out;
+}
+
+@keyframes flash {
+    from {
+        filter: brightness(1.6);
+    }
+}
+
+/* exchange status */
+.status-up,
+.status-down {
+    display: inline-block;
+    margin: 3px 1px;
+    outline: 1px solid;
+    outline-offset: 1px;
+    border-radius: 1px;
+}
+
+.status-up {
+    outline-color: var(--up-color);
+}
+
+.status-down {
+    outline-color: var(--down-color);
+    opacity: .55;
+}
+
+/* scrollbars */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cursor,
+    #trade-feed #messages > span:first-child {
+        animation: none;
+    }
 }

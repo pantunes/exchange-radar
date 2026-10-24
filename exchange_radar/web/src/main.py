@@ -12,7 +12,7 @@ from exchange_radar.web.src.routes.api import routes as routes_endpoints
 from exchange_radar.web.src.routes.schema import routes as routes_schema
 from exchange_radar.web.src.routes.views import routes as routes_views
 from exchange_radar.web.src.settings import base as settings
-from exchange_radar.web.src.tasks.sync_cache import sync_feed_cache
+from exchange_radar.web.src.tasks.expire_feed import expire_feed_rows
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -28,7 +28,7 @@ routes = routes_views + routes_schema + routes_endpoints
 @contextlib.asynccontextmanager
 async def lifespan(app: Starlette):  # noqa
     logger.info("START Lifespan")
-    sync_feed_cache()
+    expire_feed_rows()
     yield
     logger.info("END Lifespan")
 

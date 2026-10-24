@@ -1,4 +1,6 @@
         <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="color-scheme" content="light dark"/>
         <!-- Favicon -->
         <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='favicon/favicon.ico') }}">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='favicon/favicon-32x32.png') }}">
@@ -9,16 +11,18 @@
         <meta name="image" property="og:image" content="{{ url_for('static', path='favicon/favicon-180x180.png') }}"/>
         <meta name="description" property="og:description" content="Live trading information from various cryptocurrency exchanges."/>
         <!-- CSS -->
-        <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}" type="text/css"/>
-        <link rel="stylesheet" href="{{ url_for('static', path='css/theme.css') }}" type="text/css"/>
-        <link rel="stylesheet" href="{{ url_for('static', path='css/custom.css') }}" type="text/css"/>
-        <link rel="stylesheet" href="{{ url_for('static', path='css/exchanges.css') }}" type="text/css"/>
-        <link rel="stylesheet" href="{{ url_for('static', path='css/toggle-switch.css') }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}?v={{ version }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/theme.css') }}?v={{ version }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/custom.css') }}?v={{ version }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/exchanges.css') }}?v={{ version }}" type="text/css"/>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/toggle-switch.css') }}?v={{ version }}" type="text/css"/>
         <!-- Fonts -->
-        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" type="text/css"/>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"/>
         <!-- JS -->
         <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/web-socket-js/1.0.0/web_socket.min.js"></script>
         <!-- Custom JS -->
-        <script src="{{ url_for('static', path='js/index.js') }}"></script>
-        <script src="{{ url_for('static', path='js/ws.js') }}"></script>
+        <script src="{{ url_for('static', path='js/index.js') }}?v={{ version }}"></script>
+        <script src="{{ url_for('static', path='js/ws.js') }}?v={{ version }}"></script>

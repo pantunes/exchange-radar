@@ -33,8 +33,9 @@
 
     <body>
 {% block body %}
+{% with live = true %}{% include "snippets/top.j2" %}{% endwith %}
         <div class="padded-boxes">
-            <section>
+            <section data-title="trades.log">
                 <div class="padded">
                     <!-- box 1 content -->
 <pre id="trade-feed" aria-label="Live trades, newest first">
@@ -44,7 +45,7 @@
 <span id="messages"></span></pre>
                 </div>
             </section>
-            <section class="right">
+            <section class="right" data-title="radar">
                 <div class="padded">
                     <!-- box 2 content -->
 <pre>

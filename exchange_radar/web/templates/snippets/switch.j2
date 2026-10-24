@@ -1,15 +1,10 @@
         <script>
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            document.documentElement.setAttribute('data-theme', currentTheme);
+
             $(document).ready(function () {
                 const toggleSwitch = document.querySelector('.switch input[type="checkbox"]');
-                const currentTheme = localStorage.getItem('theme') || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-
-                if (currentTheme) {
-                    document.documentElement.setAttribute('data-theme', currentTheme);
-
-                    if (currentTheme === 'dark') {
-                        toggleSwitch.checked = true;
-                    }
-                }
+                toggleSwitch.checked = currentTheme === 'dark';
 
                 function switchTheme(e) {
                     if (e.target.checked) {

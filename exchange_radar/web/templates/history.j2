@@ -19,8 +19,9 @@
 
     <body>
 {% block body %}
+{% with live = false %}{% include "snippets/top.j2" %}{% endwith %}
         <div class="padded-boxes">
-            <section>
+            <section data-title="history.log">
                 <div class="padded">
                     <!-- box 1 content -->
 <pre>

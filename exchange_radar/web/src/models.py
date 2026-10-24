@@ -5,13 +5,15 @@ from datetime import datetime, timedelta
 from pydantic import BaseModel, computed_field
 from redis_om import Field, JsonModel, Migrator, get_redis_connection
 
-from exchange_radar.web.src.cache import FeedCache
 from exchange_radar.web.src.enums import Ranking
 from exchange_radar.web.src.settings import base as settings
 
 logger = logging.getLogger(__name__)
 
 redis = get_redis_connection()
+
+FEED_EXPIRATION_SECONDS = 60 * 60 * 24 * settings.REDIS_EXPIRATION
+FEED_TRIM_BATCH = 1000
 
 
 class Feed(JsonModel):  # pragma: no cover
@@ -71,12 +73,37 @@ class Feed(JsonModel):  # pragma: no cover
 
     @classmethod
     def select_rows(cls, coin: str, category: str) -> list[dict[str, str]]:
+        # execute(exhaust_results=False) runs a single search; page() keeps paginating past the limit.
         return [
             item.dict()
             for item in cls.find((cls.trade_symbol == coin) & (cls.type == category))
             .sort_by("-trade_time_ts")
-            .page(offset=0, limit=settings.REDIS_MAX_ROWS)
+            .copy(offset=0, limit=settings.REDIS_MAX_ROWS)
+            .execute(exhaust_results=False)
         ][::-1]
+
+    @classmethod
+    def trim(cls, coin: str, category: str) -> int:
+        """Delete up to FEED_TRIM_BATCH rows older than the newest REDIS_MAX_ROWS, using one search."""
+        query = cls.find((cls.trade_symbol == coin) & (cls.type == category)).query
+        _, *keys = redis.execute_command(
+            "FT.SEARCH",
+            cls.Meta.index_name,
+            query,
+            "NOCONTENT",
+            "SORTBY",
+            "trade_time_ts",
+            "DESC",
+            "LIMIT",
+            settings.REDIS_MAX_ROWS,
+            FEED_TRIM_BATCH,
+        )
+        if not keys:
+            return 0
+
+        num_deleted = redis.delete(*keys)
+        logger.info(f"TRIM {coin} {category}: {num_deleted} rows deleted")
+        return num_deleted
 
     @classmethod
     def save_or_not(cls, coin: str, category: str, message: dict) -> bool:
@@ -95,12 +122,13 @@ class Feed(JsonModel):  # pragma: no cover
             number_trades=message["number_trades"],
             message=message["message"],
             ranking=message["ranking"],
-        ).save()
+        )
+        with redis.pipeline(transaction=False) as pipe:
+            obj.save(pipeline=pipe)
+            obj.expire(num_seconds=FEED_EXPIRATION_SECONDS, pipeline=pipe)
+            pipe.execute()
 
-        obj2del_pk = FeedCache.delete_and_get_pk(obj, coin=coin, category=category)
-        if obj2del_pk:
-            is_deleted = cls.delete(obj2del_pk)
-            logger.info(f"DELETE {obj2del_pk} RETURN {is_deleted}")
+        cls.trim(coin=coin, category=category)
 
         return True
 

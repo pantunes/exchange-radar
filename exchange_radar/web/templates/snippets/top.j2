@@ -1,0 +1,7 @@
+        <header class="topbar">
+            <a class="brand" href="/">exchange-radar</a>
+            <span class="path">~{{ request.url.path }}<span class="cursor" aria-hidden="true"></span></span>
+{%- if live %}
+            <span id="ws-status" aria-live="polite"></span>
+{%- endif %}
+        </header>

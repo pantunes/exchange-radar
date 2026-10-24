@@ -3,6 +3,7 @@ function setupAndStartWS() {
 
     ws.onopen = (event) => {
         console.log("onopen")
+        $("#ws-status").addClass("live");
     };
 
     ws.onclose = (event) => {
@@ -19,6 +20,7 @@ function setupAndStartWS() {
     }
 
     ws.onclose = function (e) {
+        $("#ws-status").removeClass("live");
         console.log("Socket is closed. Reconnect will be attempted in 1 second.", e.reason);
         setTimeout(function () {
             setupAndStartWS()

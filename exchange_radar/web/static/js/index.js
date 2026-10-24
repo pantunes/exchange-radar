@@ -103,7 +103,7 @@ function formatPage() {
     $("a").each(function () {
         const link = $(this).attr('href');
         if (link === subURL) {
-            $(this).css({'font-weight': 'bold', 'font-size': '1.2em'});
+            $(this).addClass('active');
         }
     });
 }
@@ -111,11 +111,9 @@ function formatPage() {
 function getStatus() {
     $.get(http_status_url).done(function (response) {
         for (const [key, value] of Object.entries(response["exchanges"])) {
-            let class_on_off = "2px solid #c76565";
-            if (value === true) {
-                class_on_off = "2px solid #367a59";
-            }
-            $(`#${key}`).css('border', class_on_off)
+            $(`#${key}`)
+                .toggleClass('status-up', value === true)
+                .toggleClass('status-down', value !== true);
         }
     })
 }
