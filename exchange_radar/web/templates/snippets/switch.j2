@@ -1,4 +1,4 @@
-        <script>
+        <script nonce="{{ request.state.csp_nonce }}">
             const currentTheme = localStorage.getItem('theme') || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
             document.documentElement.setAttribute('data-theme', currentTheme);
 

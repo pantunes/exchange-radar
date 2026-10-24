@@ -52,3 +52,8 @@ EXCHANGES = (
 )
 
 EXCHANGES_STATUS_TTL = 30.0  # in seconds
+
+# Caps to bound memory/CPU from WebSocket fan-out (defence-in-depth alongside the
+# reverse-proxy limit_conn). Tune via env without a code change.
+MAX_WS_CONNECTIONS_PER_COIN = env.int("MAX_WS_CONNECTIONS_PER_COIN", default=50)
+MAX_WS_CONNECTIONS_TOTAL = env.int("MAX_WS_CONNECTIONS_TOTAL", default=500)

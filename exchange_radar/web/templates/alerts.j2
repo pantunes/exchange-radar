@@ -1,10 +1,10 @@
 {% extends "base.j2" %}
 {% block title %}Alerts - {{ coin }}{% endblock %}
 {% block javascript_default %}
-    <script>
+    <script nonce="{{ request.state.csp_nonce }}">
         const http_alerts_url = "{{ http_alerts_url }}";
     </script>
-    <script>
+    <script nonce="{{ request.state.csp_nonce }}">
         function get_alerts() {
             $.get(http_alerts_url).done(function (response) {
                 $("#messages").html(response.rows.join([separator = "\n"]));

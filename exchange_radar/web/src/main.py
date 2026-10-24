@@ -3,11 +3,13 @@ import logging
 
 from starlette.applications import Starlette
 from starlette.exceptions import WebSocketException
+from starlette.middleware import Middleware
 
 from exchange_radar.web.src.errors import (
     http_validation_error,
     websocket_validation_error,
 )
+from exchange_radar.web.src.middleware import SecurityHeadersMiddleware
 from exchange_radar.web.src.routes.api import routes as routes_endpoints
 from exchange_radar.web.src.routes.schema import routes as routes_schema
 from exchange_radar.web.src.routes.views import routes as routes_views
@@ -24,6 +26,8 @@ exception_handlers = {
 
 routes = routes_views + routes_schema + routes_endpoints
 
+middleware = [Middleware(SecurityHeadersMiddleware)]
+
 
 @contextlib.asynccontextmanager
 async def lifespan(app: Starlette):  # noqa
@@ -33,4 +37,10 @@ async def lifespan(app: Starlette):  # noqa
     logger.info("END Lifespan")
 
 
-app = Starlette(debug=settings.DEBUG, routes=routes, exception_handlers=exception_handlers, lifespan=lifespan)
+app = Starlette(
+    debug=settings.DEBUG,
+    routes=routes,
+    middleware=middleware,
+    exception_handlers=exception_handlers,
+    lifespan=lifespan,
+)

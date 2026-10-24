@@ -1,7 +1,7 @@
 {% extends "base.j2" %}
 {% block title %}{{ coin }} whale{% endblock %}
 {% block javascript %}
-        <script>
+        <script nonce="{{ request.state.csp_nonce }}">
             function setPageTitle(obj) {
                 document.title = `{{ coin }} whale - ${Number(obj.price).toFixed(4)} ${obj.currency}`;
             }

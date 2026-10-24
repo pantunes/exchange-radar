@@ -1,10 +1,10 @@
 {% extends "base.j2" %}
 {% block title %}History - {{ coin }}{% endblock %}
 {% block javascript_default %}
-        <script>
+        <script nonce="{{ request.state.csp_nonce }}">
             const http_history_url = "{{ http_history_url }}";
         </script>
-        <script>
+        <script nonce="{{ request.state.csp_nonce }}">
             function get_history() {
                 $.get(http_history_url).done(function (response) {
                     $("#messages").html(response.rows.join([separator = "\n"]));

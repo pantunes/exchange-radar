@@ -7,7 +7,7 @@
 {% include 'snippets/headers.j2' %}
 {% include 'snippets/switch.j2' %}
 {% block javascript_default %}
-        <script>
+        <script nonce="{{ request.state.csp_nonce }}">
             const base_http_url = window.location.origin;
             const http_trades_url = base_http_url + "{{ http_trades_url }}";
             const http_stats_url = base_http_url + "{{ http_stats_url }}";
@@ -18,7 +18,7 @@
             const websocket_url = websocket_protocol + hostname + (port ? ':' + port : '') + "{{ websocket_url }}";
             const max_rows = {{ max_rows }};
         </script>
-        <script>
+        <script nonce="{{ request.state.csp_nonce }}">
             $(document).ready(function() {
                 setupTradeFeed();
                 setupAndStartWS();

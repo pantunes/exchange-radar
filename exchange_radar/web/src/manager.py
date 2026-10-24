@@ -4,8 +4,13 @@ from collections import defaultdict
 import websockets
 from starlette.websockets import WebSocket
 
+from exchange_radar.web.src.settings import base as settings
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+# WebSocket close code 1013 == "Try Again Later".
+WS_TRY_AGAIN_LATER = 1013
 
 
 class Singleton:
@@ -27,10 +32,21 @@ class ConnectionTradesManager(Singleton):  # pragma: no cover
     def __init__(self):
         self.active_connections: dict[str, list[WebSocket]] = defaultdict(list)
 
-    async def connect(self, websocket: WebSocket, coin: str):
+    def _total_connections(self) -> int:
+        return sum(len(connections) for connections in self.active_connections.values())
+
+    async def connect(self, websocket: WebSocket, coin: str) -> bool:
+        if (
+            len(self.active_connections[coin]) >= settings.MAX_WS_CONNECTIONS_PER_COIN
+            or self._total_connections() >= settings.MAX_WS_CONNECTIONS_TOTAL
+        ):
+            logger.warning(f"Rejected {self} {coin} connection: limit reached")
+            await websocket.close(code=WS_TRY_AGAIN_LATER)
+            return False
         await websocket.accept()
         self.active_connections[coin].append(websocket)
         logger.info(f"Num. active connections {self} {coin}: {len(self.active_connections[coin])}")
+        return True
 
     def disconnect(self, websocket: WebSocket, coin: str):
         self.active_connections[coin].remove(websocket)
