@@ -148,7 +148,7 @@ their own keys.
 
 ### Consumer delivery
 
-Dolphin and whale pages retain the newest 256 trades per coin and
+Octopus, dolphin and whale pages retain the newest 256 trades per coin and
 category by default (`FEED_RETENTION_ROWS` in the web environment). Each page
 requests enough saved trades to fill its available screen height and reloads
 more history when the window grows. Live trades use the same visible row limit.
@@ -156,7 +156,7 @@ more history when the window grows. Live trades use the same visible row limit.
 query parameter; requested limits are capped at `FEED_RETENTION_ROWS`.
 Previously discarded history cannot be restored: larger histories accumulate
 as new trades arrive. The existing `REDIS_EXPIRATION` also bounds retention age.
-Octopus and all-trades pages remain live-only and do not save trade history.
+The all-trades page remains live-only and does not save trade history.
 
 Producers send trades to the existing RabbitMQ queues over AMQP. Each consumer
 collects up to 50 deliveries per queue, or waits up to 20 ms for a partial batch,

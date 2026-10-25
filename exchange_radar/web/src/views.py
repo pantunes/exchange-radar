@@ -61,6 +61,7 @@ class IndexDolphins(IndexBase):
 
 
 class IndexOctopuses(IndexBase):
+    saved_history = True
     http_trades_url = settings.TRADES_OCTOPUSES_HOST_URL
     websocket_url = settings.TRADES_OCTOPUSES_SOCKET_URL
     template_name = "index-octopuses.j2"

@@ -1,8 +1,9 @@
-from unittest.mock import AsyncMock, Mock, call
+from unittest.mock import AsyncMock, MagicMock, Mock, call
 
 import pytest
 
 from exchange_radar.feed import MAX_FEED_BATCH_SIZE
+from exchange_radar.web.src import models
 from exchange_radar.web.src.api import http
 
 
@@ -45,6 +46,53 @@ def test_batch_without_saved_trades_returns_success(client, monkeypatch):
     response = client.post("/api/feed/BTC", json=[{"trade_symbol": "BTC"}])
     assert response.status_code == 200
     assert response.json() == {"r": [False], "accepted": 1}
+
+
+@pytest.mark.parametrize("category", ["octopuses", "dolphins", "whales"])
+@pytest.mark.parametrize("batch", [False, True])
+@pytest.mark.parametrize(
+    "volume_trades,number_trades",
+    [(None, None), (None, [1, 2]), ([1.5, 2.5], None), ([1.5, 2.5], [1, 2])],
+)
+def test_feed_saves_trades_with_unavailable_statistics(
+    client, monkeypatch, category, batch, volume_trades, number_trades
+):
+    database = MagicMock()
+    monkeypatch.setattr(models, "redis", database)
+    monkeypatch.setattr("redis_om.model.model.has_redis_json", lambda connection: True)
+    trim = Mock()
+    monkeypatch.setattr(http.FeedModel, "trim", trim)
+    manager = getattr(http, f"Feed{category.capitalize()}").manager
+    broadcast = AsyncMock()
+    monkeypatch.setattr(manager, "broadcast", broadcast)
+    message = {
+        "price": 2000.0,
+        "trade_time_ts": 1792933117,
+        "is_seller": False,
+        "currency": "USDT",
+        "trade_symbol": "BTC",
+        "volume": 4.0,
+        "volume_trades": volume_trades,
+        "number_trades": number_trades,
+        "message": "Trade before both sides have daily statistics",
+        "ranking": {"octopuses": "Octopus", "dolphins": "Dolphin", "whales": "Whale"}[category],
+    }
+
+    response = client.post(
+        f"/api/feed/{'_batch' if batch else 'BTC'}/{category}", json=[message] if batch else message
+    )
+
+    assert response.status_code == 201
+    assert response.json() == ({"r": [True], "accepted": 1} if batch else {"r": True})
+    broadcast.assert_awaited_once_with(message, "BTC")
+    database.pipeline.assert_called_once_with(transaction=False)
+    pipeline = database.pipeline.return_value.__enter__.return_value
+    saved_key, _, saved = pipeline.json.return_value.set.call_args.args
+    assert saved["volume_trades"] == volume_trades
+    assert saved["number_trades"] == number_trades
+    pipeline.expire.assert_called_once_with(saved_key, models.FEED_EXPIRATION_SECONDS)
+    pipeline.execute.assert_called_once()
+    trim.assert_called_once_with(coin="BTC", category=f"Feed{category.capitalize()}")
 
 
 @pytest.mark.parametrize(

@@ -56,8 +56,9 @@ class Feed(JsonModel):  # pragma: no cover
     currency: str
     trade_symbol: str = Field(index=True)
     volume: float
-    volume_trades: list[float]
-    number_trades: list[int]
+    # Producers send null until both buy and sell statistics exist for the day.
+    volume_trades: list[float] | None = None
+    number_trades: list[int] | None = None
     message: str
     ranking: Ranking
 
@@ -69,6 +70,7 @@ class Feed(JsonModel):  # pragma: no cover
         return category in (
             "FeedWhales",
             "FeedDolphins",
+            "FeedOctopuses",
         )
 
     @classmethod
