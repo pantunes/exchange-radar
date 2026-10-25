@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -116,3 +116,75 @@ def test_missing_coin_drops_only_its_own_baseline(scheduler, monkeypatch):
     pipe.execute.return_value = [None] * 7
     alerts.task(config=config)
     assert alerts.alerts_cache[key] == {"BTC": {"price": 100, "currency": "USDT"}}
+
+
+@pytest.mark.parametrize(
+    ("config", "elapsed", "price", "name", "message"),
+    [
+        (
+            alerts.EachMinuteTaskConfig(),
+            60,
+            "97.93",
+            "Price change ≥1% · 1 min · up/down",
+            "Price decreased 2.07% over 1 min.",
+        ),
+        (
+            alerts.Each10MinutesTaskConfig(),
+            600,
+            "103.42",
+            "Price change ≥2% · 10 min · up/down",
+            "Price increased 3.42% over 10 mins.",
+        ),
+        (
+            alerts.Each10MinutesTaskConfig(),
+            660,
+            "103.42",
+            "Price change ≥2% · 10 min · up/down",
+            "Price increased 3.42% over 11 mins.",
+        ),
+        (
+            alerts.EachMinuteTaskConfig(),
+            65,
+            "97.93",
+            "Price change ≥1% · 1 min · up/down",
+            "Price decreased 2.07% over 1 min 5 secs.",
+        ),
+    ],
+)
+def test_alert_describes_rule_and_actual_elapsed_time(scheduler, monkeypatch, config, elapsed, price, name, message):
+    pipe, model = scheduler
+    monkeypatch.setattr(alerts, "COINS", ["ETH"])
+    pipe.execute.side_effect = [statistics(), statistics(price=price)]
+    start = datetime(2026, 10, 25, 12)
+    end = start + timedelta(seconds=elapsed)
+
+    with patch.object(alerts, "datetime", wraps=datetime) as clock:
+        clock.now.side_effect = [start, end]
+        alerts.task(config=config)
+        model.assert_not_called()
+        alerts.task(config=config)
+
+    model.assert_called_once()
+    assert model.call_args.kwargs["name"] == name
+    assert model.call_args.kwargs["message"] == message
+    assert model.call_args.kwargs["time_ts"] == int(end.timestamp())
+
+
+@pytest.mark.parametrize("middle", [statistics(price="100.5"), [None] * 7, statistics(currency="BTC")])
+def test_elapsed_time_uses_latest_valid_baseline(scheduler, monkeypatch, middle):
+    pipe, model = scheduler
+    monkeypatch.setattr(alerts, "COINS", ["ETH"])
+    pipe.execute.side_effect = [statistics(), middle, statistics(), statistics(price="103")]
+    start = datetime(2026, 10, 25, 12)
+    # Invalid data has no timestamp; it discards the previous baseline entirely.
+    times = [start + timedelta(minutes=i) for i in range(4) if i != 1 or middle[0] is not None]
+
+    with patch.object(alerts, "datetime", wraps=datetime) as clock:
+        clock.now.side_effect = times
+        for _ in range(3):
+            alerts.task(config=alerts.EachMinuteTaskConfig())
+        model.assert_not_called()
+        alerts.task(config=alerts.EachMinuteTaskConfig())
+
+    model.assert_called_once()
+    assert model.call_args.kwargs["message"] == "Price increased 3.00% over 1 min."

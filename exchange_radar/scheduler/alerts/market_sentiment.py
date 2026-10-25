@@ -20,8 +20,8 @@ TASK_LOCK = "MARKET-SENTIMENT-LOCK"
 
 class TaskConfig(ABC):
     @property
-    @abstractmethod
-    def name(self) -> str: ...
+    def name(self) -> str:
+        return f"Price change ≥{self.price_percentage_change:g}% · {self.frequency_in_minutes} min · up/down"
 
     @property
     @abstractmethod
@@ -36,15 +36,22 @@ class TaskConfig(ABC):
 
 
 class EachMinuteTaskConfig(TaskConfig):
-    name = "price-change-1-min"
     price_percentage_change = 1.0
     frequency_in_minutes = 1
 
 
 class Each10MinutesTaskConfig(TaskConfig):
-    name = "price-change-10-mins"
     price_percentage_change = 2.0
     frequency_in_minutes = 10
+
+
+def _format_elapsed(seconds: int) -> str:
+    parts = []
+    for unit, unit_seconds in (("hour", 3600), ("min", 60), ("sec", 1)):
+        value, seconds = divmod(max(0, seconds), unit_seconds)
+        if value:
+            parts.append(f"{value} {unit}{'s' if value != 1 else ''}")
+    return " ".join(parts) or "0 secs"
 
 
 def _get_message(
@@ -54,6 +61,7 @@ def _get_message(
     price_percentage_change: float,
     frequency_in_minutes: int,
     *,
+    time_ts: int,
     indicator: dict[str, int | float],
 ) -> str | None:
     indicator_key, indicator_value = next(iter(indicator.items()))
@@ -75,7 +83,8 @@ def _get_message(
         return None
 
     verb = "increased" if ratio > 0 else "decreased"
-    return f"The {indicator_key.upper()} {verb} {ratio_abs:.2f}% in the last {frequency_in_minutes} minute(s)"
+    elapsed = _format_elapsed(time_ts - alerts_cache_coin["time_ts"])
+    return f"{indicator_key.capitalize()} {verb} {ratio_abs:.2f}% over {elapsed}."
 
 
 @huey.periodic_task(crontab(minute="*/1"))
@@ -130,6 +139,7 @@ def task(*, config: TaskConfig):
                 logger.warning("Skipping alerts for %s: missing or invalid statistics (%s)", coin, error)
                 continue
             else:
+                time_ts = int(datetime.now().timestamp())
                 if key in alerts_cache and coin in alerts_cache[key]:
 
                     messages = []
@@ -141,13 +151,12 @@ def task(*, config: TaskConfig):
                             currency,
                             config.price_percentage_change,
                             config.frequency_in_minutes,
+                            time_ts=time_ts,
                             indicator=indicator,
                         )
                         if message:
                             logger.info(message)
                             messages.append(message)
-
-                    time_ts = int(datetime.now().timestamp())
 
                     for message in messages:
                         Alerts(
@@ -163,6 +172,7 @@ def task(*, config: TaskConfig):
                     logger.info("Initializing Alerts...")
 
                 alerts_cache[key][coin] = {
+                    "time_ts": time_ts,
                     "volume": volume,
                     "volume_buy_orders": volume_buy_orders,
                     "volume_sell_orders": volume_sell_orders,

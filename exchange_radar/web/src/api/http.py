@@ -155,7 +155,7 @@ class Alerts(HTTPEndpoint):
         """
         tags:
             - alerts
-        summary: 1 minute interval alerts.
+        summary: Price change alerts checked every 1 or 10 minutes.
         parameters:
             - name: coin
               in: path

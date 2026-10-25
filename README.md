@@ -88,6 +88,13 @@ The scheduler generates alerts for price changes of at least 1% between its
 one-minute checks or 2% between its ten-minute checks. The alerts page polls the
 web API every two seconds; it does not generate alerts itself.
 
+New alerts describe their rule in the name: `Price change ≥1% · 1 min · up/down`
+or `Price change ≥2% · 10 min · up/down`. Messages show the actual time between
+successful checks, for example `Price decreased 2.07% over 1 min.` or
+`Price increased 3.42% over 11 mins.` if a check was delayed. The first successful
+check after a scheduler restart establishes a new baseline. Previously saved
+alerts retain their original names and messages.
+
 Scheduler exchange lists are configured separately in `.envs/.production/.scheduler`.
 The current alert list is BTC, ETH, LINK and PEPE. Remove EQTY, FTM and S from all
 exchange lists in that file before recreating the scheduler. This production
