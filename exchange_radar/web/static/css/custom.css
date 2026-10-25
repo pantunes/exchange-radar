@@ -139,8 +139,7 @@ section[data-title]::before {
 }
 
 #trade-feed {
-    height: 70vh;
-    min-height: 12rem;
+    max-height: calc(100dvh - 9rem);
     overflow-x: auto;
     overflow-y: hidden;
     overflow-anchor: none;

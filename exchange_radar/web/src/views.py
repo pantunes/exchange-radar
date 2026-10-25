@@ -25,6 +25,7 @@ manager_trades_whales = ConnectionTradesWhalesManager.get_instance()
 
 
 class IndexBase(HTTPEndpoint):
+    saved_history = False
     http_trades_url = settings.TRADES_HOST_URL
     http_stats_url = settings.TRADES_STATS_URL
     websocket_url = settings.TRADES_SOCKET_URL
@@ -38,19 +39,22 @@ class IndexBase(HTTPEndpoint):
             "http_stats_url": self.http_stats_url.format(coin=data.coin),
             "websocket_url": self.websocket_url.format(coin=data.coin),
             "exchanges": get_exchanges(coin=data.coin),
-            "max_rows": settings.REDIS_MAX_ROWS,
+            "max_rows": settings.FEED_RETENTION_ROWS if self.saved_history else settings.REDIS_MAX_ROWS,
+            "saved_history": self.saved_history,
             "version": __version__,
         }
         return templates.TemplateResponse(request, self.template_name, context=context)
 
 
 class IndexWhales(IndexBase):
+    saved_history = True
     http_trades_url = settings.TRADES_WHALES_HOST_URL
     websocket_url = settings.TRADES_WHALES_SOCKET_URL
     template_name = "index-whales.j2"
 
 
 class IndexDolphins(IndexBase):
+    saved_history = True
     http_trades_url = settings.TRADES_DOLPHINS_HOST_URL
     websocket_url = settings.TRADES_DOLPHINS_SOCKET_URL
     template_name = "index-dolphins.j2"

@@ -16,6 +16,7 @@ from exchange_radar.web.src.models import Stats as StatsModel
 from exchange_radar.web.src.models import Status as StatusModel
 from exchange_radar.web.src.serializers.decorators import validate
 from exchange_radar.web.src.serializers.http import ParamsInputSerializer
+from exchange_radar.web.src.settings import base as settings
 
 manager_trades = ConnectionTradesManager.get_instance()
 manager_trades_dolphins = ConnectionTradesDolphinsManager.get_instance()
@@ -55,7 +56,7 @@ class FeedBase(HTTPEndpoint):
         return JSONResponse({"r": is_saved}, status_code=201 if is_saved else 200)
 
     @validate(serializer=ParamsInputSerializer)
-    async def get(self, _, data: ParamsInputSerializer):
+    async def get(self, request, data: ParamsInputSerializer):
         """
         tags:
             - feed
@@ -73,7 +74,15 @@ class FeedBase(HTTPEndpoint):
                 description: Error in input validation.
         """
 
-        rows = FeedModel.select_rows(coin=data.coin, category=str(self))
+        try:
+            limit = int(request.query_params.get("limit", settings.REDIS_MAX_ROWS))
+        except ValueError:
+            raise HTTPException(400, "limit must be a positive integer")
+        if limit < 1:
+            raise HTTPException(400, "limit must be a positive integer")
+        rows = FeedModel.select_rows(
+            coin=data.coin, category=str(self), limit=min(limit, settings.FEED_RETENTION_ROWS)
+        )
         return JSONResponse({"r": rows}, status_code=200)
 
 

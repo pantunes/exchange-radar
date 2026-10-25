@@ -1,4 +1,7 @@
 let tradeRowLimit = null;
+let historyRequest = null;
+let historyLiveRows = [];
+let historyLoadedLimit = 0;
 
 function trimTradeRows() {
     const messages = document.getElementById('messages');
@@ -15,12 +18,31 @@ function fitTradeFeed() {
         return;
     }
 
+    const feedRect = feed.getBoundingClientRect();
+    const panel = feed.closest('section');
+    const bottomPadding = panel.getBoundingClientRect().bottom - feedRect.bottom;
+    const bottomMargin = parseFloat(getComputedStyle(panel.parentElement).paddingBottom);
+    const headerHeight = messages.getBoundingClientRect().top - feedRect.top - feed.clientTop;
+    const maxHeight = Math.max(headerHeight,
+        window.innerHeight - feedRect.top - window.scrollY - bottomPadding - bottomMargin);
+    feed.style.maxHeight = `${maxHeight}px`;
+
     const style = getComputedStyle(feed);
-    const headerHeight = messages.getBoundingClientRect().top - feed.getBoundingClientRect().top - feed.clientTop;
-    const availableHeight = feed.clientHeight - headerHeight - parseFloat(style.paddingBottom);
-    const rowsThatFit = Math.floor(availableHeight / parseFloat(style.lineHeight));
-    tradeRowLimit = Math.max(0, Math.min(max_rows, rowsThatFit));
+    const scrollbarHeight = feed.offsetHeight - feed.clientHeight - feed.clientTop * 2;
+    // Use the height cap so a sparse feed can grow as new trades arrive.
+    const availableHeight = maxHeight - headerHeight - parseFloat(style.paddingBottom) - scrollbarHeight;
+    const rowHeight = messages.firstElementChild?.getBoundingClientRect().height || parseFloat(style.lineHeight);
+    const rowsThatFit = Math.floor(availableHeight / rowHeight);
+    const previousLimit = tradeRowLimit;
+    tradeRowLimit = Math.max(0, rowsThatFit);
+    if (saved_history) {
+        tradeRowLimit = Math.min(max_rows, tradeRowLimit);
+    }
+    historyLoadedLimit = Math.min(historyLoadedLimit, tradeRowLimit);
     trimTradeRows();
+    if (previousLimit !== null && tradeRowLimit > previousLimit && historyLoadedLimit > 0) {
+        retrieveTradeHistory();
+    }
 }
 
 function setupTradeFeed() {
@@ -28,10 +50,16 @@ function setupTradeFeed() {
     const feed = document.getElementById('trade-feed');
     if (feed) {
         new ResizeObserver(fitTradeFeed).observe(feed);
+        // A content-sized feed may not resize when the viewport grows.
+        window.addEventListener('resize', fitTradeFeed);
+        document.fonts.ready.then(fitTradeFeed);
     }
 }
 
 function addRow(obj) {
+    if (historyRequest) {
+        historyLiveRows.push(obj);
+    }
     const messages = document.getElementById('messages');
     messages.prepend(createElement(obj));
     trimTradeRows();
@@ -43,11 +71,55 @@ function retrieveData() {
         setVolumeTrades(response);
         setNumberTrades(response);
     })
-    $.get(http_trades_url).done(function (response) {
-        for (const obj of response.r) {
+    retrieveTradeHistory();
+}
+
+function retrieveTradeHistory() {
+    if (!saved_history) {
+        $.get(http_trades_url).done(function (response) {
+            for (const obj of response.r) {
+                addRow(obj);
+            }
+        });
+        return;
+    }
+    const limit = Math.max(1, tradeRowLimit === null ? max_rows : tradeRowLimit);
+    if (historyRequest || limit <= historyLoadedLimit) {
+        return;
+    }
+    historyLiveRows = [];
+    historyRequest = $.get(http_trades_url, {limit}).done(function (response) {
+        // Preserve trades arriving during the request, without repeating those
+        // already included in the saved snapshot. Count identical rows separately.
+        const rows = response.r.slice();
+        const occurrences = new Map();
+        for (const obj of rows) {
+            occurrences.set(obj.message, (occurrences.get(obj.message) || 0) + 1);
+        }
+        for (const obj of historyLiveRows) {
+            const count = occurrences.get(obj.message) || 0;
+            if (count > 0) {
+                occurrences.set(obj.message, count - 1);
+            } else {
+                rows.push(obj);
+            }
+        }
+        historyLoadedLimit = Math.min(limit, tradeRowLimit);
+        historyLiveRows = [];
+        historyRequest = null;
+        rows.sort((a, b) => a.trade_time_ts - b.trade_time_ts);
+        document.getElementById('messages').replaceChildren();
+        for (const obj of rows) {
             addRow(obj);
         }
-    })
+    }).always(function () {
+        historyRequest = null;
+        historyLiveRows = [];
+        // The screen may have grown while the previous request was in flight.
+        if (historyLoadedLimit === limit && tradeRowLimit > limit) {
+            retrieveTradeHistory();
+        }
+    });
 }
 
 function createElement(obj) {

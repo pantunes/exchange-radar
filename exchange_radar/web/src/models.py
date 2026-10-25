@@ -72,19 +72,19 @@ class Feed(JsonModel):  # pragma: no cover
         )
 
     @classmethod
-    def select_rows(cls, coin: str, category: str) -> list[dict[str, str]]:
+    def select_rows(cls, coin: str, category: str, limit: int | None = None) -> list[dict[str, str]]:
         # execute(exhaust_results=False) runs a single search; page() keeps paginating past the limit.
         return [
             item.dict()
             for item in cls.find((cls.trade_symbol == coin) & (cls.type == category))
             .sort_by("-trade_time_ts")
-            .copy(offset=0, limit=settings.REDIS_MAX_ROWS)
+            .copy(offset=0, limit=settings.REDIS_MAX_ROWS if limit is None else limit)
             .execute(exhaust_results=False)
         ][::-1]
 
     @classmethod
     def trim(cls, coin: str, category: str) -> int:
-        """Delete up to FEED_TRIM_BATCH rows older than the newest REDIS_MAX_ROWS, using one search."""
+        """Delete up to FEED_TRIM_BATCH rows beyond the retained history, using one search."""
         query = cls.find((cls.trade_symbol == coin) & (cls.type == category)).query
         _, *keys = redis.execute_command(
             "FT.SEARCH",
@@ -95,7 +95,7 @@ class Feed(JsonModel):  # pragma: no cover
             "trade_time_ts",
             "DESC",
             "LIMIT",
-            settings.REDIS_MAX_ROWS,
+            settings.FEED_RETENTION_ROWS,
             FEED_TRIM_BATCH,
         )
         if not keys:

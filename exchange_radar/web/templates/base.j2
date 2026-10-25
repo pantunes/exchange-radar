@@ -17,6 +17,7 @@
             const websocket_protocol = window.location.protocol === "http:" ? "ws://" : "wss://";
             const websocket_url = websocket_protocol + hostname + (port ? ':' + port : '') + "{{ websocket_url }}";
             const max_rows = {{ max_rows }};
+            const saved_history = {{ saved_history|tojson }};
         </script>
         <script nonce="{{ request.state.csp_nonce }}">
             $(document).ready(function() {
