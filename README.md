@@ -153,6 +153,41 @@ The Redis integration tests are opt-in. Set `TEST_REDIS_URL` to a reachable test
 Redis instance when running pytest. Tests use unique key prefixes and remove only
 their own keys.
 
+### HTX reconnect recovery
+
+HTX keeps one WebSocket per symbol. After a disconnect, it requests the latest
+300 trades over the replacement WebSocket. It continues answering heartbeats
+and holds that symbol's live trades while history arrives. Other symbols and
+the publisher continue independently. There is no polling or additional HTTP
+connection on the normal ingestion path.
+
+History and held live trades are merged by exchange timestamp, with duplicate
+trade IDs removed before updating statistics or publishing. The duplicate cache
+retains the latest 4,096 accepted IDs per symbol. Held recovery frames share the
+existing 8 MiB / 4,096-frame ingress budget; parsed objects and the duplicate
+cache require additional memory. Already accepted frames and held live trades
+survive another socket disconnect while the process remains running.
+
+`HTX recovery complete` means the history response contained the previous
+accepted trade, providing overlap across the disconnect. If the 300-trade
+window no longer reaches it, HTX history is rejected/invalid, or no response
+arrives within 10 seconds, an explicit `HTX recovery incomplete ... gap may
+remain` warning is logged. Available history and held live trades are forwarded
+and live ingestion continues. Buffer overflow remains an explicit warning and
+reconnect; trades that could not enter a buffer can be lost.
+
+This recovery covers socket reconnects within a running producer. Its cursor and
+buffers are in memory, so it does not recover gaps caused by process restarts,
+deployments, or outages exceeding HTX's recent-history window. It also cannot
+restore an old gap retrospectively. Delivery retains the existing at-least-once
+AMQP semantics.
+
+To apply the change, rebuild and recreate only the HTX producer:
+
+```bash
+docker-compose -f production.yml up -d --build --no-deps producer-htx
+```
+
 ### Consumer delivery
 
 Octopus, dolphin and whale pages retain the newest 256 trades per coin and

@@ -144,6 +144,9 @@ class BufferedTradesTask(Task):
         async with asyncio.timeout(self.SEND_TIMEOUT):
             await ws.send(message)
 
+    async def _read_connected_stream(self, ws, stream):
+        await self._read_stream(ws)
+
     async def process(self, symbol_or_symbols):
         retry_delay = self.ITER_SLEEP
         while True:
@@ -155,7 +158,7 @@ class BufferedTradesTask(Task):
                     for subscription in self.subscriptions(symbol_or_symbols):
                         await self.send(ws, json.dumps(subscription))
                     logger.info("%s stream connected: %s", self.EXCHANGE, symbol_or_symbols)
-                    await self._read_stream(ws)
+                    await self._read_connected_stream(ws, symbol_or_symbols)
             except Exception as error:
                 if connected_at is not None and monotonic() - connected_at >= self.MAX_RETRY_DELAY:
                     retry_delay = self.ITER_SLEEP

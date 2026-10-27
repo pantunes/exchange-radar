@@ -112,7 +112,16 @@ async def test_empty_and_invalid_frames_do_not_reserve_ingress_capacity(task, ca
 
 @pytest.mark.asyncio
 async def test_reconnect_keeps_previously_accepted_frames(task, monkeypatch):
-    first, second = socket(frame(*[trade(id=i) for i in range(6000)])), socket(frame(trade(id=6000)))
+    first = socket(frame(*[trade(id=i) for i in range(6000)]))
+    second = socket(
+        {
+            "rep": "market.btcusdt.trade.detail",
+            "id": "htx-recovery-1",
+            "status": "ok",
+            "data": [trade(id=5999), trade(id=6000)],
+        },
+        frame(trade(id=6000)),
+    )
     first.recv.side_effect = [packed(frame(*[trade(id=i) for i in range(6000)])), OSError("network lost")]
     monkeypatch.setattr(buffered.websockets, "connect", Mock(side_effect=[first, second]))
     monkeypatch.setattr(buffered.asyncio, "sleep", AsyncMock())
