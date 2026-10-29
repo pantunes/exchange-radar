@@ -153,6 +153,18 @@ The Redis integration tests are opt-in. Set `TEST_REDIS_URL` to a reachable test
 Redis instance when running pytest. Tests use unique key prefixes and remove only
 their own keys.
 
+### OKX connectivity
+
+OKX uses `wss://ws.okx.com/ws/v5/business` on the default TLS port 443.
+Port-retirement notice `64010` is logged without interrupting trade ingestion;
+service-upgrade notices such as `64008` still trigger reconnection.
+
+Rebuild and recreate only the OKX producer after pulling this update:
+
+```bash
+docker-compose -f production.yml up -d --build --no-deps producer-okx
+```
+
 ### HTX reconnect recovery
 
 HTX keeps one WebSocket per symbol. After a disconnect, it requests the latest

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class OkxTradesTask(BufferedTradesTask):
     EXCHANGE = "OKX"
     SERIALIZER = OkxTradeSerializer
-    URL = "wss://ws.okx.com:8443/ws/v5/business"
+    URL = "wss://ws.okx.com/ws/v5/business"
     IDLE_PING_INTERVAL = 20.0
     PONG_TIMEOUT = 20.0
 
@@ -50,6 +50,10 @@ class OkxTradesTask(BufferedTradesTask):
             if response.get("event") == "error":
                 raise RuntimeError(f"OKX request failed: {response}")
             if response.get("event") == "notice":
+                # Port retirement is informational; OKX keeps this socket open.
+                if response.get("code") == "64010":
+                    logger.warning("OKX port retirement notice: %s", response.get("msg"))
+                    continue
                 raise ConnectionError(f"OKX service notice: {response}")
             if response.get("arg", {}).get("channel") == "trades-all" and "data" in response:
                 self.enqueue(response["data"])

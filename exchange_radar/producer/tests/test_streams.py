@@ -215,6 +215,26 @@ async def test_malformed_control_frames_do_not_stop_valid_trades(kind, payload, 
 
 
 @pytest.mark.asyncio
+async def test_okx_port_retirement_notice_does_not_interrupt_trades_or_heartbeats(caplog):
+    task = okx.OkxTradesTask()
+    ws = socket(
+        json.dumps({"event": "notice", "code": "64010", "msg": "Migrate from port 8443 to 443"}),
+        frame(task, [trade(task)]),
+        "pong",
+        frame(task, [trade(task, number=2)]),
+    )
+    try:
+        with pytest.raises(asyncio.CancelledError):
+            await task._read_stream(ws)
+        assert task._received == 2
+        assert [task._pending.get_nowait()[1]["tradeId"] for _ in range(2)] == ["1", "2"]
+        assert "OKX port retirement notice" in caplog.text
+    finally:
+        task._publisher_executor.shutdown()
+        task.loop.close()
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "kind,payload",
     [
