@@ -82,6 +82,24 @@ The Radar VM uses UTC, so this is 03:00–04:00 in Amsterdam during winter and
 start an update immediately. The existing website uptime monitor provides outage
 alerts; no additional monitor is installed by this change.
 
+### RabbitMQ storage
+
+Production mounts the named `rabbitmq_data` volume at `/var/lib/rabbitmq` and
+sets the stable hostname `exchange-radar-rabbitmq`. RabbitMQ uses its hostname
+in its default node name and data directory, so both the volume and hostname
+must remain stable across container replacements. See the
+[official image documentation](https://github.com/docker-library/docs/blob/master/rabbitmq/README.md#running-the-daemon).
+
+The first deployment of this change starts fresh queues from the configured
+definitions; no data is copied from the previous anonymous volume. This rollout
+assumes the previous queue contents do not need to be retained. Future container
+replacements, including `down` followed by `up` under the same Compose project,
+reuse the named volume. `down -v` removes it and its queue data.
+
+Keep routine deployments limited to affected services: stopping producers still
+interrupts exchange collection and loses their in-memory backlog. Redis's
+`make save-data` command does not back up RabbitMQ.
+
 ### Price alerts
 
 The scheduler generates alerts for price changes of at least 1% between its

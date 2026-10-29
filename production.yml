@@ -1,5 +1,6 @@
 volumes:
   redis_data: {}
+  rabbitmq_data: {}
 
 services:
   web:
@@ -23,6 +24,7 @@ services:
   rabbitmq:
     image: rabbitmq:3.12.13-management-alpine
     container_name: exchange-radar-rabbitmq
+    hostname: exchange-radar-rabbitmq
     restart: unless-stopped
     env_file:
       - ./.envs/.production/.rabbitmq
@@ -30,6 +32,7 @@ services:
       - "5672:5672"
       - "15672:15672"
     volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
       - ./compose/rabbitmq/rabbitmq.conf:/etc/rabbitmq/conf.d/10-defaults.conf:ro
       - ./compose/rabbitmq/rabbitmq-definitions.json:/etc/rabbitmq/definitions.json:ro
 
