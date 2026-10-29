@@ -200,6 +200,41 @@ To apply the change, rebuild and recreate only the HTX producer:
 docker-compose -f production.yml up -d --build --no-deps producer-htx
 ```
 
+### Burst processing
+
+The OKX, Bybit and HTX publishers use batches of up to 50 trades normally and
+200 when at least 200 trades are already waiting. A partial batch still flushes
+after at most 20 ms of collection time. Model construction, Redis statistics and
+publishing run in one worker call per attempt. A failed batch retains its models,
+statistics snapshots and publication progress for retry before later batches.
+Trades are processed individually and retain their existing routing and order.
+
+The web service saves a received history batch through one Redis pipeline and
+trims history once per affected coin/category after saving. Each saved trade
+keeps its own record and expiry. The configured retention limit is applied after
+the batch. All-trades requests remain live-only and perform no history writes.
+The existing HTTP batch size and consumer acknowledgement rules are unchanged;
+a database error does not return a successful batch receipt.
+
+These changes reduce processing overhead. Producer buffers remain finite and
+in memory; they do not provide durable capture or guarantee recovery from
+overflow, restarts or exchange-side gaps.
+
+For this update, build the affected images before replacing any running service.
+Recreate producers after their pending buffers drain, since a recreation loses
+their in-memory backlog. The consumers can be stopped briefly while replacing
+the web service; their queues remain in RabbitMQ. Preserve both consumer replicas
+with `start`:
+
+```bash
+git pull &&
+docker-compose -f production.yml build web producer-okx producer-bybit producer-htx &&
+docker-compose -f production.yml stop consumer &&
+docker-compose -f production.yml up -d --no-deps web &&
+docker-compose -f production.yml start consumer &&
+docker-compose -f production.yml up -d --no-deps producer-okx producer-bybit producer-htx
+```
+
 ### Consumer delivery
 
 Octopus, dolphin and whale pages retain the newest 256 trades per coin and

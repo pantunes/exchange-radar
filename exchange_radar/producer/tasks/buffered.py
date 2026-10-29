@@ -13,12 +13,28 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
+class PendingBatch:
+    """Build and process on one worker, preserving the batch's retry progress."""
+
+    def __init__(self, messages, serializer):
+        self.messages = messages
+        self.serializer = serializer
+        self.batch = None
+
+    def process(self, store):
+        if self.batch is None:
+            self.batch = TradeBatch(self.messages, self.serializer)
+            self.messages = None
+        self.batch.process(store)
+
+
 class BufferedTradesTask(Task):
     """Keep exchange readers responsive while a single thread publishes batches."""
 
     MAX_RETRY_DELAY = 60.0
     MAX_PENDING_TRADES = 5000
     BATCH_SIZE = 50
+    BURST_BATCH_SIZE = 200
     BATCH_WAIT = 0.02
     REPORT_INTERVAL = 60.0
     RECEIVE_TIMEOUT = 30.0
@@ -86,8 +102,11 @@ class BufferedTradesTask(Task):
         while True:
             items = [await self._pending.get()]
             try:
+                limit = (
+                    self.BURST_BATCH_SIZE if self._pending.qsize() + 1 >= self.BURST_BATCH_SIZE else self.BATCH_SIZE
+                )
                 deadline = loop.time() + self.BATCH_WAIT
-                while len(items) < self.BATCH_SIZE:
+                while len(items) < limit:
                     try:
                         items.append(self._pending.get_nowait())
                     except asyncio.QueueEmpty:
@@ -100,9 +119,7 @@ class BufferedTradesTask(Task):
                         except TimeoutError:
                             break
 
-                batch = await loop.run_in_executor(
-                    self._publisher_executor, TradeBatch, [message for _, message in items], self.SERIALIZER
-                )
+                batch = PendingBatch([message for _, message in items], self.SERIALIZER)
                 retry_delay = 1.0
                 while True:
                     try:

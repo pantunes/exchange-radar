@@ -278,6 +278,74 @@ async def test_missing_pong_times_out_even_if_trades_keep_arriving(kind, continu
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("count,sizes", [(1, [1]), (53, [50, 3]), (450, [200, 200, 50])])
+async def test_adaptive_batches_keep_every_trade_in_order_with_one_worker_handoff(task, monkeypatch, count, sizes):
+    batches, threads = [], []
+    monkeypatch.setattr(buffered, "TradeStatsStore", Mock())
+    submit = Mock(wraps=task._publisher_executor.submit)
+    monkeypatch.setattr(task._publisher_executor, "submit", submit)
+
+    class Batch:
+        def __init__(self, messages, serializer):
+            assert serializer is task.SERIALIZER
+            threads.append(threading.get_ident())
+            self.messages = messages
+
+        def process(self, store):
+            threads.append(threading.get_ident())
+            batches.append(self.messages)
+
+    monkeypatch.setattr(buffered, "TradeBatch", Batch)
+    messages = [trade(task, index) for index in range(count)]
+    for message in messages:
+        task._pending.put_nowait((0, message))
+    worker = asyncio.create_task(task._publish_batches())
+    try:
+        await asyncio.wait_for(task._pending.join(), 3)
+    finally:
+        worker.cancel()
+        await asyncio.gather(worker, return_exceptions=True)
+    assert [len(batch) for batch in batches] == sizes
+    assert [message for batch in batches for message in batch] == messages
+    assert submit.call_count == len(sizes)
+    assert len(set(threads)) == 1
+    assert threads[0] != threading.get_ident()
+
+
+@pytest.mark.asyncio
+async def test_burst_retry_reuses_prepared_batch_and_finishes_before_later_trades(task, monkeypatch):
+    monkeypatch.setattr(buffered, "TradeStatsStore", Mock())
+    monkeypatch.setattr(buffered.asyncio, "sleep", AsyncMock())
+    constructed, delivered = [], []
+
+    class Batch:
+        def __init__(self, messages, serializer):
+            self.messages = messages
+            self.next_trade = 0
+            constructed.append(self)
+
+        def process(self, store):
+            while self.next_trade < len(self.messages):
+                delivered.append(self.messages[self.next_trade])
+                self.next_trade += 1
+                if len(delivered) == 3:
+                    raise ConnectionError("temporary publish failure")
+
+    monkeypatch.setattr(buffered, "TradeBatch", Batch)
+    messages = [trade(task, index) for index in range(450)]
+    for message in messages:
+        task._pending.put_nowait((0, message))
+    worker = asyncio.create_task(task._publish_batches())
+    try:
+        await asyncio.wait_for(task._pending.join(), 3)
+    finally:
+        worker.cancel()
+        await asyncio.gather(worker, return_exceptions=True)
+    assert [len(batch.messages) for batch in constructed] == [200, 200, 50]
+    assert delivered == messages
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("count", [1024, 5000])
 async def test_bursts_keep_heartbeats_responsive_while_publishing_is_stalled(task, monkeypatch, count):
     started, release = threading.Event(), threading.Event()

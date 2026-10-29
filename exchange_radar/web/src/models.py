@@ -109,30 +109,46 @@ class Feed(JsonModel):  # pragma: no cover
 
     @classmethod
     def save_or_not(cls, coin: str, category: str, message: dict) -> bool:
-        if not cls.is_coin_selected(coin, category):
-            return False
+        return cls.save_batch(category=category, trades=[(coin, message)])[0]
 
-        obj = cls(
-            type=category,
-            price=message["price"],
-            trade_time_ts=message["trade_time_ts"],
-            is_seller=message["is_seller"],
-            currency=message["currency"],
-            trade_symbol=message["trade_symbol"],
-            volume=message["volume"],
-            volume_trades=message["volume_trades"],
-            number_trades=message["number_trades"],
-            message=message["message"],
-            ranking=message["ranking"],
-        )
+    @classmethod
+    def save_batch(cls, category: str, trades: list[tuple[str, dict]]) -> list[bool]:
+        # Validate the whole batch before issuing any history writes.
+        objects = [
+            (
+                cls(
+                    type=category,
+                    price=message["price"],
+                    trade_time_ts=message["trade_time_ts"],
+                    is_seller=message["is_seller"],
+                    currency=message["currency"],
+                    trade_symbol=message["trade_symbol"],
+                    volume=message["volume"],
+                    volume_trades=message["volume_trades"],
+                    number_trades=message["number_trades"],
+                    message=message["message"],
+                    ranking=message["ranking"],
+                )
+                if cls.is_coin_selected(coin, category)
+                else None
+            )
+            for coin, message in trades
+        ]
+        saved = [obj is not None for obj in objects]
+        if not any(saved):
+            return saved
         with redis.pipeline(transaction=False) as pipe:
-            obj.save(pipeline=pipe)
-            obj.expire(num_seconds=FEED_EXPIRATION_SECONDS, pipeline=pipe)
+            for obj in objects:
+                if obj is not None:
+                    obj.save(pipeline=pipe)
+                    obj.expire(num_seconds=FEED_EXPIRATION_SECONDS, pipeline=pipe)
             pipe.execute()
 
-        cls.trim(coin=coin, category=category)
+        coins = dict.fromkeys(coin for (coin, _), obj in zip(trades, objects, strict=True) if obj is not None)
+        for coin in coins:
+            cls.trim(coin=coin, category=category)
 
-        return True
+        return saved
 
 
 class Alerts(JsonModel):  # pragma: no cover

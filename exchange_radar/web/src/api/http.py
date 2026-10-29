@@ -43,11 +43,12 @@ class FeedBase(HTTPEndpoint):
                 for message in payload
             ):
                 raise HTTPException(400, "Invalid trade batch")
-            saved = []
             for message in payload:
                 symbol = message["trade_symbol"]
                 await self.manager.broadcast(message, symbol)
-                saved.append(FeedModel.save_or_not(coin=symbol, category=str(self), message=message))
+            saved = FeedModel.save_batch(
+                category=str(self), trades=[(message["trade_symbol"], message) for message in payload]
+            )
             return JSONResponse({"r": saved, "accepted": len(saved)}, status_code=201 if any(saved) else 200)
         if coin == "_batch" or not isinstance(payload, dict):
             raise HTTPException(400, "Expected a trade batch")
