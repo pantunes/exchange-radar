@@ -162,16 +162,27 @@ class Alerts(JsonModel):  # pragma: no cover
     @classmethod
     def rows(cls, trade_symbol: str) -> dict[str, list[str]]:
         query = cls.find(cls.trade_symbol == trade_symbol).sort_by("-time_ts")
-        return {
-            "rows": [
+        rows = []
+        for item in query:
+            price = f"{item.price:,.8f} {item.currency.rjust(4)}".rjust(16 + 5, " ")
+            message = item.message
+            if "price increased" in message.lower():
+                color_class = "order_buy"
+            elif "price decreased" in message.lower():
+                color_class = "order_sell"
+            else:
+                color_class = None
+            if color_class:
+                price = f"<span class='{color_class}'>{price}</span>"
+                message = f"<span class='{color_class}'>{message}</span>"
+            rows.append(
                 f"{datetime.fromtimestamp(item.time_ts)} | "
                 f"{trade_symbol.ljust(4)} | "
-                f"{f'{item.price:,.8f} {item.currency.rjust(4)}'.rjust(16 + 5, ' ')} | "
+                f"{price} | "
                 f"{item.name.ljust(35)} | "
-                f"{item.message}"
-                for item in query
-            ]
-        }
+                f"{message}"
+            )
+        return {"rows": rows}
 
 
 Migrator().run()
