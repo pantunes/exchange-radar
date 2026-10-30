@@ -3,6 +3,9 @@ import json
 from decimal import Decimal
 from unittest.mock import MagicMock, patch
 
+import pytest
+from pydantic import ValidationError
+
 from exchange_radar.producer.enums import Ranking
 from exchange_radar.producer.serializers.binance import BinanceTradeSerializer
 from exchange_radar.producer.serializers.bitstamp import BitstampTradeSerializer
@@ -105,6 +108,45 @@ def test_serializer_kucoin(mock_redis):
         "is_seller": True,
         "exchange": "KuCoin",
     }
+
+
+@pytest.mark.parametrize(
+    "size",
+    [
+        "195843.52896115577408404249",
+        "0.06791958742059785148",
+        "1062430.3457092909",
+        "18188802.06222551733253954357",
+        "0.00012466578573274292",
+        "0.00116248421426725708",
+        "0.00003751578573274292",
+        "0.00000882421426725708",
+    ],
+)
+@patch("exchange_radar.producer.models.redis")
+def test_serializer_kucoin_preserves_quantities_rejected_in_production(mock_redis, size):
+    mock_redis.hincrbyfloat.return_value = float(size)
+    mock_redis.pipeline().__enter__().execute.return_value = [1.0, 100.0]
+
+    payload = KucoinTradeSerializer(
+        symbol="LINK-BTC", price="0.000003518", size=size, time="1683108639912000000", side="sell"
+    )
+
+    assert payload.quantity == Decimal(size)
+    assert json.loads(payload.model_dump_json())["quantity"] == size
+
+
+@pytest.mark.parametrize("size", ["-1", "NaN", "Infinity", "-Infinity", "not-a-number"])
+def test_serializer_kucoin_still_rejects_invalid_quantities(size):
+    with pytest.raises(ValidationError):
+        KucoinTradeSerializer(
+            _defer_stats=True,
+            symbol="LINK-BTC",
+            price="0.000003518",
+            size=size,
+            time="1683108639912000000",
+            side="sell",
+        )
 
 
 @patch("exchange_radar.producer.models.redis")

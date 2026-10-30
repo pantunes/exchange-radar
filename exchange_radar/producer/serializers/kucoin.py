@@ -11,7 +11,7 @@ from exchange_radar.producer.serializers.base import FeedSerializer
 class KucoinTradeSerializer(FeedSerializer):
     symbol: str
     price: Annotated[Decimal, Field(ge=0, decimal_places=10)]
-    quantity: Annotated[Decimal, Field(ge=0, decimal_places=9, alias="size")]
+    quantity: Annotated[Decimal, Field(ge=0, alias="size")]
     trade_time: datetime = Field(alias="time")
     side: str = Field(exclude=True)
 
