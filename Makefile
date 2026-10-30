@@ -41,3 +41,12 @@ redis-cli:
 
 create-env-file:
 	@cat .envs/.local/.* > .env
+
+.PHONY: deploy
+deploy:
+	@git pull
+	@docker-compose -f production.yml build
+	@$(MAKE) save-data
+	@docker-compose -f production.yml up -d --scale consumer=2
+	@docker system prune -a -f
+	@docker volume prune -a -f

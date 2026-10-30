@@ -45,6 +45,13 @@ their local copy.
     # Scale the consumer service horizontally with 2 instances
     $ docker compose -f production.yml up --build --scale consumer=2
 
+From the VM's repository directory, `make deploy` pulls the latest code, builds
+images, requests a Redis snapshot, updates the stack with two consumers, and
+cleans up unused Docker resources. Each step stops the deployment if it fails.
+The cleanup applies to the entire VM: it removes stopped containers, unused
+images, networks, build cache, and all unreferenced volumes, including named
+volumes containing old data. Volumes attached to retained containers remain.
+
 ### Production recovery
 
 Every production service uses `restart: unless-stopped`, including both replicas
