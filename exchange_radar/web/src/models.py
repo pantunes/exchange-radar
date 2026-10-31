@@ -165,7 +165,7 @@ class Alerts(JsonModel):  # pragma: no cover
         rows = []
         for item in query:
             price = f"{item.price:,.8f} {item.currency.rjust(4)}".rjust(16 + 5, " ")
-            message = item.message
+            message = f" {item.message}"
             if "price increased" in message.lower():
                 color_class = "order_buy"
             elif "price decreased" in message.lower():
@@ -179,7 +179,7 @@ class Alerts(JsonModel):  # pragma: no cover
                 f"{datetime.fromtimestamp(item.time_ts)} | "
                 f"{trade_symbol.ljust(4)} | "
                 f"{price} | "
-                f"{item.name.ljust(35)} | "
+                f"{item.name.ljust(35)} |"
                 f"{message}"
             )
         return {"rows": rows}

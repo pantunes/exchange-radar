@@ -39,10 +39,11 @@ def test_alert_rows_align_new_labels_with_historical_names(client):
         assert [i for i, char in enumerate(row) if char == "|"] == [i for i, char in enumerate(header) if char == "|"]
 
     for row, color_class in zip(rows, ("order_sell", "order_buy", "order_sell", "order_buy", None)):
-        cells = row.split(" | ")
+        cells = [cell.lstrip() for cell in row.split(" |")]
         if color_class:
             for index in (2, 4):
                 assert cells[index].startswith(f"<span class='{color_class}'>")
                 assert cells[index].endswith("</span>")
+            assert cells[4].startswith(f"<span class='{color_class}'> ")
         else:
             assert "<span" not in row
